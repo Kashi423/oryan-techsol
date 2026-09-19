@@ -1,0 +1,250 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/manrope/wght.css';
+@import '@fontsource/lato/latin-400.css';
+@import '@fontsource/lato/latin-700.css';
+
+/* ==========================================================================
+   Oryan Techsol design tokens — the single source of truth for the brand.
+
+   Sampled from the supplied logo artwork: navy wordmark #051C4E, cerulean
+   "TECHSOL" #10A1C6, electric cyan #0FD1E8 at the bright end of the mark,
+   grey tagline #686A6E — all on a light background. The brand collateral
+   (banner + posts) confirms the pattern used here: light pages with pale
+   network backdrops, deep-navy bands, bold navy headings with one cyan phrase.
+
+   Two tones share one set of semantic tokens:
+     • default  — light surface, navy text  (the whole site)
+     • inverse  — deep-navy surface, white text; opt in per section with
+                  <Section tone="inverse"> (the footer uses it too)
+   Components only use the semantic tokens (surface, fg, line, primary,
+   highlight…), never raw palette values, so a tone switch restyles everything
+   inside it. The default Tailwind palette is disabled on purpose so off-brand
+   colours (bg-blue-500 etc.) cannot creep in.
+   ========================================================================== */
+@theme {
+  --color-*: initial;
+
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Brand — navy → cerulean. 900 and 500 are the logo's own colours. */
+  --color-brand-50: #ecf9fc;
+  --color-brand-100: #d2f0f8;
+  --color-brand-200: #a6e2f1;
+  --color-brand-300: #6cd0e7;
+  --color-brand-400: #30b8d9;
+  --color-brand-500: #10a1c6; /* logo "TECHSOL" + rules. Too light for body text on white. */
+  --color-brand-600: #12789f; /* smallest step that passes AA as text on white */
+  --color-brand-700: #0f5f88;
+  --color-brand-800: #0a3f76;
+  --color-brand-900: #051c4e; /* logo "ORYAN" wordmark navy */
+  --color-brand-950: #030f2d;
+
+  /* Accent — the electric cyan at the bright end of the mark */
+  --color-accent-300: #5be4f4;
+  --color-accent-400: #0fd1e8; /* logo cyan */
+  --color-accent-500: #0bb1c7;
+  --color-accent-600: #088c9e;
+
+  /* Ink — cool neutrals (borders, muted text; the logo tagline is #686A6E) */
+  --color-ink-50: #f4f7fb;
+  --color-ink-100: #eaeff6;
+  --color-ink-200: #d9e1ec;
+  --color-ink-300: #bcc7d8;
+  --color-ink-400: #8c99b0;
+  --color-ink-500: #5e6b85;
+  --color-ink-600: #4a5670;
+  --color-ink-700: #364159;
+  --color-ink-800: #222c44;
+  --color-ink-900: #121a30;
+  --color-ink-950: #0a1122;
+
+  /* Semantic tokens — light tone (default). Overridden for [data-tone='inverse'] below. */
+  --color-surface: var(--color-white);
+  --color-surface-muted: var(--color-ink-50); /* alternating sections */
+  --color-surface-raised: var(--color-white); /* cards */
+  --color-surface-overlay: var(--color-ink-100); /* hover backgrounds */
+  --color-line: var(--color-ink-200);
+  --color-line-strong: var(--color-ink-300);
+  --color-fg: var(--color-brand-900); /* headings + primary text */
+  --color-fg-muted: var(--color-ink-600); /* body copy */
+  --color-fg-subtle: var(--color-ink-500); /* captions, metadata */
+  --color-primary: var(--color-brand-900); /* buttons — white text passes WCAG AA */
+  --color-primary-hover: var(--color-brand-800);
+  --color-primary-fg: var(--color-white);
+  --color-highlight: var(--color-brand-600); /* accent text, icons, borders */
+  --color-ring: var(--color-brand-500);
+  --color-logo-sub: var(--color-brand-500); /* "TECHSOL" in the logo lockup */
+  --color-success: #15803d;
+  --color-danger: #c62828;
+
+  /* Typography — Manrope for headings and UI labels, Lato for reading text */
+  --font-sans: 'Lato', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display:
+    'Manrope Variable', 'Lato', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Tokens that swap by tone but have no matching Tailwind utility. */
+@layer base {
+  :root {
+    /* Logo mark gradient: navy (left) → blue → cyan (right), as in the artwork */
+    --mark-from: #0b2a5e;
+    --mark-via: #18638e;
+    --mark-mid: #169ec0;
+    --mark-to: #0fd1e8;
+    --gradient-from: var(--color-brand-600);
+    --gradient-to: var(--color-brand-500);
+    --glow: var(--color-brand-500);
+    --shadow-card-value:
+      0 1px 2px rgb(5 28 78 / 0.05), 0 12px 28px -16px rgb(5 28 78 / 0.22);
+    --shadow-button-value: 0 8px 18px -8px color-mix(in oklab, var(--color-primary) 65%, transparent);
+  }
+
+  [data-tone='inverse'] {
+    color-scheme: dark;
+    color: var(--color-fg);
+    --color-surface: var(--color-brand-950);
+    --color-surface-muted: var(--color-brand-900);
+    --color-surface-raised: rgb(255 255 255 / 0.05);
+    --color-surface-overlay: rgb(255 255 255 / 0.09);
+    --color-line: rgb(255 255 255 / 0.12);
+    --color-line-strong: rgb(255 255 255 / 0.22);
+    --color-fg: var(--color-white);
+    --color-fg-muted: var(--color-ink-300);
+    --color-fg-subtle: var(--color-ink-400);
+    --color-primary: var(--color-accent-400);
+    --color-primary-hover: var(--color-accent-300);
+    --color-primary-fg: var(--color-brand-950);
+    --color-highlight: var(--color-accent-400);
+    --color-ring: var(--color-accent-300);
+    --color-logo-sub: var(--color-accent-400);
+
+    /* On navy the dark end of the mark would vanish, so the ramp is lifted (as in the collateral). */
+    --mark-from: #3a7bd5;
+    --mark-via: #1b8fd0;
+    --mark-mid: #17a8d8;
+    --mark-to: #4ee3f8;
+    --gradient-from: var(--color-brand-300);
+    --gradient-to: var(--color-accent-400);
+    --glow: var(--color-accent-500);
+    --shadow-card-value: none;
+    --shadow-button-value: 0 8px 22px -8px color-mix(in oklab, var(--color-primary) 55%, transparent);
+  }
+}
+
+@utility shadow-card {
+  box-shadow: var(--shadow-card-value);
+}
+
+@utility shadow-button {
+  box-shadow: var(--shadow-button-value);
+}
+
+/* Brand gradient text — the one highlighted phrase per heading, at display sizes only. */
+@utility text-gradient {
+  background-image: linear-gradient(100deg, var(--gradient-from), var(--gradient-to));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Engineering-grid backdrop that fades toward the edges; follows the tone's text colour. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--color-fg) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-fg) 7%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
+  mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
+}
+
+/* Soft glow (cheaper than a blur filter). Size/position it on the element. */
+@utility bg-glow {
+  background-image: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--glow) 30%, transparent),
+    transparent
+  );
+}
+
+/* The logo mark: the real artwork's alpha mask (set inline by <LogoMark />) filled with the
+   tone's gradient, so one small asset serves light and inverse sections. */
+@layer components {
+  .logo-mark {
+    display: block;
+    aspect-ratio: 1;
+    background-image: linear-gradient(
+      75deg,
+      var(--mark-from) 0%,
+      var(--mark-via) 35%,
+      var(--mark-mid) 65%,
+      var(--mark-to) 100%
+    );
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem; /* clear the sticky header on in-page anchors */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* Page and section titles follow the collateral: bold uppercase Manrope. Keep them short —
+     flip text-transform here if a sentence-case look is ever wanted. */
+  h1,
+  h2 {
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  h3,
+  h4 {
+    font-weight: 700;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-brand-500) 30%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}

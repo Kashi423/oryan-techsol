@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Oryan Techsol">
+  <defs>
+    <linearGradient id="g" gradientUnits="userSpaceOnUse" x1="40" y1="380" x2="472" y2="130">
+      <stop offset="0" stop-color="#1e6fb0" />
+      <stop offset="0.5" stop-color="#10a1c6" />
+      <stop offset="1" stop-color="#0fd1e8" />
+    </linearGradient>
+  </defs>
+  <path d="M470 256L407.3 407.3M470 256L383.5 308.8M470 256L383.5 203.2M407.3 407.3L256 470M407.3 407.3L383.5 308.8M407.3 407.3L308.8 383.5M256 470L104.7 407.3M256 470L308.8 383.5M256 470L203.2 383.5M104.7 407.3L42 256M104.7 407.3L128.5 308.8M104.7 407.3L203.2 383.5M42 256L104.7 104.7M42 256L128.5 203.2M42 256L128.5 308.8M104.7 104.7L256 42M104.7 104.7L203.2 128.5M104.7 104.7L128.5 203.2M256 42L407.3 104.7M256 42L308.8 128.5M256 42L203.2 128.5M407.3 104.7L470 256M407.3 104.7L383.5 203.2M407.3 104.7L308.8 128.5M383.5 308.8L308.8 383.5M308.8 383.5L203.2 383.5M203.2 383.5L128.5 308.8M128.5 308.8L128.5 203.2M128.5 203.2L203.2 128.5M203.2 128.5L308.8 128.5M308.8 128.5L383.5 203.2M383.5 203.2L383.5 308.8" fill="none" stroke="url(#g)" stroke-width="16" stroke-linecap="round" />
+  <circle cx="470" cy="256" r="31.7" fill="url(#g)" />
+  <circle cx="407.3" cy="407.3" r="33.8" fill="url(#g)" />
+  <circle cx="256" cy="470" r="34.7" fill="url(#g)" />
+  <circle cx="104.7" cy="407.3" r="31.2" fill="url(#g)" />
+  <circle cx="42" cy="256" r="33.5" fill="url(#g)" />
+  <circle cx="104.7" cy="104.7" r="32.2" fill="url(#g)" />
+  <circle cx="256" cy="42" r="35.5" fill="url(#g)" />
+  <circle cx="407.3" cy="104.7" r="31.2" fill="url(#g)" />
+  <circle cx="383.5" cy="308.8" r="19.8" fill="url(#g)" />
+  <circle cx="308.8" cy="383.5" r="18.9" fill="url(#g)" />
+  <circle cx="203.2" cy="383.5" r="18.2" fill="url(#g)" />
+  <circle cx="128.5" cy="308.8" r="18.2" fill="url(#g)" />
+  <circle cx="128.5" cy="203.2" r="18" fill="url(#g)" />
+  <circle cx="203.2" cy="128.5" r="21.9" fill="url(#g)" />
+  <circle cx="308.8" cy="128.5" r="20.7" fill="url(#g)" />
+  <circle cx="383.5" cy="203.2" r="21.6" fill="url(#g)" />
+</svg>

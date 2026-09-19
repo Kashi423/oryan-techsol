@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Site-wide defaults for crawlers and link scrapers that do not run JS.
+         Tags marked data-seo-default are replaced at runtime by <Seo />
+         (src/components/seo/Seo.jsx), which supplies the per-page values. -->
+    <title data-seo-default>Oryan Techsol | Custom Software, Web &amp; AI Automation</title>
+    <meta
+      data-seo-default
+      name="description"
+      content="Oryan Techsol builds custom software, high-performance websites, AI bots and business automation that help growing companies save time and scale."
+    />
+    <meta data-seo-default property="og:site_name" content="Oryan Techsol" />
+    <meta data-seo-default property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta
+      data-seo-default
+      property="og:title"
+      content="Oryan Techsol | Custom Software, Web &amp; AI Automation"
+    />
+    <meta
+      data-seo-default
+      property="og:description"
+      content="Custom software, high-performance websites, AI bots and business automation for growing companies."
+    />
+    <meta data-seo-default name="twitter:card" content="summary" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "%VITE_SITE_URL%/#organization",
+            "name": "Oryan Techsol",
+            "url": "%VITE_SITE_URL%/",
+            "description": "Custom software, web development, AI bots and business automation."
+          },
+          {
+            "@type": "WebSite",
+            "@id": "%VITE_SITE_URL%/#website",
+            "url": "%VITE_SITE_URL%/",
+            "name": "Oryan Techsol",
+            "publisher": { "@id": "%VITE_SITE_URL%/#organization" }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      Oryan Techsol builds custom software, websites, AI bots and business automation. Please
+      enable JavaScript to view this site.
+    </noscript>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

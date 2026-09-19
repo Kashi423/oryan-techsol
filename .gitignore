@@ -1,0 +1,20 @@
+# Dependencies & build output
+node_modules
+dist
+dist-ssr
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Local env overrides (the shared .env is committed on purpose)
+*.local
+
+# Editors / OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.DS_Store
+Thumbs.db
