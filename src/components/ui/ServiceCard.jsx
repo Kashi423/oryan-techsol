@@ -16,11 +16,17 @@ export default function ServiceCard({
   className,
 }) {
   return (
-    <Card interactive={Boolean(to)} className={cn('group flex h-full flex-col', className)}>
-      <span className="mb-6 inline-flex size-12 items-center justify-center rounded-xl bg-highlight/10 text-highlight ring-1 ring-highlight/20">
+    <Card interactive={Boolean(to)} className={cn('group relative flex h-full flex-col overflow-hidden', className)}>
+      {/* Oversized, near-invisible watermark of the card's own icon — the kind of quiet
+          craft detail that separates a "real" service card from a plain icon+text block. */}
+      <Icon
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-6 -right-6 size-28 rotate-12 text-highlight/[0.06] transition-transform duration-500 group-hover:rotate-[18deg] group-hover:scale-110"
+      />
+      <span className="relative mb-6 inline-flex size-12 items-center justify-center rounded-xl bg-highlight/10 text-highlight ring-1 ring-highlight/20 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
         <Icon className="size-6" aria-hidden="true" />
       </span>
-      <h3 className="text-xl">
+      <h3 className="relative text-xl">
         {to ? (
           <Link to={to} className="after:absolute after:inset-0 after:rounded-2xl">
             {title}

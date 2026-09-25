@@ -15,7 +15,7 @@ export default function FeatureCard({
 }) {
   return (
     <Card interactive={Boolean(to)} className={cn('group flex h-full flex-col', className)}>
-      <span className="mb-5 inline-flex size-11 items-center justify-center rounded-xl bg-highlight/10 text-highlight ring-1 ring-highlight/20">
+      <span className="mb-5 inline-flex size-11 items-center justify-center rounded-xl bg-highlight/10 text-highlight ring-1 ring-highlight/20 transition-[transform,background-color] duration-300 group-hover:scale-110 group-hover:bg-highlight/20">
         <Icon className="size-5" aria-hidden="true" />
       </span>
       <h3 className="text-lg">

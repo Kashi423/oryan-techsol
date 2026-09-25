@@ -1,9 +1,11 @@
 import {
   ArrowDown,
   ArrowRight,
+  BedDouble,
   Bell,
   Blocks,
   Bot,
+  Briefcase,
   Brain,
   Building2,
   CalendarCheck,
@@ -11,20 +13,27 @@ import {
   Clock,
   ClipboardList,
   Code2,
+  Compass,
   Database,
   FileSearch,
   FileText,
   Globe,
+  GraduationCap,
+  Hammer,
+  HeartPulse,
   Headset,
   HelpCircle,
+  Landmark,
   Layers,
   LayoutGrid,
   ListChecks,
+  Megaphone,
   Minus,
   Network,
   Plug2,
   RefreshCw,
   Repeat,
+  Rocket,
   Search,
   ShoppingCart,
   Shuffle,
@@ -33,6 +42,7 @@ import {
   Target,
   Ticket,
   TrendingDown,
+  Truck,
   Unplug,
   User,
   UserPlus,
@@ -48,6 +58,7 @@ import Seo from '@/components/seo/Seo'
 import {
   Badge,
   Button,
+  CapabilityTile,
   Card,
   CaseStudyCard,
   FeatureCard,
@@ -181,15 +192,21 @@ const aiCapabilities = [
 ]
 
 const processSteps = [
-  { number: '01', title: 'Discover', description: 'Understand the business, goals and workflow.' },
-  { number: '02', title: 'Plan', description: 'Design the technical architecture and solution.' },
-  { number: '03', title: 'Build', description: 'Develop the website, software, AI system or automation.' },
+  { number: '01', icon: Search, title: 'Discover', description: 'Understand the business, goals and workflow.' },
+  { number: '02', icon: Compass, title: 'Plan', description: 'Design the technical architecture and solution.' },
+  { number: '03', icon: Hammer, title: 'Build', description: 'Develop the website, software, AI system or automation.' },
   {
     number: '04',
+    icon: Plug2,
     title: 'Integrate',
     description: 'Connect APIs, databases, CRM, communication tools and other systems where required.',
   },
-  { number: '05', title: 'Launch & Improve', description: 'Deploy, monitor and continuously improve the solution.' },
+  {
+    number: '05',
+    icon: Rocket,
+    title: 'Launch & Improve',
+    description: 'Deploy, monitor and continuously improve the solution.',
+  },
 ]
 
 // Not a claim of certified expertise in each field — the same custom web, software and AI
@@ -198,14 +215,17 @@ const processSteps = [
 const industries = [
   {
     name: 'E-commerce',
+    icon: ShoppingCart,
     solutions: ['Customer support AI', 'Order-status assistant', 'Product recommendation', 'Marketing automation'],
   },
   {
     name: 'Real Estate',
+    icon: Building2,
     solutions: ['AI lead qualification', 'Property inquiry bot', 'Appointment scheduling', 'CRM automation'],
   },
   {
     name: 'Healthcare',
+    icon: HeartPulse,
     solutions: [
       'Appointment booking assistant',
       'Patient FAQ bot',
@@ -215,6 +235,7 @@ const industries = [
   },
   {
     name: 'Education',
+    icon: GraduationCap,
     solutions: [
       'Admissions inquiry bot',
       'Course FAQ assistant',
@@ -224,6 +245,7 @@ const industries = [
   },
   {
     name: 'Hospitality',
+    icon: BedDouble,
     solutions: [
       'Booking & reservations bot',
       'Guest inquiry assistant',
@@ -233,10 +255,12 @@ const industries = [
   },
   {
     name: 'Professional Services',
+    icon: Briefcase,
     solutions: ['Client intake bot', 'Appointment scheduling', 'Document automation', 'CRM & follow-up automation'],
   },
   {
     name: 'Finance',
+    icon: Landmark,
     solutions: [
       'Lead qualification bot',
       'Client FAQ assistant',
@@ -246,6 +270,7 @@ const industries = [
   },
   {
     name: 'Logistics',
+    icon: Truck,
     solutions: [
       'Shipment status assistant',
       'Customer inquiry bot',
@@ -255,6 +280,7 @@ const industries = [
   },
   {
     name: 'Agencies',
+    icon: Megaphone,
     solutions: [
       'Client onboarding bot',
       'Project status assistant',
@@ -264,10 +290,12 @@ const industries = [
   },
   {
     name: 'Startups',
+    icon: Rocket,
     solutions: ['MVP web & app development', 'Lead capture bot', 'Internal tooling automation', 'Customer support assistant'],
   },
   {
     name: 'Small & Medium Businesses',
+    icon: Users,
     solutions: ['Customer support bot', 'Appointment booking', 'Internal process automation', 'Simple CRM setup'],
   },
 ]
@@ -381,8 +409,16 @@ function HeroVisual() {
 function ProblemTile({ icon: Icon, label, delay = 0 }) {
   return (
     <Reveal delay={delay}>
-      <Card className="flex h-full items-center gap-4 py-5">
-        <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-fg-subtle">
+      {/* No lift/border-highlight (that would read as "clickable") — just a quiet darkening,
+          fitting for a tile describing a pain point rather than something to celebrate. A
+          faint danger-tinted icon (not the brand cyan) marks these as "the problem", visually
+          distinct from every other icon treatment on the page, which is reserved for solutions. */}
+      <Card
+        padding="none"
+        className="group relative flex h-full items-center gap-4 overflow-hidden py-5 pr-5 pl-6 transition-colors duration-200 hover:bg-surface-muted"
+      >
+        <span aria-hidden="true" className="absolute inset-y-3 left-0 w-1 rounded-full bg-danger/25" />
+        <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-danger/8 text-danger/70 transition-transform duration-200 group-hover:scale-110">
           <Icon className="size-5" aria-hidden="true" />
         </span>
         <p className="font-display text-sm font-semibold text-fg-muted">{label}</p>
@@ -396,11 +432,22 @@ function ProblemTile({ icon: Icon, label, delay = 0 }) {
 function ComparisonRow({ label, description, variant }) {
   const Icon = variant === 'after' ? CheckCircle2 : Minus
   return (
-    <li className="flex items-start gap-3 py-4">
-      <Icon
-        className={cn('mt-0.5 size-5 shrink-0', variant === 'after' ? 'text-success' : 'text-fg-subtle')}
-        aria-hidden="true"
-      />
+    // Hover tint reinforces which side of the story a row belongs to: a faint success tint
+    // on "after" rows, a neutral one on "before" — the same distinction the icon already makes.
+    <li
+      className={cn(
+        '-mx-3 flex items-start gap-3.5 rounded-xl px-3 py-4 transition-colors duration-200',
+        variant === 'after' ? 'hover:bg-success/5' : 'hover:bg-surface-muted',
+      )}
+    >
+      <span
+        className={cn(
+          'mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full',
+          variant === 'after' ? 'bg-success/10 text-success' : 'bg-fg-subtle/10 text-fg-subtle',
+        )}
+      >
+        <Icon className="size-4" aria-hidden="true" />
+      </span>
       <div>
         <p className="font-display text-sm font-bold text-fg">{label}</p>
         <p className="mt-1 text-sm leading-relaxed text-fg-muted">{description}</p>
@@ -439,43 +486,61 @@ function ProblemsSection() {
         </p>
       </Reveal>
 
-      <div className="mt-12 grid items-center gap-6 md:grid-cols-[1fr_auto_1fr] md:gap-4">
+      <div className="relative mt-12 grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-0">
         <Reveal>
-          <Card as="section" aria-labelledby="before-title" className="h-full">
-            <p id="before-title" className="font-display text-xs font-bold tracking-[0.2em] text-fg-subtle uppercase">
-              Before
-            </p>
-            <p className="mt-1 font-display text-sm font-semibold text-fg-muted">
-              Manual · Slow · Disconnected
-            </p>
-            <ul className="mt-2 divide-y divide-line">
-              {before.map((row) => (
-                <ComparisonRow key={row.label} variant="before" {...row} />
-              ))}
-            </ul>
+          <Card
+            as="section"
+            aria-labelledby="before-title"
+            padding="none"
+            className="h-full overflow-hidden md:rounded-r-none md:border-r-0"
+          >
+            <div aria-hidden="true" className="h-1.5 bg-fg-subtle/25" />
+            <div className="p-6 sm:p-8">
+              <p id="before-title" className="font-display text-xs font-bold tracking-[0.2em] text-fg-subtle uppercase">
+                Before
+              </p>
+              <p className="mt-1 font-display text-sm font-semibold text-fg-muted">Manual · Slow · Disconnected</p>
+              <ul className="mt-2 divide-y divide-line">
+                {before.map((row) => (
+                  <ComparisonRow key={row.label} variant="before" {...row} />
+                ))}
+              </ul>
+            </div>
           </Card>
         </Reveal>
 
         <div
           aria-hidden="true"
-          className="mx-auto flex size-11 rotate-90 items-center justify-center rounded-full border border-line-strong bg-surface-raised text-highlight md:rotate-0"
+          className="relative z-10 mx-auto flex size-14 rotate-90 items-center justify-center rounded-full bg-primary text-primary-fg shadow-button md:rotate-0"
         >
-          <ArrowRight className="size-5" />
+          <span className="motion-safe:absolute motion-safe:inset-0 motion-safe:animate-ping motion-safe:rounded-full motion-safe:bg-primary/50" />
+          <ArrowRight className="relative size-6" />
         </div>
 
         <Reveal delay={0.08}>
-          <Card as="section" aria-labelledby="after-title" className="h-full border-highlight/40 ring-1 ring-highlight/15">
-            <p id="after-title" className="font-display text-xs font-bold tracking-[0.2em] text-highlight uppercase">
-              After
-            </p>
-            <p className="mt-1 font-display text-sm font-semibold text-fg">
-              Automated · Intelligent · Connected
-            </p>
-            <ul className="mt-2 divide-y divide-line">
-              {after.map((row) => (
-                <ComparisonRow key={row.label} variant="after" {...row} />
-              ))}
-            </ul>
+          <Card
+            as="section"
+            aria-labelledby="after-title"
+            padding="none"
+            surface="solid"
+            data-tone="inverse"
+            className="h-full overflow-hidden md:rounded-l-none"
+          >
+            <div aria-hidden="true" className="h-1.5 bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)]" />
+            <div className="relative p-6 sm:p-8">
+              <div aria-hidden="true" className="bg-glow absolute -top-10 -right-10 h-48 w-48 opacity-70" />
+              <p id="after-title" className="relative font-display text-xs font-bold tracking-[0.2em] text-highlight uppercase">
+                After
+              </p>
+              <p className="relative mt-1 font-display text-sm font-semibold text-fg">
+                Automated · Intelligent · Connected
+              </p>
+              <ul className="relative mt-2 divide-y divide-line">
+                {after.map((row) => (
+                  <ComparisonRow key={row.label} variant="after" {...row} />
+                ))}
+              </ul>
+            </div>
           </Card>
         </Reveal>
       </div>
@@ -633,10 +698,7 @@ function AiSection() {
         <ul className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {aiCapabilities.map((capability) => (
             <li key={capability.label}>
-              <Card padding="none" className="flex h-full items-center gap-2.5 px-4 py-3">
-                <capability.icon className="size-4 shrink-0 text-highlight" aria-hidden="true" />
-                <span className="font-display text-sm font-semibold text-fg">{capability.label}</span>
-              </Card>
+              <CapabilityTile icon={capability.icon} label={capability.label} />
             </li>
           ))}
         </ul>
@@ -679,14 +741,17 @@ function ProcessSection() {
       <ol className="relative mt-16 flex flex-col gap-10 sm:flex-row sm:gap-0" style={{ '--line-inset': lineInset }}>
         <div
           aria-hidden="true"
-          className="absolute top-6 bottom-6 left-6 w-px bg-line-strong sm:bottom-auto sm:h-px sm:w-auto sm:inset-x-[var(--line-inset)]"
+          className="absolute top-7 bottom-7 left-7 w-px bg-linear-to-b from-highlight/40 via-line-strong to-line-strong sm:bottom-auto sm:h-px sm:w-auto sm:inset-x-[var(--line-inset)] sm:bg-linear-to-r"
         />
         {processSteps.map((step, index) => (
-          <li key={step.number} className="relative sm:flex-1">
+          <li key={step.number} className="group relative sm:flex-1">
             <Reveal delay={index * 0.08}>
               <div className="flex gap-5 sm:flex-col sm:items-center sm:gap-4 sm:text-center">
-                <span className="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-highlight bg-surface font-display text-sm font-extrabold text-highlight">
-                  {step.number}
+                <span className="relative z-10 flex size-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-3">
+                  <step.icon className="size-6" aria-hidden="true" />
+                  <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full border-2 border-surface bg-surface font-display text-[0.65rem] font-extrabold text-highlight">
+                    {step.number}
+                  </span>
                 </span>
                 <div className="pb-1 sm:px-4">
                   <h3 className="font-display text-lg font-bold text-fg">{step.title}</h3>
@@ -729,12 +794,13 @@ function IndustriesSection() {
               aria-pressed={index === active}
               onClick={() => setActive(index)}
               className={cn(
-                'rounded-full border px-4 py-2 font-display text-sm font-semibold transition-colors duration-200',
+                'inline-flex items-center gap-2 rounded-full border px-4 py-2 font-display text-sm font-semibold transition-[background-color,border-color,color,box-shadow] duration-200',
                 index === active
-                  ? 'border-primary bg-primary text-primary-fg'
-                  : 'border-line-strong bg-surface-raised text-fg-muted hover:text-fg',
+                  ? 'border-transparent bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button'
+                  : 'border-line-strong bg-surface-raised text-fg-muted hover:border-highlight/50 hover:text-fg',
               )}
             >
+              <ind.icon className="size-4" aria-hidden="true" />
               {ind.name}
             </button>
           ))}
@@ -751,24 +817,34 @@ function IndustriesSection() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
             >
-              <Card>
-                <p className="font-display text-xs font-bold tracking-[0.2em] text-highlight uppercase">
-                  {industry.name}
-                </p>
-                <p className="mt-2 text-sm text-fg-muted">
+              <Card className="overflow-hidden" padding="none">
+                <div className="flex items-center gap-4 bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] px-6 py-5 sm:px-8">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/30">
+                    <industry.icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <p className="font-display text-sm font-bold tracking-[0.1em] text-white uppercase">
+                    {industry.name}
+                  </p>
+                </div>
+                <div className="p-6 sm:p-8">
+                <p className="text-sm text-fg-muted">
                   Examples of what this can look like — not a fixed package, shaped around how
                   your business actually works.
                 </p>
                 <ul className="mt-5 grid gap-3 sm:grid-cols-2">
                   {industry.solutions.map((solution) => (
                     <li key={solution}>
-                      <div className="flex items-center gap-2.5 rounded-xl border border-line bg-surface-muted px-4 py-3">
-                        <CheckCircle2 className="size-4 shrink-0 text-highlight" aria-hidden="true" />
+                      <div className="group flex items-center gap-2.5 rounded-xl border border-line bg-surface-muted px-4 py-3 transition-colors duration-200 hover:border-highlight/40 hover:bg-highlight/5">
+                        <CheckCircle2
+                          className="size-4 shrink-0 text-highlight transition-transform duration-200 group-hover:scale-110"
+                          aria-hidden="true"
+                        />
                         <span className="text-sm font-semibold text-fg">{solution}</span>
                       </div>
                     </li>
                   ))}
                 </ul>
+                </div>
               </Card>
             </m.div>
           </AnimatePresence>
@@ -821,7 +897,7 @@ function PortfolioSection() {
                 'rounded-full border px-4 py-2 font-display text-sm font-semibold transition-colors duration-200',
                 category.value === activeCategory
                   ? 'border-primary bg-primary text-primary-fg'
-                  : 'border-line-strong bg-surface-raised text-fg-muted hover:text-fg',
+                  : 'border-line-strong bg-surface-raised text-fg-muted hover:border-highlight/50 hover:text-fg',
               )}
             >
               {category.label}

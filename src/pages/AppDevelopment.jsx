@@ -7,6 +7,8 @@ import {
   Building2,
   CalendarClock,
   Cloud,
+  Code2,
+  Compass,
   CreditCard,
   Database,
   Fingerprint,
@@ -15,7 +17,10 @@ import {
   LayoutGrid,
   Map,
   MessageCircle,
+  PenTool,
   Plug2,
+  Rocket,
+  Search,
   ShieldCheck,
   ShoppingBag,
   Smartphone,
@@ -30,7 +35,18 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import FaqSchema from '@/components/seo/FaqSchema'
 import ServiceSchema from '@/components/seo/ServiceSchema'
 import Seo from '@/components/seo/Seo'
-import { Accordion, Badge, Button, Card, FeatureCard, Reveal, Section, SectionHeading, ServiceCard, Tag } from '@/components/ui'
+import {
+  Accordion,
+  Badge,
+  Button,
+  CapabilityTile,
+  FeatureCard,
+  Reveal,
+  Section,
+  SectionHeading,
+  ServiceCard,
+  Tag,
+} from '@/components/ui'
 import { primaryCta } from '@/config/site'
 
 const pageDescription =
@@ -106,12 +122,32 @@ const securityPoints = [
 ]
 
 const processSteps = [
-  { number: '01', title: 'Discover', description: 'Understand the business, users and what the app actually needs to do.' },
-  { number: '02', title: 'Plan', description: 'Map the features, screens and technical architecture before writing code.' },
-  { number: '03', title: 'Design', description: 'UI/UX designed around real user flows, not generic templates.' },
-  { number: '04', title: 'Develop', description: 'Build the app, backend, APIs and admin tools in parallel.' },
-  { number: '05', title: 'Test', description: 'Verify functionality, performance and security before release.' },
-  { number: '06', title: 'Launch & Support', description: 'Publish to the app stores, then monitor and improve after launch.' },
+  {
+    number: '01',
+    icon: Search,
+    title: 'Discover',
+    description: 'Understand the business, users and what the app actually needs to do.',
+  },
+  {
+    number: '02',
+    icon: Compass,
+    title: 'Plan',
+    description: 'Map the features, screens and technical architecture before writing code.',
+  },
+  { number: '03', icon: PenTool, title: 'Design', description: 'UI/UX designed around real user flows, not generic templates.' },
+  { number: '04', icon: Code2, title: 'Develop', description: 'Build the app, backend, APIs and admin tools in parallel.' },
+  {
+    number: '05',
+    icon: ShieldCheck,
+    title: 'Test',
+    description: 'Verify functionality, performance and security before release.',
+  },
+  {
+    number: '06',
+    icon: Rocket,
+    title: 'Launch & Support',
+    description: 'Publish to the app stores, then monitor and improve after launch.',
+  },
 ]
 
 // Natural next steps for a visitor reading about apps — not every service, just the ones
@@ -312,10 +348,7 @@ function PlatformSection() {
         {platformCapabilities.map((capability, index) => (
           <li key={capability.label}>
             <Reveal delay={index * 0.03}>
-              <Card padding="none" className="flex h-full items-center gap-2.5 px-4 py-3">
-                <capability.icon className="size-4 shrink-0 text-highlight" aria-hidden="true" />
-                <span className="font-display text-sm font-semibold text-fg">{capability.label}</span>
-              </Card>
+              <CapabilityTile icon={capability.icon} label={capability.label} />
             </Reveal>
           </li>
         ))}
@@ -363,14 +396,17 @@ function ProcessSection() {
       <ol className="relative mt-16 grid grid-cols-2 gap-10 sm:grid-cols-3 lg:flex lg:gap-0" style={{ '--line-inset': lineInset }}>
         <div
           aria-hidden="true"
-          className="absolute top-6 bottom-6 left-6 hidden w-px bg-line-strong sm:bottom-auto sm:h-px sm:w-auto sm:inset-x-[var(--line-inset)] lg:block"
+          className="absolute top-7 bottom-7 left-7 hidden w-px bg-linear-to-b from-highlight/40 via-line-strong to-line-strong sm:bottom-auto sm:h-px sm:w-auto sm:inset-x-[var(--line-inset)] sm:bg-linear-to-r lg:block"
         />
         {processSteps.map((step, index) => (
-          <li key={step.number} className="relative lg:flex-1">
+          <li key={step.number} className="group relative lg:flex-1">
             <Reveal delay={index * 0.06}>
               <div className="flex flex-col items-center gap-4 text-center">
-                <span className="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-highlight bg-surface font-display text-sm font-extrabold text-highlight">
-                  {step.number}
+                <span className="relative z-10 flex size-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-3">
+                  <step.icon className="size-6" aria-hidden="true" />
+                  <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full border-2 border-surface bg-surface font-display text-[0.65rem] font-extrabold text-highlight">
+                    {step.number}
+                  </span>
                 </span>
                 <div className="pb-1 lg:px-4">
                   <h3 className="font-display text-base font-bold text-fg">{step.title}</h3>

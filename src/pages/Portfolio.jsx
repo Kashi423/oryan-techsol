@@ -63,7 +63,7 @@ function GridSection() {
                 'rounded-full border px-4 py-2 font-display text-sm font-semibold transition-colors duration-200',
                 category.value === activeCategory
                   ? 'border-primary bg-primary text-primary-fg'
-                  : 'border-line-strong bg-surface-raised text-fg-muted hover:text-fg',
+                  : 'border-line-strong bg-surface-raised text-fg-muted hover:border-highlight/50 hover:text-fg',
               )}
             >
               {category.label}

@@ -24,13 +24,15 @@ export default function Accordion({ items, className }) {
               aria-expanded={open}
               aria-controls={panelId}
               onClick={() => setOpenIndex(open ? -1 : index)}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left sm:px-6"
+              className="group flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors duration-200 hover:bg-highlight/5 sm:px-6"
             >
-              <span className="font-display text-base font-bold text-fg">{item.question}</span>
+              <span className="font-display text-base font-bold text-fg transition-colors duration-200 group-hover:text-highlight">
+                {item.question}
+              </span>
               <ChevronDown
                 aria-hidden="true"
                 className={cn(
-                  'size-5 shrink-0 text-fg-subtle transition-transform duration-200',
+                  'size-5 shrink-0 text-fg-subtle transition-[transform,color] duration-200 group-hover:text-highlight',
                   open && 'rotate-180',
                 )}
               />

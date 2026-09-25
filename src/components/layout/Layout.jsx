@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { transparentHeaderRoutes } from '@/config/site'
 import { cn } from '@/lib/cn'
+import ConsultationWidget from './ConsultationWidget'
 import Footer from './Footer'
 import Header from './Header'
 import ScrollToTop from './ScrollToTop'
@@ -33,6 +34,7 @@ export default function Layout() {
       </main>
       <Footer />
       <ScrollToTop />
+      <ConsultationWidget />
     </div>
   )
 }

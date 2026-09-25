@@ -29,7 +29,7 @@ export default function CaseStudyCard({
       padding="none"
       className={cn('group flex h-full flex-col overflow-hidden', className)}
     >
-      <div className="flex aspect-4/3 items-end bg-linear-to-br from-brand-900 via-brand-700 to-accent-500 p-6">
+      <div className="flex aspect-4/3 items-end overflow-hidden bg-linear-to-br from-brand-900 via-brand-700 to-accent-500 p-6 transition-transform duration-500 group-hover:scale-110">
         {placeholder ? (
           <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 font-display text-xs font-semibold text-white backdrop-blur-sm">
             <FlaskConical className="size-3.5" aria-hidden="true" />

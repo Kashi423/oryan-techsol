@@ -3,13 +3,16 @@ import {
   ArrowRight,
   Building2,
   Code2,
+  Compass,
   Gauge,
   Globe,
+  Hammer,
   LayoutDashboard,
   LayoutGrid,
   Lock,
   Monitor,
   Plug2,
+  Rocket,
   Search,
   Shield,
   ShieldCheck,
@@ -59,11 +62,36 @@ const whyPoints = [
 ]
 
 const processSteps = [
-  { number: '01', title: 'Discover', description: 'Understand your business, audience and what the site actually needs to do.' },
-  { number: '02', title: 'Plan', description: 'Map the structure, content and technical approach before any code is written.' },
-  { number: '03', title: 'Build', description: 'Develop the site around that plan — not a theme customised after the fact.' },
-  { number: '04', title: 'Integrate', description: 'Connect the systems the site genuinely needs, scoped to your setup.' },
-  { number: '05', title: 'Launch & Improve', description: 'Deploy, monitor real usage and refine the site over time.' },
+  {
+    number: '01',
+    icon: Search,
+    title: 'Discover',
+    description: 'Understand your business, audience and what the site actually needs to do.',
+  },
+  {
+    number: '02',
+    icon: Compass,
+    title: 'Plan',
+    description: 'Map the structure, content and technical approach before any code is written.',
+  },
+  {
+    number: '03',
+    icon: Hammer,
+    title: 'Build',
+    description: 'Develop the site around that plan — not a theme customised after the fact.',
+  },
+  {
+    number: '04',
+    icon: Plug2,
+    title: 'Integrate',
+    description: 'Connect the systems the site genuinely needs, scoped to your setup.',
+  },
+  {
+    number: '05',
+    icon: Rocket,
+    title: 'Launch & Improve',
+    description: 'Deploy, monitor real usage and refine the site over time.',
+  },
 ]
 
 const architectureLayers = [
@@ -272,14 +300,17 @@ function ProcessSection() {
       <ol className="relative mt-16 flex flex-col gap-10 sm:flex-row sm:gap-0" style={{ '--line-inset': lineInset }}>
         <div
           aria-hidden="true"
-          className="absolute top-6 bottom-6 left-6 w-px bg-line-strong sm:bottom-auto sm:h-px sm:w-auto sm:inset-x-[var(--line-inset)]"
+          className="absolute top-7 bottom-7 left-7 w-px bg-linear-to-b from-highlight/40 via-line-strong to-line-strong sm:bottom-auto sm:h-px sm:w-auto sm:inset-x-[var(--line-inset)] sm:bg-linear-to-r"
         />
         {processSteps.map((step, index) => (
-          <li key={step.number} className="relative sm:flex-1">
+          <li key={step.number} className="group relative sm:flex-1">
             <Reveal delay={index * 0.08}>
               <div className="flex gap-5 sm:flex-col sm:items-center sm:gap-4 sm:text-center">
-                <span className="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-highlight bg-surface font-display text-sm font-extrabold text-highlight">
-                  {step.number}
+                <span className="relative z-10 flex size-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-3">
+                  <step.icon className="size-6" aria-hidden="true" />
+                  <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full border-2 border-surface bg-surface font-display text-[0.65rem] font-extrabold text-highlight">
+                    {step.number}
+                  </span>
                 </span>
                 <div className="pb-1 sm:px-4">
                   <h3 className="font-display text-lg font-bold text-fg">{step.title}</h3>

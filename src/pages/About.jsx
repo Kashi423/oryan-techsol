@@ -2,7 +2,7 @@ import { Blocks, Layers, Network, Sparkles, Target, Users } from 'lucide-react'
 import Seo from '@/components/seo/Seo'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import { Badge, Button, FeatureCard, Reveal, Section, SectionHeading } from '@/components/ui'
-import { primaryCta } from '@/config/site'
+import { primaryCta, siteConfig } from '@/config/site'
 
 const pageDescription =
   'Oryan Techsol builds technology around how your business actually works — apps, software, websites, AI bots and automation, not one-size-fits-all templates.'

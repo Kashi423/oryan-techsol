@@ -7,14 +7,18 @@ import {
   Brain,
   Building2,
   CalendarCheck,
+  Compass,
   Database,
   FileText,
   Globe,
+  Hammer,
   Headset,
   HelpCircle,
   ListChecks,
   MessageCircle,
+  Plug2,
   RefreshCw,
+  Rocket,
   Search,
   Ticket,
   TrendingUp,
@@ -32,6 +36,7 @@ import {
   Accordion,
   Badge,
   Button,
+  CapabilityTile,
   Card,
   FeatureCard,
   PulseRing,
@@ -150,19 +155,36 @@ const useCases = [
 ]
 
 const processSteps = [
-  { number: '01', title: 'Discover', description: 'Understand your workflow, customers and where an AI bot would actually help.' },
+  {
+    number: '01',
+    icon: Search,
+    title: 'Discover',
+    description: 'Understand your workflow, customers and where an AI bot would actually help.',
+  },
   {
     number: '02',
+    icon: Compass,
     title: 'Plan',
     description: "Design the conversation flow, capabilities and what the bot should (and shouldn't) do.",
   },
-  { number: '03', title: 'Build', description: 'Develop and train the assistant around your real content and processes.' },
+  {
+    number: '03',
+    icon: Hammer,
+    title: 'Build',
+    description: 'Develop and train the assistant around your real content and processes.',
+  },
   {
     number: '04',
+    icon: Plug2,
     title: 'Integrate',
     description: 'Connect it to the channels and systems it needs — scoped to what your business actually uses.',
   },
-  { number: '05', title: 'Launch & Improve', description: 'Deploy, monitor real conversations and refine the bot over time.' },
+  {
+    number: '05',
+    icon: Rocket,
+    title: 'Launch & Improve',
+    description: 'Deploy, monitor real conversations and refine the bot over time.',
+  },
 ]
 
 const faqs = [
@@ -313,10 +335,7 @@ function CapabilitiesSection() {
         {capabilities.map((capability, index) => (
           <li key={capability.label}>
             <Reveal delay={index * 0.03}>
-              <Card padding="none" className="flex h-full items-center gap-2.5 px-4 py-3">
-                <capability.icon className="size-4 shrink-0 text-highlight" aria-hidden="true" />
-                <span className="font-display text-sm font-semibold text-fg">{capability.label}</span>
-              </Card>
+              <CapabilityTile icon={capability.icon} label={capability.label} />
             </Reveal>
           </li>
         ))}
@@ -464,14 +483,17 @@ function ProcessSection() {
       <ol className="relative mt-16 flex flex-col gap-10 sm:flex-row sm:gap-0" style={{ '--line-inset': lineInset }}>
         <div
           aria-hidden="true"
-          className="absolute top-6 bottom-6 left-6 w-px bg-line-strong sm:bottom-auto sm:h-px sm:w-auto sm:inset-x-[var(--line-inset)]"
+          className="absolute top-7 bottom-7 left-7 w-px bg-linear-to-b from-highlight/40 via-line-strong to-line-strong sm:bottom-auto sm:h-px sm:w-auto sm:inset-x-[var(--line-inset)] sm:bg-linear-to-r"
         />
         {processSteps.map((step, index) => (
-          <li key={step.number} className="relative sm:flex-1">
+          <li key={step.number} className="group relative sm:flex-1">
             <Reveal delay={index * 0.08}>
               <div className="flex gap-5 sm:flex-col sm:items-center sm:gap-4 sm:text-center">
-                <span className="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-highlight bg-surface font-display text-sm font-extrabold text-highlight">
-                  {step.number}
+                <span className="relative z-10 flex size-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-3">
+                  <step.icon className="size-6" aria-hidden="true" />
+                  <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full border-2 border-surface bg-surface font-display text-[0.65rem] font-extrabold text-highlight">
+                    {step.number}
+                  </span>
                 </span>
                 <div className="pb-1 sm:px-4">
                   <h3 className="font-display text-lg font-bold text-fg">{step.title}</h3>

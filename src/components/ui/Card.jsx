@@ -35,7 +35,7 @@ export default function Card({
         surfaces[surface],
         paddings[padding],
         interactive &&
-          'transition-[border-color,background-color,transform] duration-200 hover:-translate-y-0.5 hover:border-highlight/50 has-[:focus-visible]:border-highlight',
+          'transition-[border-color,background-color,transform,box-shadow] duration-200 hover:-translate-y-1 hover:border-highlight/50 hover:shadow-lg has-[:focus-visible]:border-highlight',
         className,
       )}
       {...props}

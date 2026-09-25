@@ -30,9 +30,15 @@ export default function TestimonialCard({
   className,
 }) {
   return (
-    <Card as="figure" className={cn('flex h-full flex-col', placeholder && 'border-dashed', className)}>
+    <Card as="figure" className={cn('group flex h-full flex-col', placeholder && 'border-dashed', className)}>
       <div className="flex items-start justify-between gap-3">
-        <Quote className={cn('size-8', placeholder ? 'text-fg-subtle/50' : 'text-highlight/40')} aria-hidden="true" />
+        <Quote
+          className={cn(
+            'size-8 transition-[color,transform] duration-300 group-hover:scale-110',
+            placeholder ? 'text-fg-subtle/50' : 'text-highlight/40 group-hover:text-highlight/70',
+          )}
+          aria-hidden="true"
+        />
         {projectType && <Tag>{projectType}</Tag>}
       </div>
 
@@ -63,7 +69,7 @@ export default function TestimonialCard({
         ) : (
           <span
             aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-highlight/10 font-display text-sm font-bold text-highlight"
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-highlight/10 font-display text-sm font-bold text-highlight ring-2 ring-transparent transition-shadow duration-300 group-hover:ring-highlight/30"
           >
             {initials(name)}
           </span>

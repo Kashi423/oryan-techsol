@@ -1,0 +1,6 @@
+name = "oryan-techsol-chat"
+main = "src/index.js"
+compatibility_date = "2024-09-25"
+
+# GROQ_API_KEY is set as a secret, never committed here:
+#   npx wrangler secret put GROQ_API_KEY
