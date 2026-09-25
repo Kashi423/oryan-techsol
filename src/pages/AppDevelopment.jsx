@@ -6,6 +6,7 @@ import {
   Brain,
   Building2,
   CalendarClock,
+  CheckCircle2,
   Cloud,
   Code2,
   Compass,
@@ -40,14 +41,16 @@ import {
   Badge,
   Button,
   CapabilityTile,
-  FeatureCard,
+  ProcessStepIcon,
   Reveal,
   Section,
   SectionHeading,
   ServiceCard,
   Tag,
+  TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
+import { cn } from '@/lib/cn'
 
 const pageDescription =
   'Custom mobile app development for iOS, Android and cross-platform — business apps, customer apps and on-demand platforms, connected to the backend, APIs and AI your business needs.'
@@ -208,28 +211,78 @@ function HeroBackground() {
   )
 }
 
-// A phone-frame mockup built from tokens (no image asset), consistent with the ChatMockup
-// approach elsewhere on the site — shows a business app UI, not a generic phone stock photo.
+const phoneStats = [
+  { icon: Users, label: 'Members', value: '1.2k' },
+  { icon: CreditCard, label: 'Revenue', value: '$8,420' },
+]
+
+const phoneTasks = [
+  { label: 'Push notification sent', done: true },
+  { label: 'New booking confirmed', done: true },
+  { label: 'Sync with backend API', done: false },
+]
+
+// A phone-frame mockup built from tokens (no image asset): a real chassis (notch, side keys)
+// wrapping a real app screen — named stats, a checklist and a labelled CTA — matching the
+// fidelity of the ChatMockup used on the AI bots page rather than a plain block silhouette.
 function PhoneMockup() {
   return (
-    <div className="relative mx-auto w-full max-w-[19rem]">
-      <div className="rounded-[2.5rem] border border-line bg-surface-raised p-3 shadow-card">
-        <div className="overflow-hidden rounded-[1.75rem] bg-surface-overlay">
-          <div className="flex items-center justify-between px-5 pt-5 pb-3">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-highlight/10 text-highlight">
-              <Smartphone className="size-4" aria-hidden="true" />
+    <div data-tone="default" className="relative mx-auto w-full max-w-[19rem]">
+      <div className="relative rounded-[2.5rem] border border-line bg-fg p-2.5 shadow-card">
+        <span aria-hidden="true" className="absolute top-16 -left-px h-8 w-1 rounded-full bg-fg/60" />
+        <span aria-hidden="true" className="absolute top-28 -left-px h-12 w-1 rounded-full bg-fg/60" />
+        <span aria-hidden="true" className="absolute top-24 -right-px h-14 w-1 rounded-full bg-fg/60" />
+        <div className="relative overflow-hidden rounded-[2rem] bg-surface-overlay">
+          <div
+            aria-hidden="true"
+            className="absolute top-2 left-1/2 z-10 h-4 w-20 -translate-x-1/2 rounded-full bg-fg"
+          />
+          <div className="flex items-center justify-between px-5 pt-7 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="flex size-8 items-center justify-center rounded-xl bg-highlight/10 text-highlight">
+                <Smartphone className="size-4" aria-hidden="true" />
+              </span>
+              <span className="font-display text-sm font-bold text-fg">TaskFlow</span>
+            </div>
+            <span className="relative flex size-8 items-center justify-center rounded-full bg-surface-raised text-fg-subtle">
+              <Bell className="size-4" aria-hidden="true" />
+              <span aria-hidden="true" className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-highlight" />
             </span>
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-success" />
           </div>
           <div className="space-y-3 px-5 pb-6">
-            <div className="h-24 rounded-2xl bg-primary/90" />
-            <div className="grid grid-cols-2 gap-3">
-              <div className="h-16 rounded-xl bg-surface-raised" />
-              <div className="h-16 rounded-xl bg-surface-raised" />
+            <div className="rounded-2xl bg-primary/90 p-4">
+              <p className="text-xs font-medium text-primary-fg/70">Good morning</p>
+              <p className="mt-0.5 font-display text-sm font-bold text-primary-fg">3 tasks need your review</p>
             </div>
-            <div className="h-10 rounded-xl bg-surface-raised" />
-            <div className="h-10 rounded-xl bg-surface-raised" />
-            <div className="mt-2 h-11 rounded-full bg-highlight/90" />
+            <div className="grid grid-cols-2 gap-3">
+              {phoneStats.map(({ icon: Icon, label, value }) => (
+                <div key={label} className="space-y-1.5 rounded-xl bg-surface-raised p-3">
+                  <Icon className="size-4 text-highlight" aria-hidden="true" />
+                  <p className="font-display text-sm font-extrabold text-fg">{value}</p>
+                  <p className="text-[10px] text-fg-subtle">{label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="space-y-1 rounded-xl bg-surface-raised p-2">
+              {phoneTasks.map(({ label, done }) => (
+                <div key={label} className="flex items-center gap-2.5 px-2 py-1.5">
+                  <span
+                    className={cn(
+                      'flex size-4 shrink-0 items-center justify-center rounded-full',
+                      done ? 'bg-success/15 text-success' : 'border border-line-strong',
+                    )}
+                  >
+                    {done && <CheckCircle2 className="size-3" aria-hidden="true" />}
+                  </span>
+                  <p className={cn('flex-1 text-xs font-medium', done ? 'text-fg-subtle line-through' : 'text-fg')}>
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 flex h-11 items-center justify-center rounded-full bg-highlight/90 text-sm font-bold text-fg">
+              New Task
+            </div>
           </div>
         </div>
       </div>
@@ -293,11 +346,11 @@ function WhySection() {
         description="A generic app builder gets you a template. A custom app gets you a system built around how your business actually works."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {whyCustomApps.map((item, index) => (
           <li key={item.title}>
-            <Reveal delay={index * 0.05}>
-              <FeatureCard icon={item.icon} title={item.title} description={item.description} />
+            <Reveal className="h-full" delay={index * 0.05}>
+              <TypeCard icon={item.icon} title={item.title} description={item.description} />
             </Reveal>
           </li>
         ))}
@@ -317,11 +370,11 @@ function AppTypesSection() {
         title="Built for a specific job, not a generic template."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {appTypes.map((type, index) => (
           <li key={type.title}>
-            <Reveal delay={index * 0.04}>
-              <FeatureCard icon={type.icon} title={type.title} description={type.description} />
+            <Reveal className="h-full" delay={index * 0.04}>
+              <TypeCard icon={type.icon} title={type.title} description={type.description} />
             </Reveal>
           </li>
         ))}
@@ -368,11 +421,11 @@ function SecuritySection() {
         title="Built to be trusted and built to grow."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-3">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-3">
         {securityPoints.map((item, index) => (
           <li key={item.title}>
-            <Reveal delay={index * 0.06}>
-              <FeatureCard icon={item.icon} title={item.title} description={item.description} />
+            <Reveal className="h-full" delay={index * 0.06}>
+              <TypeCard icon={item.icon} title={item.title} description={item.description} />
             </Reveal>
           </li>
         ))}
@@ -402,12 +455,7 @@ function ProcessSection() {
           <li key={step.number} className="group relative lg:flex-1">
             <Reveal delay={index * 0.06}>
               <div className="flex flex-col items-center gap-4 text-center">
-                <span className="relative z-10 flex size-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-3">
-                  <step.icon className="size-6" aria-hidden="true" />
-                  <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full border-2 border-surface bg-surface font-display text-[0.65rem] font-extrabold text-highlight">
-                    {step.number}
-                  </span>
-                </span>
+                <ProcessStepIcon icon={step.icon} number={step.number} index={index} total={processSteps.length} />
                 <div className="pb-1 lg:px-4">
                   <h3 className="font-display text-base font-bold text-fg">{step.title}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-fg-muted">{step.description}</p>
@@ -448,7 +496,7 @@ function RelatedServicesSection() {
       <ul className="mt-12 grid gap-6 sm:grid-cols-3">
         {relatedServices.map((service, index) => (
           <li key={service.to}>
-            <Reveal delay={index * 0.05}>
+            <Reveal delay={index * 0.05} className="h-full">
               <ServiceCard icon={service.icon} title={service.title} description={service.description} to={service.to} />
             </Reveal>
           </li>

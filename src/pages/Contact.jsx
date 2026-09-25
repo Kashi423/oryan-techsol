@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { Lock, Mail, MapPin, Phone, Send } from 'lucide-react'
+import { ArrowRight, CalendarCheck, FileText, Lock, Mail, MapPin, Phone, Send } from 'lucide-react'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import Seo from '@/components/seo/Seo'
 import { Badge, Button, Card, Field, Input, Reveal, Section, Select, Textarea } from '@/components/ui'
@@ -46,26 +46,88 @@ function HeroBackground() {
   )
 }
 
+// What happens after an inquiry — no response-time promise, since none is published anywhere
+// else on the site.
+const nextSteps = [
+  { icon: Send, title: 'You send your inquiry', detail: 'A few details about the project and what it needs to do.' },
+  { icon: Mail, title: 'We reply personally', detail: 'Read by the team, not routed into an automated sequence.' },
+  { icon: CalendarCheck, title: 'Free consultation call', detail: 'We walk through your workflow and what would actually help.' },
+  { icon: FileText, title: 'A tailored proposal', detail: 'Scope, approach and timeline built around your business.' },
+]
+
+// The hero visual: the path from inquiry to proposal as a step card, built from tokens — the
+// same family as the browser, phone, chat and dashboard mockups on the service pages.
+function NextStepsMockup() {
+  return (
+    <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface-raised p-5 shadow-card backdrop-blur-xl">
+      <p className="font-display text-sm font-bold text-fg">What happens after you reach out</p>
+      <ol className="mt-4">
+        {nextSteps.map(({ icon: Icon, title, detail }, index) => (
+          <li key={title} className="relative flex gap-3 pb-4 last:pb-0">
+            {index < nextSteps.length - 1 && (
+              <span aria-hidden="true" className="absolute top-10 bottom-1 left-[1.1rem] w-px bg-highlight/30" />
+            )}
+            <span
+              className={
+                index === 0
+                  ? 'flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white'
+                  : 'flex size-9 shrink-0 items-center justify-center rounded-xl bg-highlight/10 text-highlight'
+              }
+            >
+              <Icon className="size-4" aria-hidden="true" />
+            </span>
+            <div className="pt-0.5">
+              <p className="text-xs font-semibold text-fg">{title}</p>
+              <p className="mt-0.5 text-[11px] leading-snug text-fg-muted">{detail}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <div className="mt-4 flex items-center gap-2 rounded-xl bg-surface-overlay px-3 py-2.5 text-[11px] text-fg-muted">
+        <Lock className="size-3.5 shrink-0 text-highlight" aria-hidden="true" />
+        Your details are used only to respond to your inquiry.
+      </div>
+    </div>
+  )
+}
+
 function HeroSection() {
   return (
     <Section tone="inverse" spacing="hero" background={<HeroBackground />} aria-labelledby="hero-title">
-      <div className="mx-auto max-w-2xl text-center">
-        <Reveal>
-          <Badge className="mx-auto">
-            <Mail className="size-3.5 text-highlight" aria-hidden="true" />
-            Get in touch
-          </Badge>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
-            Let's build something that <span className="text-gradient">works for your business</span>.
-          </h1>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">
-            Tell us about your project below — we read every inquiry ourselves and reply
-            personally, not with an automated sales sequence.
-          </p>
+      <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
+        <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
+          <Reveal>
+            <Badge className="lg:mx-0">
+              <Mail className="size-3.5 text-highlight" aria-hidden="true" />
+              Get in touch
+            </Badge>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
+              Let's build something that <span className="text-gradient">works for your business</span>.
+            </h1>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl lg:mx-0">
+              Tell us about your project below — we read every inquiry ourselves and reply
+              personally, not with an automated sales sequence.
+            </p>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+              <Button href="#form-title" size="lg">
+                Start your inquiry
+                <ArrowRight aria-hidden="true" />
+              </Button>
+              <Button href={`mailto:${contactInfo.email}`} variant="secondary" size="lg">
+                Email us directly
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.15}>
+          <NextStepsMockup />
         </Reveal>
       </div>
     </Section>

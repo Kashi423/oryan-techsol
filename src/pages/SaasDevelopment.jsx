@@ -1,9 +1,9 @@
-import { ArrowRight, BarChart3, CreditCard, LayoutGrid, Rocket, ShieldCheck, Users } from 'lucide-react'
+import { ArrowRight, BarChart3, CreditCard, LayoutGrid, Rocket, Settings, ShieldCheck, Users } from 'lucide-react'
 import Seo from '@/components/seo/Seo'
 import ServiceSchema from '@/components/seo/ServiceSchema'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import FaqSchema from '@/components/seo/FaqSchema'
-import { Accordion, Badge, Button, FeatureCard, Reveal, Section, SectionHeading } from '@/components/ui'
+import { Accordion, Badge, Button, Reveal, Section, SectionHeading, TypeCard } from '@/components/ui'
 import { primaryCta } from '@/config/site'
 
 const pageDescription =
@@ -47,37 +47,135 @@ function HeroBackground() {
   )
 }
 
+const heroNavItems = [
+  { icon: LayoutGrid, label: 'Overview', active: true },
+  { icon: Users, label: 'Customers' },
+  { icon: CreditCard, label: 'Billing' },
+  { icon: Settings, label: 'Settings' },
+]
+
+// Relative bar heights (percent) for the usage chart — illustrative, not a real metric.
+const heroUsageBars = [38, 52, 45, 63, 58, 74, 69, 86, 80, 94]
+
+const heroTeam = ['AK', 'MS', 'JR']
+
+// The hero visual: a real-looking SaaS workspace — sidebar navigation, plan badge, a usage
+// chart and the team with access — built from tokens (no stock photo), in the same family as
+// the browser, phone, chat and dashboard mockups on the other service pages.
+function ProductMockup() {
+  return (
+    <div className="relative mx-auto flex w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface-raised shadow-card backdrop-blur-xl">
+      <aside className="hidden w-32 shrink-0 flex-col gap-1 border-r border-line bg-surface-overlay p-3 sm:flex">
+        <div className="mb-3 flex items-center gap-1.5 px-1">
+          <span className="flex size-5 items-center justify-center rounded-md bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white">
+            <Rocket className="size-3" aria-hidden="true" />
+          </span>
+          <span className="font-display text-[11px] font-bold text-fg">Launchpad</span>
+        </div>
+        {heroNavItems.map(({ icon: Icon, label, active }) => (
+          <span
+            key={label}
+            className={
+              active
+                ? 'flex items-center gap-2 rounded-md bg-highlight/15 px-2 py-1.5 text-[11px] font-semibold text-highlight'
+                : 'flex items-center gap-2 rounded-md px-2 py-1.5 text-[11px] font-medium text-fg-muted'
+            }
+          >
+            <Icon className="size-3.5" aria-hidden="true" />
+            {label}
+          </span>
+        ))}
+      </aside>
+      <div className="min-w-0 flex-1 space-y-4 p-5">
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-display text-sm font-bold text-fg">Overview</p>
+          <span className="rounded-full bg-highlight/15 px-2.5 py-1 text-[10px] font-bold tracking-wide text-highlight uppercase">
+            Pro plan
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-2.5">
+          <div className="rounded-lg bg-surface-overlay p-3">
+            <p className="text-[10px] text-fg-subtle">Active workspaces</p>
+            <p className="font-display text-base font-extrabold text-fg">248</p>
+          </div>
+          <div className="rounded-lg bg-surface-overlay p-3">
+            <p className="text-[10px] text-fg-subtle">Uptime</p>
+            <p className="font-display text-base font-extrabold text-fg">99.9%</p>
+          </div>
+        </div>
+        <div className="rounded-xl bg-surface-overlay p-3">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-semibold text-fg">Weekly usage</p>
+            <BarChart3 className="size-3.5 text-highlight" aria-hidden="true" />
+          </div>
+          <div className="mt-3 flex h-20 items-end gap-1.5" aria-hidden="true">
+            {heroUsageBars.map((height, index) => (
+              <span
+                key={index}
+                className="flex-1 rounded-t-sm bg-linear-to-t from-[var(--gradient-from)] to-[var(--gradient-to)]"
+                style={{ height: `${height}%`, opacity: 0.45 + index * 0.055 }}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex -space-x-2">
+            {heroTeam.map((initials) => (
+              <span
+                key={initials}
+                className="flex size-7 items-center justify-center rounded-full border-2 border-surface-raised bg-surface-overlay font-display text-[9px] font-bold text-fg"
+              >
+                {initials}
+              </span>
+            ))}
+          </div>
+          <span className="flex items-center gap-1 text-[11px] font-semibold text-success">
+            <ShieldCheck className="size-3.5" aria-hidden="true" />
+            Secure sign-in
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function HeroSection() {
   return (
     <Section tone="inverse" spacing="hero" background={<HeroBackground />} aria-labelledby="hero-title">
-      <div className="mx-auto max-w-2xl text-center">
-        <Reveal>
-          <Badge className="mx-auto">
-            <LayoutGrid className="size-3.5 text-highlight" aria-hidden="true" />
-            SaaS & Web Applications
-          </Badge>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
-            From idea to <span className="text-gradient">a real product</span>.
-          </h1>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">
-            We design and build SaaS products and web applications — accounts, billing,
-            dashboards and the architecture to support real users, not just a demo.
-          </p>
-        </Reveal>
+      <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
+        <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
+          <Reveal>
+            <Badge className="lg:mx-0">
+              <LayoutGrid className="size-3.5 text-highlight" aria-hidden="true" />
+              SaaS & Web Applications
+            </Badge>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
+              From idea to <span className="text-gradient">a real product</span>.
+            </h1>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl lg:mx-0">
+              We design and build SaaS products and web applications — accounts, billing,
+              dashboards and the architecture to support real users, not just a demo.
+            </p>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+              <Button to={primaryCta.to} size="lg">
+                {primaryCta.label}
+                <ArrowRight aria-hidden="true" />
+              </Button>
+              <Button to="/contact" variant="secondary" size="lg">
+                Tell us about your product
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+
         <Reveal delay={0.15}>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button to={primaryCta.to} size="lg">
-              {primaryCta.label}
-              <ArrowRight aria-hidden="true" />
-            </Button>
-            <Button to="/contact" variant="secondary" size="lg">
-              Tell us about your product
-            </Button>
-          </div>
+          <ProductMockup />
         </Reveal>
       </div>
     </Section>
@@ -95,11 +193,11 @@ function CapabilitiesSection() {
         title="What a real SaaS product needs."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {capabilities.map((item, index) => (
           <li key={item.title}>
-            <Reveal delay={index * 0.05}>
-              <FeatureCard icon={item.icon} title={item.title} description={item.description} />
+            <Reveal className="h-full" delay={index * 0.05}>
+              <TypeCard icon={item.icon} title={item.title} description={item.description} />
             </Reveal>
           </li>
         ))}

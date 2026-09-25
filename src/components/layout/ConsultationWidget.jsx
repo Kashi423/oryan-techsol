@@ -207,7 +207,7 @@ export default function ConsultationWidget() {
           </span>
         )}
         {open ? <X className="size-5 shrink-0" aria-hidden="true" /> : <MessageCircle className="size-5 shrink-0" aria-hidden="true" />}
-        <span className="hidden font-display text-sm font-bold whitespace-nowrap sm:inline">{open ? 'Close' : 'Ask Oryan AI'}</span>
+        <span className="hidden font-display text-sm font-bold whitespace-nowrap sm:inline">{open ? 'Close' : 'Free Consult with Oryan AI'}</span>
       </button>
     </div>
   )

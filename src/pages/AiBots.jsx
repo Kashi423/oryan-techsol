@@ -38,12 +38,13 @@ import {
   Button,
   CapabilityTile,
   Card,
-  FeatureCard,
+  ProcessStepIcon,
   PulseRing,
   Reveal,
   Section,
   SectionHeading,
   ServiceCard,
+  TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
 
@@ -355,11 +356,11 @@ function BotTypesSection() {
         title="Built for a specific job, not a generic script."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {botTypes.map((type, index) => (
           <li key={type.title}>
-            <Reveal delay={index * 0.04}>
-              <FeatureCard icon={type.icon} title={type.title} description={type.description} />
+            <Reveal className="h-full" delay={index * 0.04}>
+              <TypeCard icon={type.icon} title={type.title} description={type.description} />
             </Reveal>
           </li>
         ))}
@@ -455,11 +456,11 @@ function UseCasesSection() {
         description="These are illustrative scenarios, not real client results — the exact scope for your business is worked out during discovery."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2">
         {useCases.map((useCase, index) => (
           <li key={useCase.title}>
-            <Reveal delay={index * 0.05}>
-              <FeatureCard icon={useCase.icon} title={useCase.title} description={useCase.description} />
+            <Reveal className="h-full" delay={index * 0.05}>
+              <TypeCard icon={useCase.icon} title={useCase.title} description={useCase.description} />
             </Reveal>
           </li>
         ))}
@@ -489,12 +490,7 @@ function ProcessSection() {
           <li key={step.number} className="group relative sm:flex-1">
             <Reveal delay={index * 0.08}>
               <div className="flex gap-5 sm:flex-col sm:items-center sm:gap-4 sm:text-center">
-                <span className="relative z-10 flex size-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-3">
-                  <step.icon className="size-6" aria-hidden="true" />
-                  <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full border-2 border-surface bg-surface font-display text-[0.65rem] font-extrabold text-highlight">
-                    {step.number}
-                  </span>
-                </span>
+                <ProcessStepIcon icon={step.icon} number={step.number} index={index} total={processSteps.length} />
                 <div className="pb-1 sm:px-4">
                   <h3 className="font-display text-lg font-bold text-fg">{step.title}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-fg-muted">{step.description}</p>

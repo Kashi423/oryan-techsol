@@ -1,9 +1,22 @@
-import { ArrowRight, Database, Plug2, RefreshCw, Lock, Webhook, Zap } from 'lucide-react'
+import {
+  ArrowLeftRight,
+  ArrowRight,
+  CalendarCheck,
+  CreditCard,
+  Database,
+  Headset,
+  Lock,
+  Plug2,
+  RefreshCw,
+  Users,
+  Webhook,
+  Zap,
+} from 'lucide-react'
 import Seo from '@/components/seo/Seo'
 import ServiceSchema from '@/components/seo/ServiceSchema'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import FaqSchema from '@/components/seo/FaqSchema'
-import { Accordion, Badge, Button, FeatureCard, Reveal, Section, SectionHeading } from '@/components/ui'
+import { Accordion, Badge, Button, Reveal, Section, SectionHeading, TypeCard } from '@/components/ui'
 import { primaryCta } from '@/config/site'
 
 const pageDescription =
@@ -47,37 +60,111 @@ function HeroBackground() {
   )
 }
 
+const heroSystems = [
+  { icon: Users, label: 'CRM' },
+  { icon: CreditCard, label: 'Payments' },
+  { icon: CalendarCheck, label: 'Calendar' },
+  { icon: Headset, label: 'Helpdesk' },
+]
+
+const heroSyncLog = [
+  { from: 'Payments', to: 'CRM', event: 'payment.succeeded', meta: 'just now' },
+  { from: 'Calendar', to: 'CRM', event: 'booking.created', meta: '3m ago' },
+  { from: 'CRM', to: 'Helpdesk', event: 'contact.updated', meta: '8m ago' },
+]
+
+// The hero visual: a real-looking integration console — the connected systems and a live log
+// of events passing between them — built from tokens (no stock photo), in the same family as
+// the browser, phone, chat and dashboard mockups on the other service pages.
+function IntegrationMockup() {
+  return (
+    <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface-raised p-5 shadow-card backdrop-blur-xl">
+      <div className="flex items-center justify-between">
+        <p className="font-display text-sm font-bold text-fg">Connected systems</p>
+        <span className="flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
+          <span className="relative flex size-1.5">
+            <span className="motion-safe:absolute motion-safe:inline-flex motion-safe:size-full motion-safe:animate-ping motion-safe:rounded-full motion-safe:bg-success/60" />
+            <span className="relative inline-flex size-1.5 rounded-full bg-success" />
+          </span>
+          All in sync
+        </span>
+      </div>
+      <ul className="mt-4 grid grid-cols-4 gap-2">
+        {heroSystems.map(({ icon: Icon, label }) => (
+          <li key={label} className="flex flex-col items-center gap-1.5 rounded-lg bg-surface-overlay px-1 py-3">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white">
+              <Icon className="size-4" aria-hidden="true" />
+            </span>
+            <span className="text-[10px] font-semibold text-fg">{label}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4 rounded-xl bg-surface-overlay p-3">
+        <div className="flex items-center justify-between px-1">
+          <p className="text-[11px] font-semibold text-fg">Event log</p>
+          <Webhook className="size-3.5 text-highlight" aria-hidden="true" />
+        </div>
+        <ul className="mt-2 space-y-1">
+          {heroSyncLog.map(({ from, to, event, meta }) => (
+            <li key={event} className="flex items-center gap-2.5 rounded-lg px-1 py-1.5">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-highlight/10 text-highlight">
+                <ArrowLeftRight className="size-3.5" aria-hidden="true" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-medium text-fg">
+                  {from} → {to}
+                </p>
+                <p className="truncate font-mono text-[10px] text-fg-subtle">{event}</p>
+              </div>
+              <span className="shrink-0 rounded bg-success/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-success">
+                200
+              </span>
+              <span className="w-12 shrink-0 text-right text-[10px] text-fg-subtle">{meta}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
 function HeroSection() {
   return (
     <Section tone="inverse" spacing="hero" background={<HeroBackground />} aria-labelledby="hero-title">
-      <div className="mx-auto max-w-2xl text-center">
-        <Reveal>
-          <Badge className="mx-auto">
-            <Plug2 className="size-3.5 text-highlight" aria-hidden="true" />
-            API & System Integrations
-          </Badge>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
-            Your systems, <span className="text-gradient">finally connected</span>.
-          </h1>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">
-            We connect your CRM, payments and other business tools so data moves
-            automatically instead of being copied by hand between them.
-          </p>
-        </Reveal>
+      <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
+        <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
+          <Reveal>
+            <Badge className="lg:mx-0">
+              <Plug2 className="size-3.5 text-highlight" aria-hidden="true" />
+              API & System Integrations
+            </Badge>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
+              Your systems, <span className="text-gradient">finally connected</span>.
+            </h1>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl lg:mx-0">
+              We connect your CRM, payments and other business tools so data moves
+              automatically instead of being copied by hand between them.
+            </p>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+              <Button to={primaryCta.to} size="lg">
+                {primaryCta.label}
+                <ArrowRight aria-hidden="true" />
+              </Button>
+              <Button to="/contact" variant="secondary" size="lg">
+                Tell us what needs connecting
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+
         <Reveal delay={0.15}>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button to={primaryCta.to} size="lg">
-              {primaryCta.label}
-              <ArrowRight aria-hidden="true" />
-            </Button>
-            <Button to="/contact" variant="secondary" size="lg">
-              Tell us what needs connecting
-            </Button>
-          </div>
+          <IntegrationMockup />
         </Reveal>
       </div>
     </Section>
@@ -95,11 +182,11 @@ function CapabilitiesSection() {
         title="What a connected stack looks like."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {capabilities.map((item, index) => (
           <li key={item.title}>
-            <Reveal delay={index * 0.05}>
-              <FeatureCard icon={item.icon} title={item.title} description={item.description} />
+            <Reveal className="h-full" delay={index * 0.05}>
+              <TypeCard icon={item.icon} title={item.title} description={item.description} />
             </Reveal>
           </li>
         ))}

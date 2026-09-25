@@ -1,9 +1,21 @@
-import { ArrowRight, CreditCard, Package, RefreshCw, Smartphone, ShoppingCart, UserCheck, Workflow } from 'lucide-react'
+import {
+  ArrowRight,
+  CircleCheck,
+  CreditCard,
+  Package,
+  RefreshCw,
+  ShoppingBag,
+  ShoppingCart,
+  Smartphone,
+  Truck,
+  UserCheck,
+  Workflow,
+} from 'lucide-react'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import FaqSchema from '@/components/seo/FaqSchema'
 import ServiceSchema from '@/components/seo/ServiceSchema'
 import Seo from '@/components/seo/Seo'
-import { Accordion, Badge, Button, FeatureCard, Reveal, Section, SectionHeading, ServiceCard } from '@/components/ui'
+import { Accordion, Badge, Button, Reveal, Section, SectionHeading, ServiceCard, TypeCard } from '@/components/ui'
 import { primaryCta } from '@/config/site'
 
 // Natural next steps from an online store — a companion app and the automation connecting
@@ -90,37 +102,113 @@ function HeroBackground() {
   )
 }
 
+const heroOrderItems = [
+  { name: 'Everyday Tote', variant: 'Sand · Large', qty: 1, price: '$64.00' },
+  { name: 'Canvas Pouch', variant: 'Navy', qty: 2, price: '$36.00' },
+]
+
+const heroOrderStages = [
+  { icon: ShoppingCart, label: 'Placed', done: true },
+  { icon: CreditCard, label: 'Paid', done: true },
+  { icon: Package, label: 'Packed', done: true },
+  { icon: Truck, label: 'Shipped', done: false },
+]
+
+// The hero visual: a real-looking store order — line items, a paid total and the order moving
+// through fulfilment — built from tokens (no stock photo), in the same family as the browser,
+// phone, chat and dashboard mockups on the other service pages.
+function StoreMockup() {
+  return (
+    <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface-raised p-5 shadow-card backdrop-blur-xl">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="font-display text-sm font-bold text-fg">Order #1042</p>
+          <p className="text-[11px] text-fg-subtle">Placed today · 10:24</p>
+        </div>
+        <span className="flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
+          <CircleCheck className="size-3.5" aria-hidden="true" />
+          Payment received
+        </span>
+      </div>
+      <ul className="mt-4 space-y-2">
+        {heroOrderItems.map((item) => (
+          <li key={item.name} className="flex items-center gap-3 rounded-lg bg-surface-overlay p-2.5">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white">
+              <ShoppingBag className="size-4" aria-hidden="true" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-semibold text-fg">{item.name}</p>
+              <p className="text-[10px] text-fg-subtle">
+                {item.variant} · Qty {item.qty}
+              </p>
+            </div>
+            <p className="font-display text-xs font-bold text-fg">{item.price}</p>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-3 flex items-center justify-between border-t border-line px-1 pt-3">
+        <span className="text-xs text-fg-muted">Total paid</span>
+        <span className="font-display text-base font-extrabold text-fg">$100.00</span>
+      </div>
+      <ol className="mt-4 grid grid-cols-4 gap-2 rounded-xl bg-surface-overlay p-3">
+        {heroOrderStages.map(({ icon: Icon, label, done }) => (
+          <li key={label} className="flex flex-col items-center gap-1.5 text-center">
+            <span
+              className={
+                done
+                  ? 'flex size-8 items-center justify-center rounded-full bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white'
+                  : 'flex size-8 items-center justify-center rounded-full border border-dashed border-highlight/50 text-highlight'
+              }
+            >
+              <Icon className="size-3.5" aria-hidden="true" />
+            </span>
+            <span className={done ? 'text-[10px] font-semibold text-fg' : 'text-[10px] font-semibold text-fg-subtle'}>
+              {label}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
 function HeroSection() {
   return (
     <Section tone="inverse" spacing="hero" background={<HeroBackground />} aria-labelledby="hero-title">
-      <div className="mx-auto max-w-2xl text-center">
-        <Reveal>
-          <Badge className="mx-auto">
-            <ShoppingCart className="size-3.5 text-highlight" aria-hidden="true" />
-            E-commerce Solutions
-          </Badge>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
-            An online store built to <span className="text-gradient">actually sell</span>.
-          </h1>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">
-            We design and build e-commerce systems — storefronts, payments, order management and
-            the automation connecting your store to the rest of your business.
-          </p>
-        </Reveal>
+      <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
+        <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
+          <Reveal>
+            <Badge className="lg:mx-0">
+              <ShoppingCart className="size-3.5 text-highlight" aria-hidden="true" />
+              E-commerce Solutions
+            </Badge>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
+              An online store built to <span className="text-gradient">actually sell</span>.
+            </h1>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl lg:mx-0">
+              We design and build e-commerce systems — storefronts, payments, order management and
+              the automation connecting your store to the rest of your business.
+            </p>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+              <Button to={primaryCta.to} size="lg">
+                {primaryCta.label}
+                <ArrowRight aria-hidden="true" />
+              </Button>
+              <Button to="/contact" variant="secondary" size="lg">
+                Tell us about your store
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+
         <Reveal delay={0.15}>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button to={primaryCta.to} size="lg">
-              {primaryCta.label}
-              <ArrowRight aria-hidden="true" />
-            </Button>
-            <Button to="/contact" variant="secondary" size="lg">
-              Tell us about your store
-            </Button>
-          </div>
+          <StoreMockup />
         </Reveal>
       </div>
     </Section>
@@ -138,11 +226,11 @@ function CapabilitiesSection() {
         title="What a real online store needs."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {capabilities.map((item, index) => (
           <li key={item.title}>
-            <Reveal delay={index * 0.05}>
-              <FeatureCard icon={item.icon} title={item.title} description={item.description} />
+            <Reveal className="h-full" delay={index * 0.05}>
+              <TypeCard icon={item.icon} title={item.title} description={item.description} />
             </Reveal>
           </li>
         ))}
@@ -178,7 +266,7 @@ function RelatedServicesSection() {
       <ul className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
         {relatedServices.map((service, index) => (
           <li key={service.to}>
-            <Reveal delay={index * 0.05}>
+            <Reveal delay={index * 0.05} className="h-full">
               <ServiceCard icon={service.icon} title={service.title} description={service.description} to={service.to} />
             </Reveal>
           </li>

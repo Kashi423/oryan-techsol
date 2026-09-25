@@ -28,9 +28,9 @@ import {
   LayoutGrid,
   ListChecks,
   Megaphone,
-  Minus,
   Network,
   Plug2,
+  Quote,
   RefreshCw,
   Repeat,
   Rocket,
@@ -39,6 +39,7 @@ import {
   Shuffle,
   Smartphone,
   Sparkles,
+  Star,
   Target,
   Ticket,
   TrendingDown,
@@ -61,14 +62,12 @@ import {
   CapabilityTile,
   Card,
   CaseStudyCard,
-  FeatureCard,
+  ProcessStepIcon,
   PulseRing,
   Reveal,
   Section,
   SectionHeading,
-  ServiceCard,
-  Tag,
-  TestimonialCard,
+  TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
 import { caseStudies, categories } from '@/data/caseStudies'
@@ -89,16 +88,23 @@ const problems = [
   { icon: TrendingDown, label: 'Missed opportunities' },
 ]
 
-const before = [
-  { label: 'Manual', description: "Repetitive tasks like data entry and follow-ups eat up your team's time." },
-  { label: 'Slow', description: 'Leads and customers wait hours, sometimes days, for a response.' },
-  { label: 'Disconnected', description: "Data is scattered across tools that don't talk to each other." },
-]
-
-const after = [
-  { label: 'Automated', description: 'AI bots and workflows handle the repetitive work around the clock.' },
-  { label: 'Intelligent', description: 'Systems that route, prioritise and respond based on real data.' },
-  { label: 'Connected', description: 'One integrated stack — a single source of truth for your business.' },
+// Each row pairs one "before" pain with the specific "after" outcome that fixes it, rather
+// than two unrelated lists that happen to sit side by side — the icon changes per concept
+// (manual work vs. automation, waiting vs. real-time routing, siloed tools vs. one stack)
+// instead of a generic minus/check mark repeated three times.
+const transformations = [
+  {
+    before: { icon: ClipboardList, label: 'Manual', description: "Repetitive tasks like data entry and follow-ups eat up your team's time." },
+    after: { icon: Zap, label: 'Automated', description: 'AI bots and workflows handle the repetitive work around the clock.' },
+  },
+  {
+    before: { icon: Clock, label: 'Slow', description: 'Leads and customers wait hours, sometimes days, for a response.' },
+    after: { icon: Brain, label: 'Intelligent', description: 'Systems that route, prioritise and respond based on real data.' },
+  },
+  {
+    before: { icon: Unplug, label: 'Disconnected', description: "Data is scattered across tools that don't talk to each other." },
+    after: { icon: Plug2, label: 'Connected', description: 'One integrated stack — a single source of truth for your business.' },
+  },
 ]
 
 // AI Bots & AI Agents is a distinct specialty, not one card in a generic list — real
@@ -427,32 +433,57 @@ function ProblemTile({ icon: Icon, label, delay = 0 }) {
   )
 }
 
-// One row of the before/after comparison. `variant` swaps the icon and its colour so the
-// same layout reads as "current state" on the left and "outcome" on the right.
-function ComparisonRow({ label, description, variant }) {
-  const Icon = variant === 'after' ? CheckCircle2 : Minus
+// One paired row of the before/after comparison: the specific pain on the left and the
+// specific outcome that fixes it on the right, joined by a connector arrow — so each
+// transformation reads as its own before→after story instead of two unrelated lists that
+// happen to sit side by side.
+function TransformationRow({ before, after, index }) {
+  const BeforeIcon = before.icon
+  const AfterIcon = after.icon
   return (
-    // Hover tint reinforces which side of the story a row belongs to: a faint success tint
-    // on "after" rows, a neutral one on "before" — the same distinction the icon already makes.
-    <li
-      className={cn(
-        '-mx-3 flex items-start gap-3.5 rounded-xl px-3 py-4 transition-colors duration-200',
-        variant === 'after' ? 'hover:bg-success/5' : 'hover:bg-surface-muted',
-      )}
-    >
-      <span
-        className={cn(
-          'mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full',
-          variant === 'after' ? 'bg-success/10 text-success' : 'bg-fg-subtle/10 text-fg-subtle',
-        )}
-      >
-        <Icon className="size-4" aria-hidden="true" />
-      </span>
-      <div>
-        <p className="font-display text-sm font-bold text-fg">{label}</p>
-        <p className="mt-1 text-sm leading-relaxed text-fg-muted">{description}</p>
+    <Reveal delay={index * 0.08}>
+      <div className="grid items-stretch gap-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4">
+        <div className="group flex items-start gap-3.5 rounded-2xl border border-line bg-surface-raised p-5 transition-colors duration-200 hover:border-fg-subtle/30">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-fg-subtle/10 text-fg-subtle transition-transform duration-200 group-hover:scale-105">
+            <BeforeIcon className="size-5" aria-hidden="true" />
+          </span>
+          <div>
+            <Badge className="w-fit border-fg-subtle/25 bg-fg-subtle/5 py-0.5 text-[10px] tracking-[0.15em] text-fg-subtle uppercase sm:hidden">
+              Before
+            </Badge>
+            <p className="mt-1.5 font-display text-sm font-bold text-fg-muted sm:mt-0">{before.label}</p>
+            <p className="mt-1 text-sm leading-relaxed text-fg-muted">{before.description}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center py-1 sm:py-0">
+          <span className="relative flex size-10 shrink-0 rotate-90 items-center justify-center rounded-full bg-primary text-primary-fg shadow-button sm:rotate-0">
+            <span
+              aria-hidden="true"
+              className="motion-safe:absolute motion-safe:inset-0 motion-safe:animate-ping motion-safe:rounded-full motion-safe:bg-primary/50"
+            />
+            <ArrowRight className="relative size-4" aria-hidden="true" />
+          </span>
+        </div>
+
+        <div
+          data-tone="inverse"
+          className="group relative flex items-start gap-3.5 overflow-hidden rounded-2xl bg-surface p-5 shadow-card ring-1 ring-highlight/15 transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:ring-highlight/30"
+        >
+          <div aria-hidden="true" className="bg-glow absolute -top-10 -right-10 h-28 w-28 opacity-70" />
+          <span className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-200 group-hover:scale-105">
+            <AfterIcon className="size-5" aria-hidden="true" />
+          </span>
+          <div className="relative">
+            <Badge className="w-fit border-transparent bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] py-0.5 text-[10px] tracking-[0.15em] text-white uppercase shadow-button sm:hidden">
+              After
+            </Badge>
+            <p className="mt-1.5 font-display text-sm font-bold text-fg sm:mt-0">{after.label}</p>
+            <p className="mt-1 text-sm leading-relaxed text-fg-muted">{after.description}</p>
+          </div>
+        </div>
       </div>
-    </li>
+    </Reveal>
   )
 }
 
@@ -486,122 +517,260 @@ function ProblemsSection() {
         </p>
       </Reveal>
 
-      <div className="relative mt-12 grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-0">
-        <Reveal>
-          <Card
-            as="section"
-            aria-labelledby="before-title"
-            padding="none"
-            className="h-full overflow-hidden md:rounded-r-none md:border-r-0"
-          >
-            <div aria-hidden="true" className="h-1.5 bg-fg-subtle/25" />
-            <div className="p-6 sm:p-8">
-              <p id="before-title" className="font-display text-xs font-bold tracking-[0.2em] text-fg-subtle uppercase">
-                Before
-              </p>
-              <p className="mt-1 font-display text-sm font-semibold text-fg-muted">Manual · Slow · Disconnected</p>
-              <ul className="mt-2 divide-y divide-line">
-                {before.map((row) => (
-                  <ComparisonRow key={row.label} variant="before" {...row} />
-                ))}
-              </ul>
-            </div>
-          </Card>
-        </Reveal>
+      <div className="mt-12 hidden items-center gap-4 sm:grid sm:grid-cols-[1fr_auto_1fr]">
+        <Badge className="w-fit border-fg-subtle/25 bg-fg-subtle/5 tracking-[0.2em] text-fg-subtle uppercase">
+          Before
+        </Badge>
+        <span aria-hidden="true" className="w-10" />
+        <Badge className="w-fit border-transparent bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] tracking-[0.2em] text-white uppercase shadow-button">
+          After
+        </Badge>
+      </div>
 
-        <div
-          aria-hidden="true"
-          className="relative z-10 mx-auto flex size-14 rotate-90 items-center justify-center rounded-full bg-primary text-primary-fg shadow-button md:rotate-0"
-        >
-          <span className="motion-safe:absolute motion-safe:inset-0 motion-safe:animate-ping motion-safe:rounded-full motion-safe:bg-primary/50" />
-          <ArrowRight className="relative size-6" />
-        </div>
-
-        <Reveal delay={0.08}>
-          <Card
-            as="section"
-            aria-labelledby="after-title"
-            padding="none"
-            surface="solid"
-            data-tone="inverse"
-            className="h-full overflow-hidden md:rounded-l-none"
-          >
-            <div aria-hidden="true" className="h-1.5 bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)]" />
-            <div className="relative p-6 sm:p-8">
-              <div aria-hidden="true" className="bg-glow absolute -top-10 -right-10 h-48 w-48 opacity-70" />
-              <p id="after-title" className="relative font-display text-xs font-bold tracking-[0.2em] text-highlight uppercase">
-                After
-              </p>
-              <p className="relative mt-1 font-display text-sm font-semibold text-fg">
-                Automated · Intelligent · Connected
-              </p>
-              <ul className="relative mt-2 divide-y divide-line">
-                {after.map((row) => (
-                  <ComparisonRow key={row.label} variant="after" {...row} />
-                ))}
-              </ul>
-            </div>
-          </Card>
-        </Reveal>
+      <div className="mt-3 space-y-4 sm:mt-1">
+        {transformations.map((row, index) => (
+          <TransformationRow key={row.before.label} before={row.before} after={row.after} index={index} />
+        ))}
       </div>
     </Section>
   )
 }
 
+// Sets the pointer position over a card as CSS custom properties (no React re-render per
+// frame) so a radial-gradient overlay can follow the cursor — the "premium SaaS" spotlight
+// hover used on both the featured AI card and the surrounding service grid, tying the whole
+// section together as one upgraded visual language rather than two different treatments.
+// Takes the element directly (rather than returning a ref for the caller to forward) so each
+// card keeps its own plain useRef — passing refs through a custom hook's return value trips
+// the react/refs lint rule's static analysis.
+function handleSpotlightMove(event) {
+  const el = event.currentTarget
+  const rect = el.getBoundingClientRect()
+  el.style.setProperty('--spot-x', `${event.clientX - rect.left}px`)
+  el.style.setProperty('--spot-y', `${event.clientY - rect.top}px`)
+}
+
+// The glow itself — reads --color-highlight, so it's cyan on the inverse featured card and
+// navy on the light grid cards without any per-usage config.
+function Spotlight() {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      style={{
+        background:
+          'radial-gradient(420px circle at var(--spot-x, 50%) var(--spot-y, 50%), color-mix(in oklab, var(--color-highlight) 16%, transparent), transparent 72%)',
+      }}
+    />
+  )
+}
+
+// Thin gradient bar that wipes in from the left on hover — a second, understated "alive"
+// signal alongside the spotlight, borrowed from the brand gradient rather than inventing a
+// new colour.
+function HoverAccentBar() {
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] transition-transform duration-500 ease-out group-hover:scale-x-100"
+    />
+  )
+}
+
+// One line of the live-looking chat mockup below. Mirrors the bubble shapes already used by
+// the real <ConsultationWidget> chat (rounded-2xl, tail on the sender's side) so this reads as
+// "the same product" rather than a one-off illustration, just themed for the dark featured card.
+function DemoBubble({ from, delay, children }) {
+  const isUser = from === 'user'
+  return (
+    <Reveal delay={delay} y={8}>
+      <p
+        className={cn(
+          'max-w-[88%] rounded-2xl px-3 py-2 text-xs leading-snug',
+          isUser
+            ? 'ml-auto rounded-tr-sm bg-primary text-primary-fg'
+            : 'rounded-tl-sm bg-surface-overlay text-fg',
+        )}
+      >
+        {children}
+      </p>
+    </Reveal>
+  )
+}
+
+// A live-looking exchange rather than a description of one — walks through the exact flow the
+// "AI bots & agents" pitch makes lower on the page (understand → retrieve → take action), so the
+// featured card demonstrates the claim instead of just listing capability tags for it.
+function AiChatDemo() {
+  return (
+    <div className="relative w-full overflow-hidden rounded-2xl border border-line bg-black/20 p-4 backdrop-blur-sm sm:w-72">
+      <div className="mb-3 flex items-center gap-2 border-b border-line pb-3">
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white">
+          <Bot className="size-3.5" aria-hidden="true" />
+        </span>
+        <p className="flex-1 font-display text-xs font-bold text-fg">Oryan AI Assistant</p>
+        <span className="flex items-center gap-1 font-display text-[10px] font-semibold tracking-wide text-fg-subtle uppercase">
+          <span aria-hidden="true" className="size-1.5 rounded-full bg-highlight" />
+          Online
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <DemoBubble from="user" delay={0}>
+          Any openings this Thursday afternoon?
+        </DemoBubble>
+        <DemoBubble from="bot" delay={0.1}>
+          2:00 PM and 4:30 PM are both open — want me to book one?
+        </DemoBubble>
+        <DemoBubble from="user" delay={0.2}>
+          2pm works
+        </DemoBubble>
+        <DemoBubble from="bot" delay={0.3}>
+          Booked for Thursday at 2:00 PM. Confirmation sent.
+        </DemoBubble>
+      </div>
+
+      <Reveal delay={0.4} y={8}>
+        <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-highlight/10 px-2.5 py-1.5 font-display text-[11px] font-semibold text-highlight">
+          <Zap className="size-3 shrink-0" aria-hidden="true" />
+          Calendar updated · CRM synced
+        </p>
+      </Reveal>
+    </div>
+  )
+}
+
 // The featured AI Bots & AI Agents card — deliberately larger and on the inverse (navy)
-// tone, so it reads as the specialty rather than one entry in a generic service list.
-// The example list is what makes the "not a generic chatbot" positioning concrete.
+// tone, so it reads as the specialty rather than one entry in a generic service list. Rather
+// than describing what the bots do via a wall of capability tags, the right side shows one
+// doing it — the copy on the left only needs a short, scannable checklist alongside it.
 function FeaturedAiCard() {
   return (
     <Reveal className="sm:col-span-2 lg:col-span-2 lg:row-span-2">
-      <Card data-tone="inverse" surface="solid" interactive className="group flex h-full flex-col overflow-hidden">
+      <Card
+        onMouseMove={handleSpotlightMove}
+        data-tone="inverse"
+        surface="solid"
+        interactive
+        className="group flex h-full flex-col overflow-hidden"
+      >
         <div aria-hidden="true" className="bg-grid absolute inset-0 opacity-60" />
         <div aria-hidden="true" className="bg-glow absolute -top-16 -right-16 h-72 w-72" />
+        <Spotlight />
+        <HoverAccentBar />
 
-        <div className="relative flex flex-1 flex-col">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex size-12 items-center justify-center rounded-xl bg-highlight/10 text-highlight ring-1 ring-highlight/20">
-              <Bot className="size-6" aria-hidden="true" />
-            </span>
-            <Badge>
-              <Sparkles className="size-3.5 text-highlight" aria-hidden="true" />
-              Our specialty
-            </Badge>
+        <div className="relative flex flex-1 flex-col justify-center gap-8 sm:flex-row sm:items-center">
+          <div className="flex flex-1 flex-col">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="relative inline-flex size-12 items-center justify-center rounded-xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button">
+                  <Bot className="size-6" aria-hidden="true" />
+                  <PulseRing index={0} total={1} stepDuration={2} className="rounded-xl" />
+                </span>
+                <Badge>
+                  <Sparkles className="size-3.5 text-highlight" aria-hidden="true" />
+                  Our specialty
+                </Badge>
+              </div>
+              <span className="inline-flex items-center gap-1.5 font-display text-xs font-semibold tracking-wide text-fg-subtle uppercase">
+                <span className="relative flex size-1.5">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-highlight opacity-75" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-highlight" />
+                </span>
+                Always on
+              </span>
+            </div>
+
+            <h3 className="mt-6 text-2xl sm:text-3xl">AI Bots & AI Agents</h3>
+            <p className="mt-3 leading-relaxed text-fg-muted">
+              We design and build custom AI bots and agents around your actual workflows — not a
+              generic script bolted onto your website.
+            </p>
+
+            <ul className="mt-5 grid grid-cols-1 gap-x-4 gap-y-2 lg:grid-cols-2">
+              {aiExamples.map((example) => (
+                <li key={example} className="flex items-center gap-1.5 text-xs font-medium text-fg-muted">
+                  <CheckCircle2 className="size-3.5 shrink-0 text-highlight" aria-hidden="true" />
+                  {example}
+                </li>
+              ))}
+            </ul>
+
+            <Link
+              to="/ai-bots"
+              className="mt-8 inline-flex items-center gap-2 font-display text-sm font-semibold text-highlight after:absolute after:inset-0"
+            >
+              Learn more
+              <span
+                aria-hidden="true"
+                className="inline-flex size-6 items-center justify-center rounded-full bg-highlight/10 transition-[background-color,transform] duration-200 group-hover:translate-x-1 group-hover:bg-highlight/20"
+              >
+                <ArrowRight className="size-3.5" />
+              </span>
+            </Link>
           </div>
 
-          <h3 className="mt-6 text-2xl sm:text-3xl">AI Bots & AI Agents</h3>
-          <p className="mt-3 max-w-xl leading-relaxed text-fg-muted">
-            We design and build custom AI bots and agents around your actual workflows — not a
-            generic script bolted onto your website. Faster responses, fewer repetitive tickets,
-            and a team freed up for the work that actually needs a human.
-          </p>
-
-          <ul className="mt-6 flex flex-wrap gap-2">
-            {aiExamples.map((example) => (
-              <li key={example}>
-                <Tag>{example}</Tag>
-              </li>
-            ))}
-          </ul>
-
-          <Link
-            to="/ai-bots"
-            className="mt-8 inline-flex items-center gap-1 font-display text-sm font-semibold text-highlight after:absolute after:inset-0"
-          >
-            Learn more
-            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
-          </Link>
+          <AiChatDemo />
         </div>
       </Card>
     </Reveal>
   )
 }
 
+// Standard service cell for the grid around the featured AI card. Adds three "advanced" but
+// restrained signature details on top of the plain ServiceCard: a cursor-tracking spotlight,
+// a faint numbered index (reinforcing "N core services" as a set), and a gradient icon badge
+// that matches the weight already used for the featured card and TypeCard elsewhere.
+function ServiceGridCard({ icon: Icon, title, description, to, number }) {
+  return (
+    <Card
+      onMouseMove={handleSpotlightMove}
+      interactive
+      className="group relative flex h-full flex-col overflow-hidden"
+    >
+      <Spotlight />
+      <HoverAccentBar />
+      <span
+        aria-hidden="true"
+        className="absolute top-5 right-6 font-display text-4xl font-extrabold text-fg/[0.06] transition-colors duration-300 group-hover:text-highlight/10"
+      >
+        {number}
+      </span>
+
+      <span className="relative mb-6 inline-flex size-12 items-center justify-center rounded-xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+        <Icon className="size-6" aria-hidden="true" />
+      </span>
+      <h3 className="relative text-xl">
+        <Link to={to} className="after:absolute after:inset-0 after:rounded-2xl">
+          {title}
+        </Link>
+      </h3>
+      <p className="relative mt-3 leading-relaxed text-fg-muted">{description}</p>
+      <span
+        aria-hidden="true"
+        className="relative mt-auto inline-flex items-center gap-2 pt-6 font-display text-sm font-semibold text-highlight"
+      >
+        Explore
+        <span className="inline-flex size-6 items-center justify-center rounded-full bg-highlight/10 transition-[background-color,transform] duration-200 group-hover:translate-x-1 group-hover:bg-highlight/20">
+          <ArrowRight className="size-3.5" />
+        </span>
+      </span>
+    </Card>
+  )
+}
+
+// Subtle engineering-grid backdrop for the services section, tying it visually to the AI
+// section immediately below rather than leaving it a flat muted band between two more
+// decorated sections.
+function ServicesSectionBackground() {
+  return <div aria-hidden="true" className="bg-grid absolute inset-0 opacity-40" />
+}
+
 // Six core services in a bento grid: AI Bots & AI Agents gets the large featured cell
-// (the differentiator), the rest sit in standard ServiceCards around it.
+// (the differentiator), the rest sit in ServiceGridCards around it.
 function ServicesSection() {
   return (
-    <Section tone="muted" aria-labelledby="services-title">
+    <Section tone="muted" background={<ServicesSectionBackground />} aria-labelledby="services-title">
       <SectionHeading
         as="h2"
         id="services-title"
@@ -616,11 +785,12 @@ function ServicesSection() {
         <FeaturedAiCard />
         {services.map((service, index) => (
           <Reveal key={service.to} delay={0.05 * (index + 1)}>
-            <ServiceCard
+            <ServiceGridCard
               icon={service.icon}
               title={service.title}
               description={service.description}
               to={service.to}
+              number={String(index + 1).padStart(2, '0')}
             />
           </Reveal>
         ))}
@@ -747,12 +917,7 @@ function ProcessSection() {
           <li key={step.number} className="group relative sm:flex-1">
             <Reveal delay={index * 0.08}>
               <div className="flex gap-5 sm:flex-col sm:items-center sm:gap-4 sm:text-center">
-                <span className="relative z-10 flex size-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-3">
-                  <step.icon className="size-6" aria-hidden="true" />
-                  <span className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full border-2 border-surface bg-surface font-display text-[0.65rem] font-extrabold text-highlight">
-                    {step.number}
-                  </span>
-                </span>
+                <ProcessStepIcon icon={step.icon} number={step.number} index={index} total={processSteps.length} />
                 <div className="pb-1 sm:px-4">
                   <h3 className="font-display text-lg font-bold text-fg">{step.title}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-fg-muted">{step.description}</p>
@@ -950,11 +1115,11 @@ function WhySection() {
         className="mx-auto"
       />
 
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {differentiators.map((item, index) => (
           <li key={item.title}>
-            <Reveal delay={index * 0.05}>
-              <FeatureCard icon={item.icon} title={item.title} description={item.description} />
+            <Reveal className="h-full" delay={index * 0.05}>
+              <TypeCard icon={item.icon} title={item.title} description={item.description} />
             </Reveal>
           </li>
         ))}
@@ -963,10 +1128,64 @@ function WhySection() {
   )
 }
 
-// All three entries are placeholders today (src/data/testimonials.js) — TestimonialCard's
-// `placeholder` styling makes that honest rather than dressing bracketed copy up as real
-// quotes. Replace an entry there once a real testimonial exists; this section doesn't change.
+// Initials avatar fallback — same approach as the (now-unused-here) <TestimonialCard>: keeps
+// every entry visually consistent without depending on client photos.
+function initials(name) {
+  return name
+    .split(' ')
+    .map((part) => part[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+}
+
+// One switcher pill — the active entry's whole quote lives in the panel above, so this only
+// needs to carry enough to identify who's currently speaking and invite picking someone else.
+function TestimonialSwitcher({ testimonial, active, onSelect }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onSelect}
+      className={cn(
+        'flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-[background-color,border-color,box-shadow] duration-200',
+        active
+          ? 'border-transparent bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] shadow-button'
+          : 'border-line bg-surface-raised hover:border-highlight/40',
+      )}
+    >
+      <span
+        aria-hidden="true"
+        className={cn(
+          'flex size-9 shrink-0 items-center justify-center rounded-full font-display text-xs font-bold',
+          active ? 'bg-white/20 text-white' : 'bg-highlight/10 text-highlight',
+        )}
+      >
+        {initials(testimonial.name)}
+      </span>
+      <span>
+        <span className={cn('block font-display text-sm font-bold', active ? 'text-white' : 'text-fg')}>
+          {testimonial.name}
+        </span>
+        <span className={cn('block text-xs', active ? 'text-white/80' : 'text-fg-subtle')}>
+          {testimonial.company}
+        </span>
+      </span>
+    </button>
+  )
+}
+
+// One large featured quote instead of a flat 3-up grid — reads as a pull-quote rather than
+// three interchangeable boxes, and gives a short quote room to actually carry weight on the
+// page. The switcher row below lets a visitor browse the rest without the section growing
+// taller for each one. All three entries are placeholders today (src/data/testimonials.js);
+// `placeholder` styling (dashed border, muted quote) keeps that honest if a future entry needs
+// it, same as the shared <TestimonialCard> this replaces.
 function TestimonialsSection() {
+  const [active, setActive] = useState(0)
+  const testimonial = testimonials[active]
+
   return (
     <Section aria-labelledby="testimonials-title">
       <SectionHeading
@@ -979,23 +1198,92 @@ function TestimonialsSection() {
         className="mx-auto"
       />
 
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {testimonials.map((testimonial, index) => (
-          <li key={testimonial.id}>
-            <Reveal delay={index * 0.06}>
-              <TestimonialCard
-                quote={testimonial.quote}
-                name={testimonial.name}
-                jobTitle={testimonial.jobTitle}
-                company={testimonial.company}
-                logo={testimonial.logo}
-                projectType={testimonial.projectType}
-                placeholder={testimonial.placeholder}
+      <div className="mx-auto mt-12 max-w-2xl" aria-live="polite">
+        <AnimatePresence mode="wait">
+          <m.div
+            key={testimonial.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card
+              as="figure"
+              className={cn('relative overflow-hidden', testimonial.placeholder && 'border-dashed')}
+            >
+              <Quote
+                aria-hidden="true"
+                className="pointer-events-none absolute -top-4 -left-2 size-28 text-highlight/[0.07]"
               />
-            </Reveal>
-          </li>
-        ))}
-      </ul>
+
+              <div className="relative flex flex-wrap items-center justify-between gap-3">
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={cn('size-4', testimonial.placeholder ? 'fill-fg-subtle/40 text-fg-subtle/40' : 'fill-highlight text-highlight')}
+                      aria-hidden="true"
+                    />
+                  ))}
+                </div>
+                {testimonial.projectType && <Badge>{testimonial.projectType}</Badge>}
+              </div>
+
+              <blockquote
+                className={cn(
+                  'relative mt-5 text-xl leading-relaxed sm:text-2xl',
+                  testimonial.placeholder ? 'text-fg-subtle italic' : 'font-medium text-fg',
+                )}
+              >
+                “{testimonial.quote}”
+              </blockquote>
+
+              <figcaption className="relative mt-6 flex items-center gap-3 border-t border-line pt-6">
+                {testimonial.logo ? (
+                  <img
+                    src={testimonial.logo}
+                    alt=""
+                    width={40}
+                    height={40}
+                    loading="lazy"
+                    decoding="async"
+                    className="size-10 shrink-0 rounded-full object-contain"
+                  />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-highlight/10 font-display text-sm font-bold text-highlight"
+                  >
+                    {initials(testimonial.name)}
+                  </span>
+                )}
+                <div>
+                  <p className={cn('font-display text-sm font-bold', testimonial.placeholder ? 'text-fg-subtle' : 'text-fg')}>
+                    {testimonial.name}
+                  </p>
+                  <p className="text-xs text-fg-subtle">
+                    {testimonial.jobTitle}
+                    {testimonial.company && `, ${testimonial.company}`}
+                  </p>
+                </div>
+              </figcaption>
+            </Card>
+          </m.div>
+        </AnimatePresence>
+      </div>
+
+      <Reveal delay={0.1}>
+        <div className="mx-auto mt-6 flex max-w-2xl flex-wrap justify-center gap-3">
+          {testimonials.map((item, index) => (
+            <TestimonialSwitcher
+              key={item.id}
+              testimonial={item}
+              active={index === active}
+              onSelect={() => setActive(index)}
+            />
+          ))}
+        </div>
+      </Reveal>
     </Section>
   )
 }

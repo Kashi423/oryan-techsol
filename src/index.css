@@ -1,7 +1,6 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/manrope/wght.css';
-@import '@fontsource/lato/latin-400.css';
-@import '@fontsource/lato/latin-700.css';
+@import '@fontsource-variable/space-grotesk/wght.css';
+@import '@fontsource-variable/inter/wght.css';
 
 /* ==========================================================================
    Oryan Techsol design tokens — the single source of truth for the brand.
@@ -78,10 +77,11 @@
   --color-success: #15803d;
   --color-danger: #c62828;
 
-  /* Typography — Manrope for headings and UI labels, Lato for reading text */
-  --font-sans: 'Lato', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Typography — Space Grotesk for headings and UI labels, Inter for reading text */
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display:
-    'Manrope Variable', 'Lato', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    'Space Grotesk Variable', 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
 }
 
 /* Tokens that swap by tone but have no matching Tailwind utility. */
@@ -118,6 +118,9 @@
     --color-highlight: var(--color-accent-400);
     --color-ring: var(--color-accent-300);
     --color-logo-sub: var(--color-accent-400);
+    /* The light-tone green (#15803d) is too dark to read on navy — status badges in the hero
+       mockups ("Live", "Active", "Payment received") need the lifted shade. */
+    --color-success: #4ade80;
 
     /* On navy the dark end of the mark would vanish, so the ramp is lifted (as in the collateral). */
     --mark-from: #3a7bd5;
@@ -251,11 +254,12 @@
     text-wrap: balance;
   }
 
-  /* Page and section titles follow the collateral: bold uppercase Manrope. Keep them short —
-     flip text-transform here if a sentence-case look is ever wanted. */
+  /* Page and section titles follow the collateral: bold uppercase Space Grotesk. Keep them
+     short — flip text-transform here if a sentence-case look is ever wanted. Space Grotesk
+     Variable's weight axis tops out at 700 (no 800/900 cut), so that's the heaviest available. */
   h1,
   h2 {
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: -0.01em;
     text-transform: uppercase;
   }

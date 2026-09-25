@@ -106,6 +106,7 @@ export const transparentHeaderRoutes = [
   '/ecommerce',
   '/saas-development',
   '/api-integrations',
+  '/portfolio',
   '/about',
   '/faq',
   '/contact',

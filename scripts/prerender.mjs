@@ -66,6 +66,12 @@ async function main() {
 
   const server = await preview({ root: rootDir, preview: { port: 4321, strictPort: false } })
   const base = server.resolvedUrls.local[0]
+  // Puppeteer's page.content() snapshots the LIVE DOM, which includes <link rel="modulepreload">
+  // hints that the browser/React resolve to absolute URLs against this local preview server's own
+  // origin (e.g. http://localhost:4321/assets/...) — that origin has no meaning once this file
+  // ships to production, so it's stripped below, turning those hrefs back into the same
+  // root-relative form (/assets/...) the rest of the build already uses.
+  const previewOrigin = new URL(base).origin
 
   // --no-sandbox is required in most CI containers (GitHub Actions' runner user can't use
   // Chrome's setuid sandbox) — harmless locally, necessary there.
@@ -114,20 +120,23 @@ async function main() {
           defaultDescription,
         )
 
-        // Canonical has no static default (confirmed: raw pre-JS HTML has none at all) — both
-        // copies are React-rendered with the production domain (siteConfig.url), which differs
-        // from this local preview server's own host, so compare by pathname only, against the
-        // route actually being prerendered, not against document.location.
-        const canonicals = [...document.querySelectorAll('link[rel="canonical"]')]
-        if (canonicals.length > 1) {
-          const matching = canonicals.filter((node) => new URL(node.href).pathname === routePath)
+        // Canonical and og:url have no static default (confirmed: raw pre-JS HTML has neither) —
+        // both copies are React-rendered with the production domain (siteConfig.url), which
+        // differs from this local preview server's own host, so compare by pathname only, against
+        // the route actually being prerendered, not against document.location.
+        const dedupeByRoutePath = (nodes, getUrl) => {
+          if (nodes.length < 2) return
+          const matching = nodes.filter((node) => new URL(getUrl(node)).pathname === routePath)
           if (matching.length > 0) {
-            canonicals.filter((node) => !matching.includes(node)).forEach((node) => node.remove())
+            nodes.filter((node) => !matching.includes(node)).forEach((node) => node.remove())
             matching.slice(1).forEach((node) => node.remove())
           } else {
-            canonicals.slice(1).forEach((node) => node.remove())
+            nodes.slice(1).forEach((node) => node.remove())
           }
         }
+
+        dedupeByRoutePath([...document.querySelectorAll('link[rel="canonical"]')], (node) => node.href)
+        dedupeByRoutePath([...document.querySelectorAll('meta[property="og:url"]')], content)
       },
       defaultTitle,
       defaultDescription,
@@ -137,12 +146,13 @@ async function main() {
     const counts = await page.evaluate(() => ({
       title: document.querySelectorAll('title').length,
       canonical: document.querySelectorAll('link[rel="canonical"]').length,
+      ogUrl: document.querySelectorAll('meta[property="og:url"]').length,
     }))
-    if (counts.title !== 1 || counts.canonical !== 1) {
+    if (counts.title !== 1 || counts.canonical !== 1 || counts.ogUrl !== 1) {
       throw new Error(`${route}: head tags still duplicated after dedup (${JSON.stringify(counts)})`)
     }
 
-    const html = await page.content()
+    const html = (await page.content()).replaceAll(previewOrigin, '')
     const outPath =
       route === '/' ? path.join(distDir, 'index.html') : path.join(distDir, route.slice(1), 'index.html')
     await fs.mkdir(path.dirname(outPath), { recursive: true })

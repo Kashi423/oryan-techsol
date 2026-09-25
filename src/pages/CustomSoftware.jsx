@@ -6,16 +6,23 @@ import {
   Boxes,
   Building2,
   CalendarCheck,
+  CheckCircle2,
   ClipboardList,
   Code2,
   Layers,
   LayoutDashboard,
   ListChecks,
   Plug2,
+  Repeat,
   Rocket,
+  Table2,
+  TrendingUp,
+  Unplug,
   UserRound,
   Users,
   Workflow,
+  X,
+  Zap,
 } from 'lucide-react'
 import { Fragment } from 'react'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
@@ -28,11 +35,11 @@ import {
   Button,
   Card,
   CaseStudyCard,
-  FeatureCard,
   PulseRing,
   Reveal,
   Section,
   SectionHeading,
+  TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
 import { caseStudies } from '@/data/caseStudies'
@@ -54,9 +61,21 @@ const buildTypes = [
 ]
 
 const replacements = [
-  { title: 'Spreadsheets', description: 'that need manual updates and break when someone edits the wrong cell.' },
-  { title: 'Disconnected tools', description: "that don't talk to each other, so the same data gets entered twice." },
-  { title: 'Repetitive manual processes', description: 'that take up time your team could spend on real work.' },
+  {
+    icon: Table2,
+    title: 'Spreadsheets',
+    description: 'that need manual updates and break when someone edits the wrong cell.',
+  },
+  {
+    icon: Unplug,
+    title: 'Disconnected tools',
+    description: "that don't talk to each other, so the same data gets entered twice.",
+  },
+  {
+    icon: Repeat,
+    title: 'Repetitive manual processes',
+    description: 'that take up time your team could spend on real work.',
+  },
 ]
 
 const flowSteps = [
@@ -103,30 +122,55 @@ function HeroBackground() {
   )
 }
 
-// The hero visual: an abstract dashboard mockup (stat tiles + a table) — a diagram of "an
-// internal tool", not a stock photo, and distinct from the browser-chrome mockup used on
+const dashboardStats = [
+  { icon: TrendingUp, label: 'Revenue', value: '$48.2k' },
+  { icon: Users, label: 'Active users', value: '1,284' },
+  { icon: Zap, label: 'Automated', value: '312' },
+]
+
+const dashboardActivity = [
+  { icon: CheckCircle2, label: 'New order received', meta: 'Just now' },
+  { icon: ClipboardList, label: 'Invoice generated', meta: '2m ago' },
+  { icon: Users, label: 'Customer record synced', meta: '5m ago' },
+  { icon: Plug2, label: 'CRM integration ran', meta: '12m ago' },
+]
+
+// The hero visual: a real-looking internal dashboard — named stat tiles with icons and
+// values, a live-status indicator and a labelled activity feed — a diagram of "an internal
+// tool" built from tokens (no stock photo), distinct from the browser-chrome mockup used on
 // the web-development page.
 function DashboardMockup() {
   return (
     <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface-raised p-5 shadow-card backdrop-blur-xl">
       <div className="flex items-center justify-between">
-        <div className="h-3 w-24 rounded-full bg-fg/30" />
-        <div className="size-7 rounded-full bg-highlight/30" />
+        <p className="font-display text-sm font-bold text-fg">Operations Dashboard</p>
+        <span className="flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
+          <span className="relative flex size-1.5">
+            <span className="motion-safe:absolute motion-safe:inline-flex motion-safe:size-full motion-safe:animate-ping motion-safe:rounded-full motion-safe:bg-success/60" />
+            <span className="relative inline-flex size-1.5 rounded-full bg-success" />
+          </span>
+          Live
+        </span>
       </div>
       <div className="mt-4 grid grid-cols-3 gap-2.5">
-        {['bg-highlight/40', 'bg-success/40', 'bg-accent-400/40'].map((color) => (
-          <div key={color} className="space-y-2 rounded-lg bg-surface-overlay p-3">
-            <div className={`h-2 w-8 rounded-full ${color}`} />
-            <div className="h-3.5 w-10 rounded-full bg-fg/40" />
+        {dashboardStats.map(({ icon: Icon, label, value }) => (
+          <div key={label} className="space-y-2 rounded-lg bg-surface-overlay p-3">
+            <Icon className="size-4 text-highlight" aria-hidden="true" />
+            <div>
+              <p className="font-display text-sm font-extrabold text-fg">{value}</p>
+              <p className="text-[10px] leading-tight text-fg-subtle">{label}</p>
+            </div>
           </div>
         ))}
       </div>
-      <div className="mt-4 space-y-2 rounded-xl bg-surface-overlay p-3">
-        {[0, 1, 2, 3].map((row) => (
-          <div key={row} className="flex items-center gap-3">
-            <div className="size-6 shrink-0 rounded-md bg-fg-subtle/20" />
-            <div className="h-2 flex-1 rounded-full bg-fg-subtle/25" />
-            <div className="h-2 w-10 rounded-full bg-fg-subtle/25" />
+      <div className="mt-4 space-y-1 rounded-xl bg-surface-overlay p-3">
+        {dashboardActivity.map(({ icon: Icon, label, meta }) => (
+          <div key={label} className="flex items-center gap-3 rounded-lg px-1 py-1.5">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-highlight/10 text-highlight">
+              <Icon className="size-3.5" aria-hidden="true" />
+            </span>
+            <p className="flex-1 truncate text-xs font-medium text-fg">{label}</p>
+            <p className="shrink-0 text-[10px] text-fg-subtle">{meta}</p>
           </div>
         ))}
       </div>
@@ -178,6 +222,29 @@ function HeroSection() {
   )
 }
 
+// Danger-tinted "problem" card — reuses Home's <ProblemTile> grammar (muted danger icon,
+// coloured left edge, no lift/hover-highlight since this names a pain point rather than
+// something to click) rather than a plain bordered box, so what's being replaced reads as
+// the problem half of the page's problem→solution structure, not just another feature card.
+// A small crossed-out mark in the corner reinforces "this goes away" at a glance.
+function ReplaceCard({ icon: Icon, title, description, delay = 0 }) {
+  return (
+    <Reveal delay={delay}>
+      <Card padding="none" className="group relative h-full overflow-hidden py-6 pr-6 pl-7 transition-colors duration-200 hover:bg-surface-muted">
+        <span aria-hidden="true" className="absolute inset-y-4 left-0 w-1 rounded-full bg-danger/25" />
+        <span aria-hidden="true" className="absolute top-4 right-4 text-danger/30">
+          <X className="size-4" />
+        </span>
+        <span className="inline-flex size-12 items-center justify-center rounded-xl bg-danger/8 text-danger/70 transition-transform duration-200 group-hover:scale-110">
+          <Icon className="size-6" aria-hidden="true" />
+        </span>
+        <p className="mt-5 font-display text-lg font-bold text-fg">{title}</p>
+        <p className="mt-2 text-sm leading-relaxed text-fg-muted">{description}</p>
+      </Card>
+    </Reveal>
+  )
+}
+
 function ReplaceSection() {
   return (
     <Section aria-labelledby="replace-title">
@@ -193,12 +260,7 @@ function ReplaceSection() {
       <ul className="mt-12 grid gap-6 sm:grid-cols-3">
         {replacements.map((item, index) => (
           <li key={item.title}>
-            <Reveal delay={index * 0.06}>
-              <Card className="h-full">
-                <p className="font-display text-lg font-bold text-fg">{item.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-fg-muted">{item.description}</p>
-              </Card>
-            </Reveal>
+            <ReplaceCard icon={item.icon} title={item.title} description={item.description} delay={index * 0.06} />
           </li>
         ))}
       </ul>
@@ -217,11 +279,11 @@ function WhatWeBuildSection() {
         title="Whatever your business actually needs to run on."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {buildTypes.map((type, index) => (
           <li key={type.title}>
-            <Reveal delay={index * 0.03}>
-              <FeatureCard icon={type.icon} title={type.title} description={type.description} />
+            <Reveal className="h-full" delay={index * 0.03}>
+              <TypeCard icon={type.icon} title={type.title} description={type.description} />
             </Reveal>
           </li>
         ))}

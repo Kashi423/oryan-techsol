@@ -153,12 +153,12 @@ export default function Styleguide() {
       </Section>
 
       <Section tone="muted" aria-labelledby="sg-type">
-        <SectionHeading id="sg-type" eyebrow="Typography" title="Manrope headings, Lato body" />
+        <SectionHeading id="sg-type" eyebrow="Typography" title="Space Grotesk headings, Inter body" />
         <div className="mt-10 space-y-6">
           <p className="font-display text-5xl font-extrabold uppercase">Display heading 5xl</p>
-          <h3 className="text-3xl">Heading 3xl — Manrope bold, sentence case</h3>
+          <h3 className="text-3xl">Heading 3xl — Space Grotesk bold, sentence case</h3>
           <p className="text-lg text-fg-muted">
-            Body large — Lato. Custom software, web platforms, AI bots and business automation.
+            Body large — Inter. Custom software, web platforms, AI bots and business automation.
           </p>
           <p className="text-base text-fg-muted">Body base — the default paragraph size across the site.</p>
           <p className="text-sm text-fg-subtle">Small / caption — metadata and supporting text.</p>

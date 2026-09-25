@@ -4,6 +4,7 @@ import {
   Bell,
   Bot,
   CalendarCheck,
+  CircleCheck,
   Database,
   FileText,
   Globe,
@@ -28,11 +29,11 @@ import {
   Button,
   Card,
   CaseStudyCard,
-  FeatureCard,
   PulseRing,
   Reveal,
   Section,
   SectionHeading,
+  TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
 import { caseStudies } from '@/data/caseStudies'
@@ -124,38 +125,104 @@ function HeroBackground() {
   )
 }
 
+const heroWorkflowSteps = [
+  { icon: Globe, kind: 'Trigger', label: 'New website enquiry' },
+  { icon: Bot, kind: 'AI step', label: 'Qualify and tag the lead' },
+  { icon: Database, kind: 'Action', label: 'Create contact in CRM' },
+  { icon: Mail, kind: 'Action', label: 'Send tailored follow-up' },
+  { icon: Bell, kind: 'Action', label: 'Notify the sales team' },
+]
+
+// The hero visual: a real-looking automation builder — a trigger, the steps it runs and the
+// last run's result — built from tokens (no stock photo), in the same family as the browser,
+// phone, chat and dashboard mockups on the other service pages.
+function WorkflowMockup() {
+  return (
+    <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface-raised p-5 shadow-card backdrop-blur-xl">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="flex size-7 items-center justify-center rounded-lg bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white">
+            <Workflow className="size-4" aria-hidden="true" />
+          </span>
+          <p className="font-display text-sm font-bold text-fg">Lead follow-up</p>
+        </div>
+        <span className="flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
+          <span className="relative flex size-1.5">
+            <span className="motion-safe:absolute motion-safe:inline-flex motion-safe:size-full motion-safe:animate-ping motion-safe:rounded-full motion-safe:bg-success/60" />
+            <span className="relative inline-flex size-1.5 rounded-full bg-success" />
+          </span>
+          Active
+        </span>
+      </div>
+      <ol className="mt-4 space-y-0">
+        {heroWorkflowSteps.map(({ icon: Icon, kind, label }, index) => (
+          <li key={label} className="relative flex items-center gap-3 pb-2.5 last:pb-0">
+            {index < heroWorkflowSteps.length - 1 && (
+              <span aria-hidden="true" className="absolute top-9 bottom-0 left-[1.1rem] w-px bg-highlight/30" />
+            )}
+            <span
+              className={
+                index === 0
+                  ? 'relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white'
+                  : 'relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-highlight/10 text-highlight'
+              }
+            >
+              <Icon className="size-4" aria-hidden="true" />
+            </span>
+            <div className="flex-1 rounded-lg bg-surface-overlay px-3 py-2">
+              <p className="text-[10px] font-semibold tracking-wide text-fg-subtle uppercase">{kind}</p>
+              <p className="text-xs font-medium text-fg">{label}</p>
+            </div>
+            <CircleCheck className="size-4 shrink-0 text-success" aria-hidden="true" />
+          </li>
+        ))}
+      </ol>
+      <div className="mt-4 flex items-center justify-between rounded-xl bg-surface-overlay px-3 py-2.5 text-[11px]">
+        <span className="font-medium text-fg-muted">Last run · 2m ago</span>
+        <span className="font-semibold text-success">5 of 5 steps succeeded</span>
+      </div>
+    </div>
+  )
+}
+
 function HeroSection() {
   return (
     <Section tone="inverse" spacing="hero" background={<HeroBackground />} aria-labelledby="hero-title">
-      <div className="mx-auto max-w-3xl text-center">
-        <Reveal>
-          <Badge className="mx-auto">
-            <Workflow className="size-3.5 text-highlight" aria-hidden="true" />
-            Business Automation
-          </Badge>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
-            Automation designed around <span className="text-gradient">your workflow</span>.
-          </h1>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">
-            We connect the tools you already use and automate the repetitive steps in
-            between — mapped to how your business actually operates, not a generic
-            template.
-          </p>
-        </Reveal>
+      <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
+        <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
+          <Reveal>
+            <Badge className="lg:mx-0">
+              <Workflow className="size-3.5 text-highlight" aria-hidden="true" />
+              Business Automation
+            </Badge>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
+              Automation designed around <span className="text-gradient">your workflow</span>.
+            </h1>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl lg:mx-0">
+              We connect the tools you already use and automate the repetitive steps in
+              between — mapped to how your business actually operates, not a generic
+              template.
+            </p>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+              <Button to={primaryCta.to} size="lg">
+                {primaryCta.label}
+                <ArrowRight aria-hidden="true" />
+              </Button>
+              <Button href="#workflows-title" variant="secondary" size="lg">
+                See example workflows
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+
         <Reveal delay={0.15}>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button to={primaryCta.to} size="lg">
-              {primaryCta.label}
-              <ArrowRight aria-hidden="true" />
-            </Button>
-            <Button href="#workflows-title" variant="secondary" size="lg">
-              See example workflows
-            </Button>
-          </div>
+          <WorkflowMockup />
         </Reveal>
       </div>
     </Section>
@@ -173,11 +240,11 @@ function ProcessesSection() {
         title="The repetitive parts of running a business."
         className="mx-auto"
       />
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {processes.map((process, index) => (
           <li key={process.title}>
-            <Reveal delay={index * 0.03}>
-              <FeatureCard icon={process.icon} title={process.title} description={process.description} />
+            <Reveal className="h-full" delay={index * 0.03}>
+              <TypeCard icon={process.icon} title={process.title} description={process.description} />
             </Reveal>
           </li>
         ))}
