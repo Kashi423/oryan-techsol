@@ -67,7 +67,9 @@ async function main() {
   const server = await preview({ root: rootDir, preview: { port: 4321, strictPort: false } })
   const base = server.resolvedUrls.local[0]
 
-  const browser = await puppeteer.launch({ headless: true })
+  // --no-sandbox is required in most CI containers (GitHub Actions' runner user can't use
+  // Chrome's setuid sandbox) — harmless locally, necessary there.
+  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
 
   for (const route of routes) {
     // A fresh page per route rather than reusing one tab across all 16 — framer-motion's
