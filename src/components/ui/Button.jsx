@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { cn } from '@/lib/cn'
+import Spinner from './Spinner'
 
 const base =
   'inline-flex items-center justify-center gap-2 rounded-lg font-display font-bold whitespace-nowrap transition-colors duration-200 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0'
@@ -20,6 +21,9 @@ const sizes = {
 //   `href` → plain <a>                   (external, mailto:, tel:, files)
 //   neither → <button>                   (actions; defaults to type="button")
 //
+// `loading` only applies to the plain-<button> form (a submit action) — a Link/anchor has
+// no notion of "in flight", so route to a real button while a submission is pending.
+//
 // `className` is for layout only (margin, width). Don't override display, padding or
 // colours with it — there is no tailwind-merge, so conflicting utilities are resolved by
 // stylesheet order, not by the order you wrote them. Use `variant`/`size`, or wrap the
@@ -29,6 +33,8 @@ export default function Button({
   size = 'md',
   to,
   href,
+  loading = false,
+  disabled,
   className,
   children,
   ...props
@@ -53,7 +59,14 @@ export default function Button({
   }
 
   return (
-    <button type="button" className={classes} {...props}>
+    <button
+      type="button"
+      className={classes}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      {...props}
+    >
+      {loading && <Spinner size="size-4" />}
       {children}
     </button>
   )

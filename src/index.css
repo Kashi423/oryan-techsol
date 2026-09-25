@@ -130,6 +130,38 @@
     --shadow-card-value: none;
     --shadow-button-value: 0 8px 22px -8px color-mix(in oklab, var(--color-primary) 55%, transparent);
   }
+
+  /* Escape hatch for a light-toned element nested inside an inverse ancestor (e.g. the
+     header's services popover staying a solid light card while the header itself is
+     transparent-over-navy). Mirrors :root's defaults so it isn't a second source of truth. */
+  [data-tone='default'] {
+    color-scheme: light;
+    color: var(--color-fg);
+    --color-surface: var(--color-white);
+    --color-surface-muted: var(--color-ink-50);
+    --color-surface-raised: var(--color-white);
+    --color-surface-overlay: var(--color-ink-100);
+    --color-line: var(--color-ink-200);
+    --color-line-strong: var(--color-ink-300);
+    --color-fg: var(--color-brand-900);
+    --color-fg-muted: var(--color-ink-600);
+    --color-fg-subtle: var(--color-ink-500);
+    --color-primary: var(--color-brand-900);
+    --color-primary-hover: var(--color-brand-800);
+    --color-primary-fg: var(--color-white);
+    --color-highlight: var(--color-brand-600);
+    --color-ring: var(--color-brand-500);
+    --color-logo-sub: var(--color-brand-500);
+    --mark-from: #0b2a5e;
+    --mark-via: #18638e;
+    --mark-mid: #169ec0;
+    --mark-to: #0fd1e8;
+    --gradient-from: var(--color-brand-600);
+    --gradient-to: var(--color-brand-500);
+    --glow: var(--color-brand-500);
+    --shadow-card-value: 0 1px 2px rgb(5 28 78 / 0.05), 0 12px 28px -16px rgb(5 28 78 / 0.22);
+    --shadow-button-value: 0 8px 18px -8px color-mix(in oklab, var(--color-primary) 65%, transparent);
+  }
 }
 
 @utility shadow-card {
@@ -195,6 +227,10 @@
     scroll-behavior: smooth;
     scroll-padding-top: 5rem; /* clear the sticky header on in-page anchors */
     -webkit-text-size-adjust: 100%;
+    /* Decorative glow/grid backgrounds are deliberately sized to bleed past their
+       container for a soft, edgeless look (see bg-glow, bg-grid). That bleed should
+       never create a horizontal scrollbar or shift layout. */
+    overflow-x: hidden;
   }
 
   body {

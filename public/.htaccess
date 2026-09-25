@@ -1,0 +1,45 @@
+# Required for client-side routing (react-router): Apache serves a real file/directory if
+# one exists (the hashed JS/CSS/font assets), otherwise falls back to index.html so routes
+# like /ai-bots or /portfolio/aurex7 work on a direct visit or a page refresh, not just when
+# navigated to from within the app.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# scripts/prerender.mjs writes a static dist/<route>/index.html for every public route, so
+# Apache would otherwise auto-redirect e.g. /app-development -> /app-development/ before
+# serving it (mod_dir's default DirectorySlash behaviour) — a redirect hop that doesn't match
+# that page's own canonical tag or any internal link/sitemap entry, which all use no trailing
+# slash. Serve the directory's index.html directly at the no-slash URL instead.
+<IfModule mod_dir.c>
+  DirectorySlash Off
+</IfModule>
+
+# The JS/CSS/font/image files Vite outputs are content-hashed (the filename changes if the
+# content does), so they're safe to cache for a long time — a new deploy gets new filenames
+# automatically. index.html itself must never be cached, since it's what points at the
+# current hashed filenames.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+</IfModule>
+
+<FilesMatch "^index\.html$">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, must-revalidate"
+  </IfModule>
+</FilesMatch>
+
+# Compress text-based assets in transit.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>

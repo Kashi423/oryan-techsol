@@ -6,10 +6,20 @@ import {
   Badge,
   Button,
   Card,
+  CaseStudyCard,
   FeatureCard,
-  Reveal,
+  Field,
+  Input,
   Section,
   SectionHeading,
+  Select,
+  ServiceCard,
+  Skeleton,
+  Spinner,
+  Tag,
+  TestimonialCard,
+  Textarea,
+  Reveal,
 } from '@/components/ui'
 
 // DEV-ONLY (route is not registered in production builds). Living reference for the
@@ -198,6 +208,108 @@ export default function Styleguide() {
           <Badge>Badge</Badge>
         </div>
         <CardRow />
+      </Section>
+
+      <Section aria-labelledby="sg-service-cards">
+        <SectionHeading
+          id="sg-service-cards"
+          eyebrow="Service, testimonial & case-study cards"
+          title="Content-specific cards"
+          description="Built on the same <Card>, so tone/interactive/padding behaviour stays consistent everywhere."
+        />
+        <ul className="mt-10 grid gap-6 md:grid-cols-3">
+          <li>
+            <Reveal>
+              <ServiceCard
+                icon={Bot}
+                title="AI Bots & Automation"
+                description="Chat and voice assistants, workflow automation and API integrations."
+                features={['Custom chat & voice bots', 'Workflow automation', 'API integrations']}
+                to="/ai-bots"
+              />
+            </Reveal>
+          </li>
+          <li>
+            <Reveal delay={0.08}>
+              <TestimonialCard
+                quote="OryanTechsol automated our support triage and cut first-response time by more than half."
+                name="Sara Khan"
+                jobTitle="Operations Lead"
+                company="Northline Retail"
+                projectType="AI Bot & Automation"
+              />
+            </Reveal>
+          </li>
+          <li>
+            <Reveal delay={0.12}>
+              <TestimonialCard
+                quote="[Client testimonial will be added here]"
+                name="[Client Name]"
+                jobTitle="[Position]"
+                company="[Company]"
+                projectType="Custom Web Development"
+                placeholder
+              />
+            </Reveal>
+          </li>
+          <li>
+            <Reveal delay={0.16}>
+              <CaseStudyCard
+                title="AI Customer Support Assistant"
+                industry="E-commerce"
+                solutionType="AI Bot & Automation"
+                description="A custom AI assistant that answers common questions instantly and routes the rest to a human."
+                tags={['React', 'Node.js', 'OpenAI API']}
+                placeholder
+                result="Placeholder — the real result will be added once this project ships."
+                to="/portfolio/ai-support-assistant"
+              />
+            </Reveal>
+          </li>
+        </ul>
+      </Section>
+
+      <Section tone="muted" aria-labelledby="sg-forms">
+        <SectionHeading id="sg-forms" title="Form inputs & tags" />
+        <div className="mt-10 grid gap-6 sm:grid-cols-2">
+          <Field htmlFor="sg-name" label="Full name" required>
+            <Input id="sg-name" name="name" placeholder="Jane Cooper" required />
+          </Field>
+          <Field htmlFor="sg-service" label="Service" hint="Which service are you enquiring about?">
+            <Select id="sg-service" name="service" defaultValue="">
+              <option value="" disabled>
+                Select a service
+              </option>
+              <option value="ai-bots-automation">AI Bots & Automation</option>
+              <option value="web-development">Custom Web Development</option>
+            </Select>
+          </Field>
+          <Field htmlFor="sg-email" label="Email" error="Enter a valid email address">
+            <Input id="sg-email" name="email" type="email" invalid placeholder="jane@company.com" />
+          </Field>
+          <Field htmlFor="sg-message" label="Message">
+            <Textarea id="sg-message" name="message" placeholder="Tell us about your project…" />
+          </Field>
+        </div>
+        <div className="mt-6 flex flex-wrap gap-2">
+          <Tag>AI Bots</Tag>
+          <Tag>Automation</Tag>
+          <Tag>Web Development</Tag>
+        </div>
+      </Section>
+
+      <Section aria-labelledby="sg-loading">
+        <SectionHeading id="sg-loading" title="Loading states" />
+        <div className="mt-10 flex flex-wrap items-center gap-4">
+          <Button loading>Submitting</Button>
+          <Spinner label="Loading" />
+          <Skeleton className="h-11 w-40" />
+        </div>
+        <div className="mt-6 grid gap-6 sm:grid-cols-3">
+          <Skeleton className="h-40 rounded-2xl" />
+          <Skeleton className="h-40 rounded-2xl" />
+          <Skeleton className="h-40 rounded-2xl" />
+        </div>
       </Section>
     </>
   )

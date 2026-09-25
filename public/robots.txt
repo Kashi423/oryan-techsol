@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+# Dev-only component reference; excluded from the production build anyway (see App.jsx),
+# disallowed here too as defense in depth.
+Disallow: /styleguide
 
 Sitemap: https://oryantechsol.com/sitemap.xml

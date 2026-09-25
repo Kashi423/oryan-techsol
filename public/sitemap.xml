@@ -1,6 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Manually maintained — add a <url> entry here when a new page ships. Placeholder-marked
+  portfolio case studies (src/data/caseStudies.js) are deliberately left out: they're
+  marked noindex on the page itself (see CaseStudyDetail.jsx) until real project content
+  replaces them, so they shouldn't be offered to crawlers via the sitemap either. A case
+  study with `placeholder: false` (a real, indexable project) belongs here — add its
+  /portfolio/<slug> URL when one ships.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://oryantechsol.com/</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/app-development</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/ai-bots</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/web-development</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/custom-software</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/business-automation</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/ecommerce</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/saas-development</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/api-integrations</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/portfolio</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/portfolio/aurex7</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/about</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/faq</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/contact</loc>
   </url>
 </urlset>
