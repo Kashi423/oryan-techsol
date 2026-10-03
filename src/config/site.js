@@ -26,7 +26,7 @@ export const contactInfo = {
 // exists. Rendered dimmed/non-interactive in the footer until then (see Footer.jsx).
 export const socialLinks = [
   { name: 'LinkedIn', href: '#', icon: 'linkedin' },
-  { name: 'Facebook', href: '#', icon: 'facebook' },
+  { name: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61593868535933', icon: 'facebook' },
   { name: 'Instagram', href: '#', icon: 'instagram' },
   { name: 'YouTube', href: '#', icon: 'youtube' },
 ]

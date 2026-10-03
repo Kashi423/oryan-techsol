@@ -31,16 +31,30 @@ function SocialIcon({ icon, className }) {
 function SocialRow() {
   return (
     <div className="mt-6 flex items-center gap-3">
-      {socialLinks.map((social) => (
-        <span
-          key={social.name}
-          title={`${social.name} — coming soon`}
-          aria-label={`${social.name} — coming soon`}
-          className="flex size-9 cursor-default items-center justify-center rounded-full border border-line text-fg-subtle"
-        >
-          <SocialIcon icon={social.icon} className="size-4" />
-        </span>
-      ))}
+      {socialLinks.map((social) =>
+        social.href === '#' ? (
+          <span
+            key={social.name}
+            title={`${social.name} — coming soon`}
+            aria-label={`${social.name} — coming soon`}
+            className="flex size-9 cursor-default items-center justify-center rounded-full border border-line text-fg-subtle"
+          >
+            <SocialIcon icon={social.icon} className="size-4" />
+          </span>
+        ) : (
+          <a
+            key={social.name}
+            href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={social.name}
+            aria-label={`Oryan Techsol on ${social.name}`}
+            className="flex size-9 items-center justify-center rounded-full border border-line text-fg-muted transition-colors hover:border-accent hover:text-fg"
+          >
+            <SocialIcon icon={social.icon} className="size-4" />
+          </a>
+        ),
+      )}
     </div>
   )
 }
