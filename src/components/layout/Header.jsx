@@ -18,13 +18,12 @@ const serviceIcons = {
   plug: Plug2,
 }
 
-const desktopLink = ({ isActive }) =>
-  cn(
-    'rounded-md px-3 py-2 font-display text-sm font-semibold transition-colors',
-    isActive ? 'text-fg' : 'text-fg-muted hover:text-fg',
-  )
+// Pill-style nav: items sit inside one bordered capsule; the current page is a filled pill.
+const pillBase = 'rounded-full px-5 py-2 font-display text-sm font-semibold transition-colors'
+const pillActive = 'bg-primary text-primary-fg shadow-button'
+const pillIdle = 'text-fg hover:bg-surface-overlay'
 
-const desktopTrigger = 'rounded-md px-3 py-2 font-display text-sm font-semibold text-fg-muted transition-colors hover:text-fg'
+const desktopLink = ({ isActive }) => cn(pillBase, isActive ? pillActive : pillIdle)
 
 const mobileLink = ({ isActive }) =>
   cn(
@@ -37,6 +36,8 @@ const mobileLink = ({ isActive }) =>
 // keyboard and touch users; Escape or a click outside closes it and returns focus.
 function ServicesMenu({ item }) {
   const [open, setOpen] = useState(false)
+  const { pathname } = useLocation()
+  const active = item.items.some((sub) => sub.to === pathname)
   const closeTimer = useRef(null)
   const rootRef = useRef(null)
   const triggerId = 'nav-services-trigger'
@@ -78,7 +79,7 @@ function ServicesMenu({ item }) {
       <button
         id={triggerId}
         type="button"
-        className={cn(desktopTrigger, 'inline-flex items-center gap-1')}
+        className={cn(pillBase, active ? pillActive : pillIdle, 'inline-flex items-center gap-1')}
         aria-expanded={open}
         aria-controls={panelId}
         // Not a toggle: hovering onto this button already opens the panel (onMouseEnter
@@ -135,7 +136,10 @@ function ServicesMenu({ item }) {
 
 function DesktopNav() {
   return (
-    <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
+    <nav
+      aria-label="Primary"
+      className="hidden items-center gap-1 rounded-full border border-line-strong bg-surface-raised/60 p-1.5 backdrop-blur-md lg:flex"
+    >
       {navItems.map((item) =>
         item.items ? (
           <ServicesMenu key={item.label} item={item} />
@@ -271,7 +275,9 @@ export default function Header() {
           <div className="hidden lg:block">
             {/* Tone tokens alone give the right contrast: navy button on the light header,
                 bright cyan on the transparent/inverse one — no variant switch needed. */}
-            <Button to={primaryCta.to}>{primaryCta.label}</Button>
+            <Button to={primaryCta.to} pill size="lg">
+              {primaryCta.label}
+            </Button>
           </div>
           <button
             type="button"

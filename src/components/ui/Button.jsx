@@ -35,11 +35,12 @@ export default function Button({
   href,
   loading = false,
   disabled,
+  pill = false,
   className,
   children,
   ...props
 }) {
-  const classes = cn(base, variants[variant], sizes[size], className)
+  const classes = cn(pill ? base.replace('rounded-lg', 'rounded-full') : base, variants[variant], sizes[size], className)
 
   if (to) {
     return (
