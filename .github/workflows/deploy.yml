@@ -8,6 +8,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # The FTP_* secrets are stored as environment secrets in the "FTP Server" environment.
+    environment: FTP Server
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,6 +31,9 @@ jobs:
         env:
           VITE_SITE_URL: https://oryantechsol.com
 
+      - name: Stamp build version
+        run: echo "$GITHUB_SHA" > dist/deploy-version.txt
+
       - name: Deploy to Namecheap via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -40,3 +45,14 @@ jobs:
           exclude: |
             **/.git*
             **/.git*/**
+
+      # Fails the run if the upload went to the wrong folder (green FTP step, unchanged site).
+      - name: Verify live site serves this build
+        run: |
+          for i in 1 2 3 4 5; do
+            if curl -fsS "https://oryantechsol.com/deploy-version.txt?cb=$i" | grep -q "$GITHUB_SHA"; then
+              echo "Live site is serving $GITHUB_SHA"; exit 0
+            fi
+            sleep 10
+          done
+          echo "Live site does not have this build — check FTP server-dir / account folder"; exit 1
