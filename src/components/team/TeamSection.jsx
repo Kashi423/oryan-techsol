@@ -4,17 +4,9 @@ import { cn } from '@/lib/cn'
 
 const hexagon = 'polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)'
 
-const initials = (name) =>
-  name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join('')
-    .toUpperCase()
-
 // Gradient-ringed hexagon portrait: an outer hexagon filled with the brand gradient, and an
-// inner hexagon inset by `ring` px showing the photo (or initials when there is none).
-function HexPortrait({ person, className, ring = 5, textClass = 'text-xl' }) {
+// inner hexagon inset by `ring` px showing the photo (or a placeholder avatar when there is none).
+function HexPortrait({ person, className, ring = 5 }) {
   return (
     <div
       aria-hidden={person.photo ? undefined : 'true'}
@@ -28,9 +20,10 @@ function HexPortrait({ person, className, ring = 5, textClass = 'text-xl' }) {
         {person.photo ? (
           <img src={person.photo} alt={person.name} className="size-full object-cover" loading="lazy" />
         ) : (
-          <span className={cn('font-display font-bold tracking-wide text-accent-400', textClass)}>
-            {initials(person.name)}
-          </span>
+          <svg viewBox="0 0 100 112" className="size-full text-brand-700" aria-hidden="true">
+            <circle cx="50" cy="42" r="19" fill="currentColor" />
+            <path d="M12 112c0-26 16-41 38-41s38 15 38 41z" fill="currentColor" />
+          </svg>
         )}
       </div>
     </div>
@@ -45,7 +38,7 @@ function LeadCard() {
   return (
     <Reveal className="h-full">
       <div className="flex h-full flex-col gap-6 rounded-3xl border border-line-strong bg-surface-raised p-6 sm:p-8">
-        <HexPortrait person={teamLead} ring={8} textClass="text-6xl" className="mx-auto w-full max-w-72" />
+        <HexPortrait person={teamLead} ring={8} className="mx-auto w-full max-w-72" />
         <div>
           <h3 className="font-display text-2xl font-bold text-fg">{teamLead.name}</h3>
           <p className="mt-1 font-display text-base font-semibold text-highlight">{teamLead.role}</p>

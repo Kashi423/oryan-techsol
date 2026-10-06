@@ -1,14 +1,20 @@
 // Team section content (About page). One lead + four members.
 //
-// `photo` is optional — drop an image in src/assets/team/, import it here and set it on the
-// person; without a photo the hexagon shows their initials. Bios describe each role only —
-// extend them with real background once the people are happy with the wording.
+// `photo` is an imported image (src/assets/team/, face-cropped, ~0.9 aspect for the hexagon).
+// With no photo the hexagon shows a neutral placeholder avatar — swap in a real photo by
+// adding the file and setting `photo`. Bios describe each role only; extend them with real
+// background once the people are happy with the wording.
+
+import asad from '@/assets/team/asad.webp'
+import mehmood from '@/assets/team/mehmood.webp'
+import qasim from '@/assets/team/qasim.webp'
+import waqas from '@/assets/team/waqas.webp'
 
 export const teamLead = {
   name: 'Waqas Ahmad Asghar',
   role: 'Founder & CEO',
   bio: 'Sets the direction at Oryan Techsol and works with clients from the first conversation to launch, making sure every build fits the way their business actually works.',
-  photo: null,
+  photo: waqas,
 }
 
 export const teamMembers = [
@@ -16,24 +22,24 @@ export const teamMembers = [
     name: 'Rai Asad Kharal',
     role: 'Sales Head',
     bio: 'Leads sales and client relationships, helping businesses find the right solution for their goals.',
-    photo: null,
+    photo: asad,
   },
   {
     name: 'Mehmood Asghar',
     role: 'React Native Developer',
     bio: 'Builds our cross-platform mobile apps for iOS and Android.',
-    photo: null,
+    photo: mehmood,
   },
   {
     name: 'Slaman Amjad Virk',
     role: 'Director & Financial Partner',
     bio: 'A key backer of Oryan Techsol, supporting the company’s growth and financial foundation.',
-    photo: null,
+    photo: null, // placeholder avatar until a real photo is supplied
   },
   {
     name: 'Qasim Amjad Virk',
     role: 'Director & Financial Partner',
     bio: 'A key backer of Oryan Techsol, supporting the company’s growth and financial foundation.',
-    photo: null,
+    photo: qasim,
   },
 ]
