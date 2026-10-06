@@ -12,8 +12,8 @@ import waqas from '@/assets/team/waqas.webp'
 
 export const teamLead = {
   name: 'Waqas Ahmad Asghar',
-  role: 'Founder & CEO',
-  bio: 'Sets the direction at Oryan Techsol and works with clients from the first conversation to launch, making sure every build fits the way their business actually works.',
+  role: 'CEO & Full-Stack Architect',
+  bio: 'Leads Oryan Techsol and architects and builds its solutions end to end, working with clients from the first conversation to launch so every build fits the way their business actually works.',
   photo: waqas,
 }
 
