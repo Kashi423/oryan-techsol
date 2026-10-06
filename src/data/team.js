@@ -26,14 +26,14 @@ export const teamMembers = [
   },
   {
     name: 'Slaman Amjad Virk',
-    role: 'Finance Manager',
-    bio: 'Oversees finance and budgeting, keeping projects and billing on track.',
+    role: 'Director & Financial Partner',
+    bio: 'A key backer of Oryan Techsol, supporting the company’s growth and financial foundation.',
     photo: null,
   },
   {
     name: 'Qasim Amjad Virk',
-    role: 'Finance Executive',
-    bio: 'Supports accounts, invoicing and day-to-day financial operations.',
+    role: 'Director & Financial Partner',
+    bio: 'A key backer of Oryan Techsol, supporting the company’s growth and financial foundation.',
     photo: null,
   },
 ]
