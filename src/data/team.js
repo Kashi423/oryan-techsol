@@ -38,8 +38,8 @@ export const teamMembers = [
   },
   {
     name: 'Rai Asad Kharal',
-    role: 'Sales Head',
-    bio: 'Leads sales and client relationships, helping businesses find the right solution for their goals.',
+    role: 'Sales and Marketing Head',
+    bio: 'Leads sales, marketing and client relationships, helping businesses find the right solution for their goals.',
     photo: asad,
   },
 ]
