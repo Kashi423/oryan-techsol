@@ -1,0 +1,107 @@
+import { Quote } from 'lucide-react'
+import { Reveal, Section, SectionHeading } from '@/components/ui'
+import { teamLead, teamMembers } from '@/data/team'
+import { cn } from '@/lib/cn'
+
+const hexagon = 'polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)'
+
+const initials = (name) =>
+  name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
+
+// Gradient-ringed hexagon portrait: an outer hexagon filled with the brand gradient, and an
+// inner hexagon inset by `ring` px showing the photo (or initials when there is none).
+function HexPortrait({ person, className, ring = 5, textClass = 'text-xl' }) {
+  return (
+    <div
+      aria-hidden={person.photo ? undefined : 'true'}
+      className={cn('relative aspect-[0.9] bg-linear-to-br from-brand-700 via-brand-500 to-accent-400', className)}
+      style={{ clipPath: hexagon }}
+    >
+      <div
+        className="absolute flex items-center justify-center bg-brand-900"
+        style={{ clipPath: hexagon, inset: ring }}
+      >
+        {person.photo ? (
+          <img src={person.photo} alt={person.name} className="size-full object-cover" loading="lazy" />
+        ) : (
+          <span className={cn('font-display font-bold tracking-wide text-accent-400', textClass)}>
+            {initials(person.name)}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Underline() {
+  return <span aria-hidden="true" className="mt-2 block h-1 w-12 rounded-full bg-highlight" />
+}
+
+function LeadCard() {
+  return (
+    <Reveal className="h-full">
+      <div className="flex h-full flex-col gap-6 rounded-3xl border border-line-strong bg-surface-raised p-6 sm:p-8">
+        <HexPortrait person={teamLead} ring={8} textClass="text-6xl" className="mx-auto w-full max-w-72" />
+        <div>
+          <h3 className="font-display text-2xl font-bold text-fg">{teamLead.name}</h3>
+          <p className="mt-1 font-display text-base font-semibold text-highlight">{teamLead.role}</p>
+          <Underline />
+          {teamLead.bio && (
+            <p className="mt-5 flex gap-3 leading-relaxed text-fg-muted">
+              <Quote className="mt-1 size-5 shrink-0 text-highlight" aria-hidden="true" />
+              <span>{teamLead.bio}</span>
+            </p>
+          )}
+        </div>
+      </div>
+    </Reveal>
+  )
+}
+
+function MemberCard({ person, index }) {
+  return (
+    <Reveal className="h-full" delay={index * 0.05}>
+      <div className="flex h-full items-center gap-4 rounded-3xl border border-line bg-surface-raised p-5">
+        <HexPortrait person={person} ring={4} className="w-24 shrink-0 sm:w-28" />
+        <div className="min-w-0">
+          <h3 className="font-display text-lg font-bold text-fg">{person.name}</h3>
+          <p className="font-display text-sm font-semibold text-highlight">{person.role}</p>
+          <Underline />
+          {person.bio && <p className="mt-3 text-sm leading-relaxed text-fg-muted">{person.bio}</p>}
+        </div>
+      </div>
+    </Reveal>
+  )
+}
+
+export default function TeamSection() {
+  return (
+    <Section aria-labelledby="team-title">
+      <SectionHeading
+        as="h2"
+        id="team-title"
+        eyebrow="Our team"
+        align="center"
+        title="Meet the team."
+        className="mx-auto"
+      />
+      <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-5">
+        <div className="lg:col-span-2">
+          <LeadCard />
+        </div>
+        <ul className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:col-span-3">
+          {teamMembers.map((person, index) => (
+            <li key={person.name}>
+              <MemberCard person={person} index={index} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Section>
+  )
+}

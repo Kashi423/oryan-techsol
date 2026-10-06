@@ -16,6 +16,7 @@ import {
   Workflow,
 } from 'lucide-react'
 import LogoMark from '@/components/brand/LogoMark'
+import TeamSection from '@/components/team/TeamSection'
 import Seo from '@/components/seo/Seo'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import { Badge, Button, Reveal, Section, SectionHeading, TypeCard } from '@/components/ui'
@@ -219,6 +220,7 @@ export default function About() {
       <HeroSection />
       <ApproachSection />
       <DifferentiatorsSection />
+      <TeamSection />
       <FinalCtaSection />
     </>
   )
