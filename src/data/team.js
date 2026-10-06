@@ -19,16 +19,10 @@ export const teamLead = {
 
 export const teamMembers = [
   {
-    name: 'Rai Asad Kharal',
-    role: 'Sales Head',
-    bio: 'Leads sales and client relationships, helping businesses find the right solution for their goals.',
-    photo: asad,
-  },
-  {
-    name: 'Mehmood Asghar',
-    role: 'React Native Developer',
-    bio: 'Builds our cross-platform mobile apps for iOS and Android.',
-    photo: mehmood,
+    name: 'Qasim Amjad Virk',
+    role: 'Director & Financial Partner',
+    bio: 'A key backer of Oryan Techsol, supporting the company’s growth and financial foundation.',
+    photo: qasim,
   },
   {
     name: 'Slaman Amjad Virk',
@@ -37,9 +31,15 @@ export const teamMembers = [
     photo: null, // placeholder avatar until a real photo is supplied
   },
   {
-    name: 'Qasim Amjad Virk',
-    role: 'Director & Financial Partner',
-    bio: 'A key backer of Oryan Techsol, supporting the company’s growth and financial foundation.',
-    photo: qasim,
+    name: 'Mehmood Asghar',
+    role: 'React Native Developer',
+    bio: 'Builds our cross-platform mobile apps for iOS and Android.',
+    photo: mehmood,
+  },
+  {
+    name: 'Rai Asad Kharal',
+    role: 'Sales Head',
+    bio: 'Leads sales and client relationships, helping businesses find the right solution for their goals.',
+    photo: asad,
   },
 ]
