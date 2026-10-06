@@ -1,4 +1,3 @@
-import { Quote } from 'lucide-react'
 import { Reveal, Section, SectionHeading } from '@/components/ui'
 import { teamLead, teamMembers } from '@/data/team'
 import { cn } from '@/lib/cn'
@@ -52,10 +51,7 @@ function LeadCard() {
           <p className="mt-1 font-display text-base font-semibold text-highlight">{teamLead.role}</p>
           <Underline />
           {teamLead.bio && (
-            <p className="mt-5 flex gap-3 leading-relaxed text-fg-muted">
-              <Quote className="mt-1 size-5 shrink-0 text-highlight" aria-hidden="true" />
-              <span>{teamLead.bio}</span>
-            </p>
+            <p className="mt-5 leading-relaxed text-fg-muted">{teamLead.bio}</p>
           )}
         </div>
       </div>
