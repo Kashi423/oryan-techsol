@@ -103,7 +103,7 @@ function ServicesMenu({ item }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-1/2 z-50 mt-3 w-[22rem] -translate-x-1/2 rounded-2xl border border-line bg-surface-raised p-2 shadow-card"
+            className="absolute top-full left-1/2 z-50 mt-4 w-[22rem] -translate-x-1/2 rounded-3xl border border-line-strong bg-surface p-2 shadow-card"
           >
             <ul>
               {item.items.map((sub) => {
@@ -113,9 +113,9 @@ function ServicesMenu({ item }) {
                     <Link
                       to={sub.to}
                       onClick={closeNow}
-                      className="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-surface-overlay"
+                      className="group flex items-center gap-3 rounded-full py-2 pr-4 pl-2 transition-colors hover:bg-surface-overlay"
                     >
-                      <span className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-highlight/10 text-highlight">
+                      <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-highlight/10 text-highlight transition-colors group-hover:bg-primary group-hover:text-primary-fg">
                         <Icon className="size-4" aria-hidden="true" />
                       </span>
                       <span>
@@ -194,8 +194,8 @@ function MobileNav({ onNavigate }) {
                           onClick={onNavigate}
                           className={({ isActive }) =>
                             cn(
-                              'block rounded-lg px-3 py-2.5 font-display text-sm font-semibold transition-colors hover:bg-surface-raised',
-                              isActive ? 'text-fg' : 'text-fg-muted',
+                              'block rounded-full px-4 py-2.5 font-display text-sm font-semibold transition-colors',
+                              isActive ? pillActive : 'text-fg-muted hover:bg-surface-raised',
                             )
                           }
                         >
