@@ -1,8 +1,8 @@
-import { useEffect, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useSyncExternalStore } from 'react'
 import { contactInfo, socialLinks } from '@/config/site'
 import snapshot from '@/data/cms-snapshot'
 import { caseStudies } from '@/data/caseStudies'
-import { enrichPosts, posts as bakedPosts } from '@/data/posts'
+import { allPosts as bakedPosts, enrichPosts, publishedOnly } from '@/data/posts'
 import { teamLead, teamMembers } from '@/data/team'
 import { api } from './api'
 import { setTexts } from './translate'
@@ -128,9 +128,13 @@ export async function syncPosts() {
   }
 }
 
-/** Articles for the blog pages (live admin version when newer than the build). */
+/**
+ * Articles for the blog pages: the live admin version when newer than the build, and only those
+ * whose publish date has arrived (scheduled articles stay hidden until their day).
+ */
 export function usePosts() {
-  const posts = useCms((s) => s.posts)
+  const all = useCms((s) => s.posts)
+  const posts = useMemo(() => publishedOnly(all), [all])
   const stale = useCms((s) => s.postsVersion !== s.version)
   useEffect(() => {
     if (stale) syncPosts()

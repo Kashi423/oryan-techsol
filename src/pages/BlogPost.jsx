@@ -34,7 +34,8 @@ export default function BlogPost() {
   const related = getRelatedPosts(post, posts)
   const path = `/blog/${post.slug}`
   const url = new URL(path, siteConfig.url).href
-  const image = post.image || `/og/${post.slug}.jpg`
+  const image = `/og/${post.slug}.jpg`
+  const cover = post.cover
 
   return (
     <>
@@ -61,7 +62,7 @@ export default function BlogPost() {
           '@type': 'BlogPosting',
           headline: post.title,
           description: post.description,
-          image: new URL(image, siteConfig.url).href,
+          image: new URL(cover?.src ?? image, siteConfig.url).href,
           datePublished: post.date,
           dateModified: post.updated,
           mainEntityOfPage: { '@type': 'WebPage', '@id': url },
@@ -93,6 +94,24 @@ export default function BlogPost() {
       <Section tone="default" spacing="default" className="pt-12 sm:pt-14 lg:pt-16">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_17rem] xl:grid-cols-[minmax(0,1fr)_19rem]">
           <article id="article-content" className="min-w-0 max-w-3xl">
+            {cover && (
+              <figure className="mb-8 overflow-hidden rounded-3xl border border-line">
+                <img
+                  src={cover.src}
+                  alt={cover.alt}
+                  width={cover.width}
+                  height={cover.height}
+                  fetchPriority="high"
+                  decoding="async"
+                  className="aspect-[16/9] w-full object-cover"
+                />
+                {cover.source && (
+                  <figcaption className="bg-surface-raised px-4 py-2 text-xs text-fg-subtle">
+                    Cover photo via {cover.source}
+                  </figcaption>
+                )}
+              </figure>
+            )}
             <p className="text-lg leading-relaxed font-medium text-fg sm:text-xl">
               <RichText text={post.intro} />
             </p>

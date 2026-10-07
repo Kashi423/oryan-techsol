@@ -375,7 +375,7 @@ final class Content
     {
         return array_map(
             [self::class, 'postPublic'],
-            Db::all("SELECT * FROM posts WHERE status = 'published' ORDER BY published_at DESC, id DESC"),
+            Db::all("SELECT * FROM posts WHERE status = 'published' AND (published_at IS NULL OR published_at <= ?) ORDER BY published_at DESC, id DESC", [gmdate('Y-m-d H:i:s')]),
         );
     }
 

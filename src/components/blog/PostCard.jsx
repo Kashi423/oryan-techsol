@@ -9,6 +9,22 @@ export default function PostCard({ post, featured = false }) {
   return (
     <Link to={`/blog/${post.slug}`} className="group block h-full rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight">
       <Card interactive padding="none" className="flex h-full flex-col overflow-hidden">
+        {post.cover ? (
+          <div className={`relative overflow-hidden bg-brand-950 ${featured ? 'aspect-[16/9] sm:aspect-[21/8]' : 'aspect-[16/9]'}`}>
+            <img
+              src={post.cover.src}
+              alt={post.cover.alt}
+              width={post.cover.width}
+              height={post.cover.height}
+              loading="lazy"
+              decoding="async"
+              className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <span className="absolute bottom-3 left-4 rounded-md bg-accent-400 px-2.5 py-1 font-display text-[11px] font-bold tracking-wide text-brand-950 uppercase">
+              {post.category}
+            </span>
+          </div>
+        ) : (
         <div
           aria-hidden="true"
           className="relative h-28 overflow-hidden bg-linear-to-br from-brand-950 via-brand-900 to-brand-700"
@@ -28,6 +44,7 @@ export default function PostCard({ post, featured = false }) {
             {post.category}
           </span>
         </div>
+        )}
         <div className="flex flex-1 flex-col p-6">
           <h2 className={featured ? 'text-xl normal-case sm:text-2xl' : 'text-lg normal-case'}>
             <span className="transition-colors group-hover:text-highlight">{post.title}</span>

@@ -212,6 +212,46 @@ async function writeSitemap() {
   await fs.writeFile(path.join(distDir, 'sitemap.xml'), xml)
   await fs.writeFile(path.join(rootDir, 'public', 'sitemap.xml'), xml)
   console.log(`Wrote sitemap.xml (${routes.length} URLs)`)
+  await writeFeed(origin)
+}
+
+// RSS 2.0 feed of the latest published articles (scheduled ones appear on their day's rebuild).
+async function writeFeed(origin) {
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  const items = [...posts]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 30)
+    .map((post) => {
+      const link = `${origin}/blog/${post.slug}`
+      const enclosure = post.cover?.src
+        ? `
+      <enclosure url="${origin}${post.cover.src}" type="image/${post.cover.src.endsWith('.webp') ? 'webp' : 'jpeg'}" length="0" />`
+        : ''
+      return `    <item>
+      <title>${esc(post.title)}</title>
+      <link>${link}</link>
+      <guid isPermaLink="true">${link}</guid>
+      <pubDate>${new Date(post.date + 'T09:00:00Z').toUTCString()}</pubDate>
+      <category>${esc(post.category)}</category>
+      <description>${esc(post.description)}</description>${enclosure}
+    </item>`
+    })
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<rss version="2.0">',
+    '  <channel>',
+    '    <title>Oryan Techsol Blog</title>',
+    `    <link>${origin}/blog</link>`,
+    '    <description>Practical guides on apps, websites, custom software, AI bots and automation.</description>',
+    '    <language>en-us</language>',
+    ...items,
+    '  </channel>',
+    '</rss>',
+    '',
+  ].join('\n')
+  await fs.writeFile(path.join(distDir, 'feed.xml'), xml)
+  await fs.writeFile(path.join(rootDir, 'public', 'feed.xml'), xml)
+  console.log(`Wrote feed.xml (${items.length} items)`)
 }
 
 main().catch((error) => {

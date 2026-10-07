@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Oryan Techsol Blog</title>
+    <link>https://oryantechsol.com/blog</link>
+    <description>Practical guides on apps, websites, custom software, AI bots and automation.</description>
+    <language>en-us</language>
+    <item>
+      <title>React Native vs. Flutter vs. Native: Which Should You Choose for Your App?</title>
+      <link>https://oryantechsol.com/blog/react-native-vs-flutter-vs-native</link>
+      <guid isPermaLink="true">https://oryantechsol.com/blog/react-native-vs-flutter-vs-native</guid>
+      <pubDate>Wed, 07 Oct 2026 09:00:00 GMT</pubDate>
+      <category>App Development</category>
+      <description>React Native, Flutter or native? Compare cost, performance, speed and maintenance, and use a clear guide to choose the right approach for your app.</description>
+      <enclosure url="https://oryantechsol.com/blog/covers/react-native-vs-flutter-vs-native.webp" type="image/webp" length="0" />
+    </item>
+    <item>
+      <title>How to Choose a Software Development Company: A 10-Point Checklist</title>
+      <link>https://oryantechsol.com/blog/how-to-choose-a-software-development-company</link>
+      <guid isPermaLink="true">https://oryantechsol.com/blog/how-to-choose-a-software-development-company</guid>
+      <pubDate>Wed, 07 Oct 2026 09:00:00 GMT</pubDate>
+      <category>Guides</category>
+      <description>Use this 10-point checklist to evaluate software development companies on experience, process, pricing, code ownership and red flags.</description>
+      <enclosure url="https://oryantechsol.com/blog/covers/how-to-choose-a-software-development-company.webp" type="image/webp" length="0" />
+    </item>
+    <item>
+      <title>AI Agents for Business, Explained: What They Are and Where They Actually Help</title>
+      <link>https://oryantechsol.com/blog/ai-agents-for-business-explained</link>
+      <guid isPermaLink="true">https://oryantechsol.com/blog/ai-agents-for-business-explained</guid>
+      <pubDate>Wed, 07 Oct 2026 09:00:00 GMT</pubDate>
+      <category>AI Bots</category>
+      <description>What is an AI agent? How agents differ from chatbots and automation, real business use cases, the risks to manage and how to start safely.</description>
+      <enclosure url="https://oryantechsol.com/blog/covers/ai-agents-for-business-explained.webp" type="image/webp" length="0" />
+    </item>
+    <item>
+      <title>How Much Does It Cost to Build a Mobile App in 2026? A Plain-English Guide</title>
+      <link>https://oryantechsol.com/blog/how-much-does-a-mobile-app-cost</link>
+      <guid isPermaLink="true">https://oryantechsol.com/blog/how-much-does-a-mobile-app-cost</guid>
+      <pubDate>Sun, 04 Oct 2026 09:00:00 GMT</pubDate>
+      <category>App Development</category>
+      <description>What a mobile app really costs in 2026: five cost drivers, budget ranges by complexity, hidden costs and ways to save without cutting quality.</description>
+      <enclosure url="https://oryantechsol.com/blog/covers/how-much-does-a-mobile-app-cost.webp" type="image/webp" length="0" />
+    </item>
+    <item>
+      <title>AI Chatbot vs. Live Chat: Which Is Right for Your Business in 2026?</title>
+      <link>https://oryantechsol.com/blog/ai-chatbot-vs-live-chat-for-small-business</link>
+      <guid isPermaLink="true">https://oryantechsol.com/blog/ai-chatbot-vs-live-chat-for-small-business</guid>
+      <pubDate>Sun, 04 Oct 2026 09:00:00 GMT</pubDate>
+      <category>AI Bots</category>
+      <description>AI chatbot or live chat for your business? Compare speed, cost and accuracy, see where each wins and how a hybrid setup gives you both.</description>
+      <enclosure url="https://oryantechsol.com/blog/covers/ai-chatbot-vs-live-chat-for-small-business.webp" type="image/webp" length="0" />
+    </item>
+    <item>
+      <title>Custom Software vs. Off-the-Shelf: How to Decide (With a Practical Framework)</title>
+      <link>https://oryantechsol.com/blog/custom-software-vs-off-the-shelf</link>
+      <guid isPermaLink="true">https://oryantechsol.com/blog/custom-software-vs-off-the-shelf</guid>
+      <pubDate>Sun, 04 Oct 2026 09:00:00 GMT</pubDate>
+      <category>Custom Software</category>
+      <description>Build or buy? Compare custom and off-the-shelf software on cost, fit and control, with a simple framework to choose the right path.</description>
+      <enclosure url="https://oryantechsol.com/blog/covers/custom-software-vs-off-the-shelf.webp" type="image/webp" length="0" />
+    </item>
+    <item>
+      <title>What Is API Integration? A Business Owner’s Guide to Connecting Your Systems</title>
+      <link>https://oryantechsol.com/blog/what-is-api-integration</link>
+      <guid isPermaLink="true">https://oryantechsol.com/blog/what-is-api-integration</guid>
+      <pubDate>Sun, 04 Oct 2026 09:00:00 GMT</pubDate>
+      <category>API Integrations</category>
+      <description>API integration explained in plain English: how it connects your CRM, payments and store, real examples, and what makes it reliable.</description>
+      <enclosure url="https://oryantechsol.com/blog/covers/what-is-api-integration.webp" type="image/webp" length="0" />
+    </item>
+    <item>
+      <title>Business Process Automation: Where to Start (and What to Automate First)</title>
+      <link>https://oryantechsol.com/blog/business-process-automation-where-to-start</link>
+      <guid isPermaLink="true">https://oryantechsol.com/blog/business-process-automation-where-to-start</guid>
+      <pubDate>Sun, 04 Oct 2026 09:00:00 GMT</pubDate>
+      <category>Automation</category>
+      <description>How to start with business process automation: pick the right workflows, score them, estimate the return and roll out step by step.</description>
+      <enclosure url="https://oryantechsol.com/blog/covers/business-process-automation-where-to-start.webp" type="image/webp" length="0" />
+    </item>
+  </channel>
+</rss>

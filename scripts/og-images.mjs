@@ -24,7 +24,7 @@ const markUrl = pathToFileURL(path.join(rootDir, 'src/assets/brand/logo-mark.web
 
 const escapeHtml = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-const template = ({ kicker, title, footer }) => `<!doctype html>
+const template = ({ kicker, title, footer, cover }) => `<!doctype html>
 <html><head><meta charset="utf-8" />
 <style>
   @font-face { font-family: 'SG'; src: url('${fontUrl}'); font-weight: 300 700; }
@@ -32,6 +32,8 @@ const template = ({ kicker, title, footer }) => `<!doctype html>
   * { box-sizing: border-box; margin: 0; }
   body { width: 1200px; height: 630px; overflow: hidden; position: relative; font-family: 'Inter', sans-serif; color: #fff;
     background: radial-gradient(900px 500px at 15% 0%, rgba(11,177,199,.28), transparent 60%), radial-gradient(700px 500px at 100% 100%, rgba(16,161,198,.25), transparent 60%), linear-gradient(135deg, #030f2d, #051c4e); }
+  .photo { position: absolute; inset: 0; background: url('${cover ?? ''}') center / cover no-repeat; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(3,15,45,.96) 0%, rgba(3,15,45,.88) 45%, rgba(3,15,45,.55) 100%); }
   .grid { position: absolute; inset: 0; opacity: .5;
     background-image: linear-gradient(to right, rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.07) 1px, transparent 1px);
     background-size: 56px 56px; -webkit-mask-image: radial-gradient(ellipse at 30% 40%, black 20%, transparent 75%); }
@@ -46,6 +48,7 @@ const template = ({ kicker, title, footer }) => `<!doctype html>
   .url { margin-left: auto; font: 600 22px 'SG'; color: #6cd0e7; }
 </style></head>
 <body>
+  ${cover ? '<div class="photo"></div><div class="shade"></div>' : ''}
   <div class="grid"></div>
   <svg class="hex" viewBox="0 0 100 100" fill="none">
     <polygon points="50,2 96,26 96,74 50,98 4,74 4,26" stroke="currentColor" stroke-opacity=".35" stroke-width=".5"/>
@@ -66,7 +69,14 @@ const template = ({ kicker, title, footer }) => `<!doctype html>
 
 const cards = [
   { file: 'default.jpg', kicker: 'Apps · Software · AI', title: 'Custom software, apps, websites and AI automation for growing companies.', footer: 'oryantechsol.com' },
-  ...posts.map((post) => ({ file: `${post.slug}.jpg`, kicker: post.category, title: post.title, footer: 'oryantechsol.com/blog' })),
+  ...posts.map((post) => ({
+    file: `${post.slug}.jpg`,
+    kicker: post.category,
+    title: post.title,
+    footer: 'oryantechsol.com/blog',
+    // Only self-hosted covers shipped in /public can be read at build time.
+    cover: post.cover?.src?.startsWith('/blog/') ? pathToFileURL(path.join(rootDir, 'public', post.cover.src)).href : null,
+  })),
 ]
 
 await fs.mkdir(outDir, { recursive: true })
