@@ -1,7 +1,8 @@
-import { FileText, Mail } from 'lucide-react'
+import { CalendarDays, FileText, Globe, Mail } from 'lucide-react'
+import PageHero from '@/components/layout/PageHero'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import Seo from '@/components/seo/Seo'
-import { Badge, Card, Reveal, Section, SectionHeading } from '@/components/ui'
+import { Card, Reveal, Section } from '@/components/ui'
 import { contactInfo, siteConfig } from '@/config/site'
 
 const pageDescription = 'The terms that apply to using the Oryan Techsol website.'
@@ -39,22 +40,20 @@ function TermsSection({ id, title, children }) {
 
 function HeroSection() {
   return (
-    <Section spacing="hero">
-      <div className="mx-auto max-w-2xl text-center">
-        <Reveal>
-          <Badge className="mx-auto">
-            <FileText className="size-3.5 text-highlight" aria-hidden="true" />
-            Legal
-          </Badge>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <SectionHeading as="h1" title="Terms & Conditions" align="center" className="mx-auto mt-6" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <p className="mt-4 text-sm text-fg-subtle">Last updated: {lastUpdated}</p>
-        </Reveal>
-      </div>
-    </Section>
+    <PageHero
+      align="center"
+      eyebrow="Legal"
+      icon={FileText}
+      title="Terms &"
+      accent="Conditions"
+      description={pageDescription}
+      crumbs={[{ name: 'Terms & Conditions' }]}
+      meta={[
+        { icon: CalendarDays, label: `Last updated: ${lastUpdated}` },
+        { icon: Globe, label: 'Applies to oryantechsol.com' },
+        { icon: Mail, label: contactInfo.email },
+      ]}
+    />
   )
 }
 

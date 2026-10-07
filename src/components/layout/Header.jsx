@@ -4,7 +4,13 @@ import { Bot, ChevronDown, Code2, Layers, LayoutGrid, Menu, Plug2, ShoppingCart,
 import { Link, NavLink, useLocation } from 'react-router'
 import Logo from '@/components/brand/Logo'
 import { Button, Container } from '@/components/ui'
-import { navItems, primaryCta, siteConfig, transparentHeaderRoutes } from '@/config/site'
+import {
+  navItems,
+  primaryCta,
+  siteConfig,
+  transparentHeaderPrefixes,
+  transparentHeaderRoutes,
+} from '@/config/site'
 import { cn } from '@/lib/cn'
 
 const serviceIcons = {
@@ -229,7 +235,9 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const open = openAt === pathname
 
-  const canOverlay = transparentHeaderRoutes.includes(pathname)
+  const canOverlay =
+    transparentHeaderRoutes.includes(pathname) ||
+    transparentHeaderPrefixes.some((prefix) => pathname.startsWith(prefix))
   const overlay = canOverlay && !scrolled && !open
 
   useEffect(() => {

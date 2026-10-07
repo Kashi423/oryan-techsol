@@ -19,6 +19,7 @@ import puppeteer from 'puppeteer'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
+import { posts } from '../src/data/posts.js'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url)) + '/..'
 const distDir = path.join(rootDir, 'dist')
@@ -40,15 +41,16 @@ const routes = [
   '/about',
   '/faq',
   '/blog',
-  '/blog/how-much-does-a-mobile-app-cost',
-  '/blog/ai-chatbot-vs-live-chat-for-small-business',
-  '/blog/custom-software-vs-off-the-shelf',
-  '/blog/what-is-api-integration',
-  '/blog/business-process-automation-where-to-start',
+  ...posts.map((post) => `/blog/${post.slug}`),
   '/contact',
   '/privacy',
   '/terms',
 ]
+
+// The homepage is rendered LAST: it overwrites dist/index.html, which vite preview serves as the
+// SPA shell for every route. Rendering it first would make every later route start from the
+// homepage's finished tags (duplicate og:*/robots/twitter:* in every page's head).
+const renderOrder = [...routes.filter((route) => route !== '/'), '/']
 
 async function main() {
   // The pristine build's own static <head> defaults (before any route overwrites dist/index.html)
@@ -83,7 +85,7 @@ async function main() {
   // Chrome's setuid sandbox) — harmless locally, necessary there.
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
 
-  for (const route of routes) {
+  for (const route of renderOrder) {
     // A fresh page per route rather than reusing one tab across all 16 — framer-motion's
     // continuous animations and scroll listeners accumulate across navigations in a single
     // long-lived tab and previously crashed Chrome mid-run ("Navigating frame was detached").
@@ -149,13 +151,29 @@ async function main() {
       route,
     )
 
-    const counts = await page.evaluate(() => ({
-      title: document.querySelectorAll('title').length,
-      canonical: document.querySelectorAll('link[rel="canonical"]').length,
-      ogUrl: document.querySelectorAll('meta[property="og:url"]').length,
-    }))
-    if (counts.title !== 1 || counts.canonical !== 1 || counts.ogUrl !== 1) {
-      throw new Error(`${route}: head tags still duplicated after dedup (${JSON.stringify(counts)})`)
+    const counts = await page.evaluate(() => {
+      // Every one of these must appear exactly once in the final head.
+      const selectors = {
+        title: 'title',
+        description: 'meta[name="description"]',
+        canonical: 'link[rel="canonical"]',
+        robots: 'meta[name="robots"]',
+        ogUrl: 'meta[property="og:url"]',
+        ogTitle: 'meta[property="og:title"]',
+        ogType: 'meta[property="og:type"]',
+        ogImage: 'meta[property="og:image"]',
+        ogSiteName: 'meta[property="og:site_name"]',
+        ogLocale: 'meta[property="og:locale"]',
+        twitterCard: 'meta[name="twitter:card"]',
+        twitterImage: 'meta[name="twitter:image"]',
+      }
+      return Object.fromEntries(Object.entries(selectors).map(([key, selector]) => [key, document.querySelectorAll(selector).length]))
+    })
+    // robots / og:image / twitter:image are only emitted by <Seo />, so they may legitimately be 0
+    // on a page that opts out — but never more than 1.
+    const bad = Object.entries(counts).filter(([key, n]) => n > 1 || (['title', 'canonical', 'ogUrl'].includes(key) && n !== 1))
+    if (bad.length > 0) {
+      throw new Error(`${route}: head tags duplicated or missing after dedup (${JSON.stringify(Object.fromEntries(bad))})`)
     }
 
     const html = (await page.content()).replaceAll(previewOrigin, '')
@@ -169,6 +187,31 @@ async function main() {
 
   await browser.close()
   await server.close()
+  await writeSitemap()
+}
+
+// Generated sitemap: every prerendered route, with a real <lastmod> for blog posts (their
+// "updated" date). Written to dist/ for production and to public/ so the repo copy never
+// drifts from what ships.
+async function writeSitemap() {
+  const origin = (process.env.VITE_SITE_URL || 'https://oryantechsol.com').replace(/\/$/, '')
+  const lastmod = new Map(posts.map((post) => [`/blog/${post.slug}`, post.updated ?? post.date]))
+  const entries = routes.map((route) => {
+    const loc = origin + (route === '/' ? '/' : route)
+    const mod = lastmod.get(route)
+    const modTag = mod ? `\n    <lastmod>${mod}</lastmod>` : ''
+    return `  <url>\n    <loc>${loc}</loc>${modTag}\n  </url>`
+  })
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...entries,
+    '</urlset>',
+    '',
+  ].join('\n')
+  await fs.writeFile(path.join(distDir, 'sitemap.xml'), xml)
+  await fs.writeFile(path.join(rootDir, 'public', 'sitemap.xml'), xml)
+  console.log(`Wrote sitemap.xml (${routes.length} URLs)`)
 }
 
 main().catch((error) => {

@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router'
-import { transparentHeaderRoutes } from '@/config/site'
+import { transparentHeaderPrefixes, transparentHeaderRoutes } from '@/config/site'
 import { cn } from '@/lib/cn'
 import ConsultationWidget from './ConsultationWidget'
 import Footer from './Footer'
@@ -15,7 +15,9 @@ import ScrollToTop from './ScrollToTop'
 // which intentionally start at y=0. Keep this h-16/lg:h-20 in sync with Header's own.
 export default function Layout() {
   const { pathname } = useLocation()
-  const overlaysHero = transparentHeaderRoutes.includes(pathname)
+  const overlaysHero =
+    transparentHeaderRoutes.includes(pathname) ||
+    transparentHeaderPrefixes.some((prefix) => pathname.startsWith(prefix))
 
   return (
     <div className="flex min-h-dvh flex-col">

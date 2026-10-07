@@ -1,7 +1,8 @@
-import { Mail, Shield } from 'lucide-react'
+import { CalendarDays, Globe, Mail, Shield } from 'lucide-react'
+import PageHero from '@/components/layout/PageHero'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import Seo from '@/components/seo/Seo'
-import { Badge, Card, Reveal, Section, SectionHeading } from '@/components/ui'
+import { Card, Reveal, Section } from '@/components/ui'
 import { contactInfo, siteConfig } from '@/config/site'
 
 const pageDescription = 'How Oryan Techsol collects, uses and protects information from visitors to this website.'
@@ -42,22 +43,20 @@ function PolicySection({ id, title, children }) {
 
 function HeroSection() {
   return (
-    <Section spacing="hero">
-      <div className="mx-auto max-w-2xl text-center">
-        <Reveal>
-          <Badge className="mx-auto">
-            <Shield className="size-3.5 text-highlight" aria-hidden="true" />
-            Legal
-          </Badge>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <SectionHeading as="h1" title="Privacy Policy" align="center" className="mx-auto mt-6" />
-        </Reveal>
-        <Reveal delay={0.1}>
-          <p className="mt-4 text-sm text-fg-subtle">Last updated: {lastUpdated}</p>
-        </Reveal>
-      </div>
-    </Section>
+    <PageHero
+      align="center"
+      eyebrow="Legal"
+      icon={Shield}
+      title="Privacy"
+      accent="Policy"
+      description={pageDescription}
+      crumbs={[{ name: 'Privacy Policy' }]}
+      meta={[
+        { icon: CalendarDays, label: `Last updated: ${lastUpdated}` },
+        { icon: Globe, label: 'Applies to oryantechsol.com' },
+        { icon: Mail, label: contactInfo.email },
+      ]}
+    />
   )
 }
 

@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Manually maintained — add a <url> entry here when a new page ships. Placeholder-marked
-  portfolio case studies (src/data/caseStudies.js) are deliberately left out: they're
-  marked noindex on the page itself (see CaseStudyDetail.jsx) until real project content
-  replaces them, so they shouldn't be offered to crawlers via the sitemap either. A case
-  study with `placeholder: false` (a real, indexable project) belongs here — add its
-  /portfolio/<slug> URL when one ships.
--->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://oryantechsol.com/</loc>
@@ -52,20 +44,43 @@
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/how-much-does-a-mobile-app-cost</loc>
+    <lastmod>2026-10-07</lastmod>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/react-native-vs-flutter-vs-native</loc>
+    <lastmod>2026-10-07</lastmod>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/how-to-choose-a-software-development-company</loc>
+    <lastmod>2026-10-07</lastmod>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/ai-agents-for-business-explained</loc>
+    <lastmod>2026-10-07</lastmod>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/ai-chatbot-vs-live-chat-for-small-business</loc>
+    <lastmod>2026-10-07</lastmod>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/custom-software-vs-off-the-shelf</loc>
+    <lastmod>2026-10-07</lastmod>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/what-is-api-integration</loc>
+    <lastmod>2026-10-07</lastmod>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/business-process-automation-where-to-start</loc>
+    <lastmod>2026-10-07</lastmod>
   </url>
   <url>
     <loc>https://oryantechsol.com/contact</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/privacy</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/terms</loc>
   </url>
 </urlset>

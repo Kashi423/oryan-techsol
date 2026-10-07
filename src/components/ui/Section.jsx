@@ -8,6 +8,8 @@ const spacings = {
   // regardless of how much copy it holds — a short hero (Contact, Privacy) centers within the
   // same floor as a content-heavy one (Home's two-column layout), rather than looking squat.
   hero: 'flex flex-col justify-center min-h-[34rem] sm:min-h-[38rem] lg:min-h-[44rem] pt-20 pb-20 sm:pt-28 lg:pt-36 lg:pb-32',
+  // Compact hero for content pages (blog, legal, FAQ) — same dark treatment, less height.
+  page: 'pt-28 pb-14 sm:pt-32 sm:pb-16 lg:pt-40 lg:pb-20',
 }
 
 const tones = {

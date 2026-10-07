@@ -1,8 +1,10 @@
+import { Clock, HelpCircle, Layers, MessagesSquare } from 'lucide-react'
 import { Link } from 'react-router'
+import PageHero from '@/components/layout/PageHero'
 import Seo from '@/components/seo/Seo'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import FaqSchema from '@/components/seo/FaqSchema'
-import { Accordion, Badge, Button, Reveal, Section, SectionHeading } from '@/components/ui'
+import { Accordion, Button, Reveal, Section, SectionHeading } from '@/components/ui'
 import { primaryCta } from '@/config/site'
 
 // Same content already written on each service page (single source there would need a
@@ -97,35 +99,32 @@ const groups = [
 // exactly what's visibly rendered above, in one FAQPage block for the whole page.
 const allFaqs = groups.flatMap((group) => group.faqs)
 
-function HeroBackground() {
-  return (
-    <>
-      <div className="bg-grid absolute inset-0" />
-      <div className="bg-glow absolute top-0 left-1/2 h-[36rem] w-[60rem] max-w-none -translate-x-1/2 -translate-y-1/2" />
-    </>
-  )
-}
-
 function HeroSection() {
   return (
-    <Section tone="inverse" spacing="hero" background={<HeroBackground />} aria-labelledby="hero-title">
-      <div className="mx-auto max-w-2xl text-center">
-        <Reveal>
-          <Badge className="mx-auto">FAQ</Badge>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl">
-            Common <span className="text-gradient">questions</span>.
-          </h1>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">
-            General questions below, plus service-specific ones grouped underneath. Don't
-            see yours? Ask us directly.
-          </p>
-        </Reveal>
-      </div>
-    </Section>
+    <PageHero
+      align="center"
+      eyebrow="FAQ"
+      icon={HelpCircle}
+      title="Common"
+      accent="questions."
+      description="Straight answers on how we work, what projects cost, timelines, AI bots, websites, software and automation. Don’t see yours? Ask us directly."
+      crumbs={[{ name: 'FAQ' }]}
+      meta={[
+        { icon: MessagesSquare, label: `${allFaqs.length} answers` },
+        { icon: Layers, label: `${groups.length} topics` },
+        { icon: Clock, label: 'We reply to every message' },
+      ]}
+      actions={
+        <>
+          <Button to={primaryCta.to} size="lg">
+            {primaryCta.label}
+          </Button>
+          <Button href="#faq-groups" variant="secondary" size="lg">
+            Browse the answers
+          </Button>
+        </>
+      }
+    />
   )
 }
 
@@ -133,7 +132,7 @@ function FaqGroups() {
   return (
     <>
       {groups.map((group, index) => (
-        <Section key={group.title} tone={index % 2 === 0 ? 'default' : 'muted'} aria-labelledby={`${group.title}-title`}>
+        <Section key={group.title} id={index === 0 ? 'faq-groups' : undefined} tone={index % 2 === 0 ? 'default' : 'muted'} aria-labelledby={`${group.title}-title`}>
           <div className="mx-auto max-w-2xl">
             <SectionHeading as="h2" id={`${group.title}-title`} title={group.title} className="mx-auto" align="center" />
             <Reveal delay={0.05}>
