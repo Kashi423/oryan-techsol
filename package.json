@@ -8,6 +8,8 @@
     "build": "vite build && node scripts/prerender.mjs",
     "prerender": "node scripts/prerender.mjs",
     "og": "node scripts/og-images.mjs",
+    "seed": "node scripts/export-seed.mjs",
+    "cms:fetch": "node scripts/fetch-cms.mjs",
     "preview": "vite preview",
     "lint": "oxlint"
   },

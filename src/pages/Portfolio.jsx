@@ -5,7 +5,8 @@ import Seo from '@/components/seo/Seo'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import { Badge, Button, CaseStudyCard, Reveal, Section } from '@/components/ui'
 import { primaryCta } from '@/config/site'
-import { caseStudies, categories } from '@/data/caseStudies'
+import { categories } from '@/data/caseStudies'
+import { useCaseStudies } from '@/lib/cms/store'
 import { cn } from '@/lib/cn'
 
 function HeroBackground() {
@@ -23,6 +24,7 @@ const categoryIcons = { ai: Bot, web: Code2, software: Layers, automation: Workf
 // including their "Sample" flag — so the hero never shows a project the grid below doesn't.
 // Same family as the browser, phone, chat and dashboard mockups on the service pages.
 function ProjectLibraryMockup() {
+  const caseStudies = useCaseStudies()
   const featured = caseStudies.slice(0, 3)
   return (
     <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface-raised p-5 shadow-card backdrop-blur-xl">
@@ -128,6 +130,7 @@ function HeroSection() {
 // Same filterable-grid pattern as the homepage preview, over the same data source, so a
 // project is written once (src/data/caseStudies.js) and appears in both places identically.
 function GridSection() {
+  const caseStudies = useCaseStudies()
   const [activeCategory, setActiveCategory] = useState('all')
   const visible =
     activeCategory === 'all' ? caseStudies : caseStudies.filter((project) => project.category === activeCategory)

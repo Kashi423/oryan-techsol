@@ -1,5 +1,5 @@
 import { Reveal, Section, SectionHeading } from '@/components/ui'
-import { teamLead, teamMembers } from '@/data/team'
+import { useTeam } from '@/lib/cms/store'
 import { cn } from '@/lib/cn'
 
 const hexagon = 'polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)'
@@ -34,7 +34,7 @@ function Underline() {
   return <span aria-hidden="true" className="mt-2 block h-1 w-12 rounded-full bg-highlight" />
 }
 
-function LeadCard() {
+function LeadCard({ teamLead }) {
   return (
     <Reveal className="h-full">
       <div className="flex h-full flex-col gap-6 rounded-3xl border border-line-strong bg-surface-raised p-6 sm:p-8">
@@ -69,6 +69,7 @@ function MemberCard({ person, index }) {
 }
 
 export default function TeamSection() {
+  const { lead: teamLead, members: teamMembers } = useTeam()
   return (
     <Section aria-labelledby="team-title">
       <SectionHeading
@@ -81,7 +82,7 @@ export default function TeamSection() {
       />
       <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <LeadCard />
+          <LeadCard teamLead={teamLead} />
         </div>
         <ul className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:col-span-3">
           {teamMembers.map((person, index) => (

@@ -40,7 +40,7 @@ import {
   TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
-import { caseStudies } from '@/data/caseStudies'
+import { useCaseStudies } from '@/lib/cms/store'
 import { cn } from '@/lib/cn'
 
 const pageDescription =
@@ -738,6 +738,7 @@ function SecuritySection() {
 }
 
 function PortfolioSection() {
+  const caseStudies = useCaseStudies()
   const webProjects = caseStudies.filter((project) => project.category === 'web')
   return (
     <Section aria-labelledby="portfolio-title">

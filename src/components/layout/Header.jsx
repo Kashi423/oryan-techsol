@@ -12,6 +12,7 @@ import {
   transparentHeaderRoutes,
 } from '@/config/site'
 import { cn } from '@/lib/cn'
+import { useNavExtras } from '@/lib/cms/store'
 
 const serviceIcons = {
   smartphone: Smartphone,
@@ -140,7 +141,35 @@ function ServicesMenu({ item }) {
   )
 }
 
-function DesktopNav() {
+// Menu items added in the admin (Admin → Menu): same link/anchor split as the built-in items.
+function ExtraLink({ item, className, onClick, children }) {
+  const external = !item.url.startsWith('/')
+  if (external) {
+    return (
+      <a
+        href={item.url}
+        target={item.newTab ? '_blank' : undefined}
+        rel={item.newTab ? 'noopener noreferrer' : undefined}
+        className={className}
+        onClick={onClick}
+      >
+        {children}
+      </a>
+    )
+  }
+  return (
+    <NavLink
+      to={item.url}
+      target={item.newTab ? '_blank' : undefined}
+      className={typeof className === 'function' ? className : () => className}
+      onClick={onClick}
+    >
+      {children}
+    </NavLink>
+  )
+}
+
+function DesktopNav({ extras }) {
   return (
     <nav
       aria-label="Primary"
@@ -155,13 +184,20 @@ function DesktopNav() {
           </NavLink>
         ),
       )}
+      {extras
+        .filter((item) => item.style !== 'button')
+        .map((item, index) => (
+          <ExtraLink key={`${item.url}-${index}`} item={item} className={desktopLink}>
+            {item.label}
+          </ExtraLink>
+        ))}
     </nav>
   )
 }
 
 // Mobile panel: flat links plus an accordion for Services so all four sub-pages stay
 // reachable without a second-level nested menu on a small screen.
-function MobileNav({ onNavigate }) {
+function MobileNav({ onNavigate, extras }) {
   const [servicesOpen, setServicesOpen] = useState(false)
 
   return (
@@ -220,6 +256,11 @@ function MobileNav({ onNavigate }) {
           </NavLink>
         ),
       )}
+      {extras.map((item, index) => (
+        <ExtraLink key={`${item.url}-${index}`} item={item} className={mobileLink} onClick={onNavigate}>
+          {item.label}
+        </ExtraLink>
+      ))}
       <Button to={primaryCta.to} size="lg" className="mt-3" onClick={onNavigate}>
         {primaryCta.label}
       </Button>
@@ -229,6 +270,7 @@ function MobileNav({ onNavigate }) {
 
 export default function Header() {
   const { pathname } = useLocation()
+  const extras = useNavExtras()
   // The mobile menu is "open" only for the route it was opened on, so navigating
   // (links, back/forward) closes it without needing an effect.
   const [openAt, setOpenAt] = useState(null)
@@ -277,15 +319,28 @@ export default function Header() {
           <Logo />
         </Link>
 
-        <DesktopNav />
+        <DesktopNav extras={extras} />
 
         <div className="flex items-center gap-2">
           <div className="hidden lg:block">
             {/* Tone tokens alone give the right contrast: navy button on the light header,
                 bright cyan on the transparent/inverse one — no variant switch needed. */}
-            <Button to={primaryCta.to} pill size="lg">
-              {primaryCta.label}
-            </Button>
+            <div className="flex items-center gap-2">
+              {extras
+                .filter((item) => item.style === 'button')
+                .map((item, index) => (
+                  <ExtraLink
+                    key={`${item.url}-${index}`}
+                    item={item}
+                    className="inline-flex h-12 items-center justify-center rounded-full border border-line-strong bg-surface-raised px-6 font-display text-base font-bold whitespace-nowrap text-fg transition-colors hover:bg-surface-overlay"
+                  >
+                    {item.label}
+                  </ExtraLink>
+                ))}
+              <Button to={primaryCta.to} pill size="lg">
+                {primaryCta.label}
+              </Button>
+            </div>
           </div>
           <button
             type="button"
@@ -312,7 +367,7 @@ export default function Header() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
           >
-            <MobileNav onNavigate={() => setOpenAt(null)} />
+            <MobileNav onNavigate={() => setOpenAt(null)} extras={extras} />
           </m.nav>
         )}
       </AnimatePresence>

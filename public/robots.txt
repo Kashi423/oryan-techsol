@@ -3,5 +3,8 @@ Allow: /
 # Dev-only component reference; excluded from the production build anyway (see App.jsx),
 # disallowed here too as defense in depth.
 Disallow: /styleguide
+# Private admin area and backend API (not content for search engines).
+Disallow: /admin
+Disallow: /api/
 
 Sitemap: https://oryantechsol.com/sitemap.xml

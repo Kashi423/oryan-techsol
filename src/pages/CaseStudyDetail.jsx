@@ -3,7 +3,8 @@ import { useParams } from 'react-router'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import Seo from '@/components/seo/Seo'
 import { Button, Card, Reveal, Section, SectionHeading, Tag } from '@/components/ui'
-import { categories, getCaseStudyBySlug } from '@/data/caseStudies'
+import { categories } from '@/data/caseStudies'
+import { useCaseStudies } from '@/lib/cms/store'
 import { primaryCta } from '@/config/site'
 import NotFound from './NotFound'
 
@@ -20,7 +21,8 @@ function Label({ children }) {
 // the homepage preview grid reads), so a project only has to be written once.
 export default function CaseStudyDetail() {
   const { slug } = useParams()
-  const project = getCaseStudyBySlug(slug)
+  const caseStudies = useCaseStudies()
+  const project = caseStudies.find((item) => item.slug === slug)
 
   if (!project) return <NotFound />
 

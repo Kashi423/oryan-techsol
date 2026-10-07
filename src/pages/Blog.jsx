@@ -7,13 +7,13 @@ import Seo from '@/components/seo/Seo'
 import PostCard from '@/components/blog/PostCard'
 import { Button, Reveal, Section } from '@/components/ui'
 import { primaryCta, siteConfig } from '@/config/site'
-import { posts } from '@/data/posts'
+import { usePosts } from '@/lib/cms/store'
 import { cn } from '@/lib/cn'
 
-const categories = ['All', ...new Set(posts.map((post) => post.category))]
-const totalMinutes = posts.reduce((sum, post) => sum + post.readMinutes, 0)
-
 export default function Blog() {
+  const posts = usePosts()
+  const categories = ['All', ...new Set(posts.map((post) => post.category).filter(Boolean))]
+  const totalMinutes = posts.reduce((sum, post) => sum + post.readMinutes, 0)
   const [category, setCategory] = useState('All')
   const visible = category === 'All' ? posts : posts.filter((post) => post.category === category)
   const [featured, ...rest] = visible

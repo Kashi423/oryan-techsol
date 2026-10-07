@@ -14,6 +14,7 @@ import Seo from '@/components/seo/Seo'
 import { Accordion, Button, Reveal, Section } from '@/components/ui'
 import { primaryCta, siteConfig } from '@/config/site'
 import { getPostBySlug, getRelatedPosts } from '@/data/posts'
+import { usePosts } from '@/lib/cms/store'
 import { tocFromBlocks } from '@/lib/article'
 import { formatDate } from '@/lib/format'
 import NotFound from './NotFound'
@@ -24,15 +25,16 @@ import NotFound from './NotFound'
 // the matching service page, and a share row.
 export default function BlogPost() {
   const { slug } = useParams()
-  const post = getPostBySlug(slug)
+  const posts = usePosts()
+  const post = getPostBySlug(slug, posts)
 
   if (!post) return <NotFound />
 
   const toc = tocFromBlocks(post.blocks)
-  const related = getRelatedPosts(post)
+  const related = getRelatedPosts(post, posts)
   const path = `/blog/${post.slug}`
   const url = new URL(path, siteConfig.url).href
-  const image = `/og/${post.slug}.jpg`
+  const image = post.image || `/og/${post.slug}.jpg`
 
   return (
     <>

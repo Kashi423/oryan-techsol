@@ -42,7 +42,7 @@ import {
   TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
-import { caseStudies } from '@/data/caseStudies'
+import { useCaseStudies } from '@/lib/cms/store'
 
 const pageDescription =
   'Custom CRMs, dashboards, portals and internal tools that replace spreadsheets, disconnected apps and repetitive manual work.'
@@ -337,6 +337,7 @@ function FlowSection() {
 }
 
 function PortfolioSection() {
+  const caseStudies = useCaseStudies()
   const softwareProjects = caseStudies.filter((project) => project.category === 'software')
   return (
     <Section tone="muted" aria-labelledby="portfolio-title">

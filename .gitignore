@@ -18,3 +18,10 @@ npm-debug.log*
 .idea
 .DS_Store
 Thumbs.db
+
+# CMS backend — server-only files (never commit or deploy these)
+public/api/config.php
+public/api/storage/*
+!public/api/storage/.htaccess
+public/uploads/
+src/data/cms-snapshot.local.json

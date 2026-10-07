@@ -15,6 +15,9 @@ export default function RichText({ text }) {
       const [, label, href] = link
       const className =
         'font-semibold text-highlight underline decoration-highlight/40 underline-offset-2 transition-colors hover:decoration-highlight'
+      // Article copy can come from the admin: only ever render internal paths or http(s)/mailto/tel
+      // links, never javascript:, data: and the like.
+      if (!/^(\/(?!\/)|https?:\/\/|mailto:|tel:|#)/i.test(href)) return label
       return href.startsWith('/') ? (
         <Link key={index} to={href} className={className}>
           {label}

@@ -36,7 +36,7 @@ import {
   TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
-import { caseStudies } from '@/data/caseStudies'
+import { useCaseStudies } from '@/lib/cms/store'
 
 const pageDescription =
   'Automation for lead capture, customer support, CRM updates, document processing and more — designed around your existing workflow.'
@@ -338,6 +338,7 @@ function TailoredSection() {
 }
 
 function PortfolioSection() {
+  const caseStudies = useCaseStudies()
   const automationProjects = caseStudies.filter((project) => project.category === 'automation')
   return (
     <Section tone="muted" aria-labelledby="portfolio-title">

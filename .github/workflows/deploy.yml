@@ -26,6 +26,18 @@ jobs:
       - name: Install Chrome for Puppeteer
         run: npx puppeteer browsers install chrome
 
+      # Bake whatever is published in the admin (blog, team, portfolio, text edits, menu) into the
+      # build so the prerendered HTML — what Google and social bots read — is up to date. Fails
+      # soft: if the backend isn't installed or is unreachable, the committed content is used.
+      - name: Fetch published content from the admin
+        run: node scripts/fetch-cms.mjs
+        env:
+          CMS_API_URL: https://oryantechsol.com/api
+
+      # Social-share images for every article (including ones created in the admin).
+      - name: Generate social images
+        run: node scripts/og-images.mjs
+
       - name: Build
         run: npm run build
         env:

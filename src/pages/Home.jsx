@@ -70,7 +70,8 @@ import {
   TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
-import { caseStudies, categories } from '@/data/caseStudies'
+import { categories } from '@/data/caseStudies'
+import { useCaseStudies } from '@/lib/cms/store'
 import { testimonials } from '@/data/testimonials'
 import { cn } from '@/lib/cn'
 
@@ -1034,6 +1035,7 @@ function IndustriesSection() {
 // later without duplicating content. Every entry today is a clearly labelled placeholder —
 // see that file's header comment for how to replace one with a real project.
 function PortfolioSection() {
+  const caseStudies = useCaseStudies()
   const [activeCategory, setActiveCategory] = useState('all')
   const visible =
     activeCategory === 'all' ? caseStudies : caseStudies.filter((project) => project.category === activeCategory)

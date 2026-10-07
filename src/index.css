@@ -288,3 +288,21 @@
     }
   }
 }
+
+/* On-site text editing (admin only): while body.cms-editing is set, every text piece is wrapped in
+   a .cms-editable span by the custom JSX runtime — outline them so they read as clickable. */
+body.cms-editing .cms-editable {
+  outline: 1px dashed color-mix(in oklab, var(--color-accent-400) 75%, transparent);
+  outline-offset: 2px;
+  border-radius: 3px;
+  cursor: text;
+}
+body.cms-editing .cms-editable:hover {
+  background: color-mix(in oklab, var(--color-accent-400) 20%, transparent);
+}
+/* The editing bar itself is never editable. */
+body.cms-editing [data-cms-bar] .cms-editable {
+  outline: none;
+  background: none;
+  cursor: inherit;
+}

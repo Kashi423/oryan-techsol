@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, m } from 'framer-motion'
 import { MessageCircle, Send, Sparkles, X } from 'lucide-react'
 import { Link } from 'react-router'
+import { api, backendAvailable } from '@/lib/cms/api'
 import { cn } from '@/lib/cn'
 
 // Site-wide floating AI consultation chat — mounted once in Layout so it's reachable from
@@ -14,6 +15,29 @@ import { cn } from '@/lib/cn'
 // timelines, or client results) is entirely defined by the system prompt in that Worker, not
 // here. This widget only renders the conversation and forwards messages.
 const CHAT_ENDPOINT = 'https://oryan-techsol-chat.oryan-techsol-chat-worker.workers.dev'
+
+// Conversations are saved to the admin backend (Admin → Chats) so the team can review them and
+// follow up — the widget's header promises a person reviews every chat. Logging is best-effort:
+// if the backend is unreachable the chat itself keeps working.
+function chatSessionId() {
+  try {
+    let id = window.sessionStorage.getItem('oryan_chat_sid')
+    if (!id) {
+      id = (window.crypto?.randomUUID?.() ?? `${Date.now()}${Math.random().toString(16).slice(2)}`).replace(/-/g, '')
+      window.sessionStorage.setItem('oryan_chat_sid', id)
+    }
+    return id
+  } catch {
+    return `anon${Date.now()}`
+  }
+}
+
+function logChat(messages) {
+  api('/public/chat', {
+    method: 'POST',
+    body: { sessionId: chatSessionId(), page: window.location.pathname, messages },
+  }).catch(() => {})
+}
 
 const greeting = {
   role: 'assistant',
@@ -56,6 +80,8 @@ export default function ConsultationWidget() {
   const [inputValue, setInputValue] = useState('')
   const [pending, setPending] = useState(false)
   const [error, setError] = useState(false)
+  // Only claim chats are saved when the logging backend is actually installed and answering.
+  const [saving, setSaving] = useState(false)
   const scrollRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -67,7 +93,9 @@ export default function ConsultationWidget() {
   }, [open])
 
   useEffect(() => {
-    if (open) inputRef.current?.focus()
+    if (!open) return
+    inputRef.current?.focus()
+    backendAvailable().then(setSaving)
   }, [open])
 
   useEffect(() => {
@@ -94,8 +122,10 @@ export default function ConsultationWidget() {
       if (!response.ok) throw new Error('Request failed')
       const data = await response.json()
       setMessages((current) => [...current, { role: 'assistant', content: data.reply }])
+      logChat([{ role: 'user', content: text }, { role: 'assistant', content: data.reply }])
     } catch {
       setError(true)
+      logChat([{ role: 'user', content: text }])
       setMessages((current) => [
         ...current,
         {
@@ -171,7 +201,16 @@ export default function ConsultationWidget() {
                   <Send className="size-4" aria-hidden="true" />
                 </button>
               </form>
-              <p className="mt-2 text-center text-xs text-fg-subtle">
+              {saving && (
+                <p className="mt-2 text-center text-[11px] text-fg-subtle">
+                  Chats are saved so our team can follow up (see our{' '}
+                  <Link to="/privacy" onClick={() => setOpen(false)} className="underline hover:text-fg">
+                    privacy policy
+                  </Link>
+                  ).
+                </p>
+              )}
+              <p className="mt-1 text-center text-xs text-fg-subtle">
                 {error ? (
                   <Link to="/contact" onClick={() => setOpen(false)} className="font-semibold text-highlight hover:underline">
                     Or use the full contact form

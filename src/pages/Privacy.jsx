@@ -9,14 +9,13 @@ const pageDescription = 'How Oryan Techsol collects, uses and protects informati
 
 // "Last updated" is a real, meaningful date only once this page reflects the actual
 // business's practices — update it whenever the content below changes.
-const lastUpdated = 'September 2026'
+const lastUpdated = 'October 2026'
 
-// Everything below reflects what this website actually does today, verified against the
-// codebase rather than assumed: the contact page (src/pages/Contact.jsx) builds a mailto:
-// link client-side and never sends form data to a server, and no analytics, tracking pixel
-// or cookie-setting script exists anywhere in this codebase. If either of those changes
-// (e.g. a real backend or an analytics tool is added later), this page must be updated to
-// match — don't let it go stale.
+// Everything below reflects what this website actually does today: the contact form is saved by
+// our own backend (public/api → database, plus an email alert), the AI chat transcript is saved
+// there too and replies come from a third-party AI provider via a Cloudflare Worker (worker/),
+// and no analytics, tracking pixel or visitor cookie exists in this codebase. If any of that
+// changes (e.g. analytics is added), this page must be updated to match — don't let it go stale.
 function Paragraph({ children }) {
   return <p className="leading-relaxed text-fg-muted">{children}</p>
 }
@@ -78,32 +77,43 @@ function ContentSection() {
           <PolicySection id="information-we-collect" title="Information we collect">
             <Paragraph>
               The only information this website collects is what you choose to give us directly
-              through the contact form or a direct email/call. Depending on which you use, that may
-              include:
+              — through the contact form, the AI consultation chat, or a direct email/call.
+              Depending on which you use, that may include:
             </Paragraph>
             <ul className="space-y-2.5">
               <ListItem>Your name and the name of your business</ListItem>
               <ListItem>Your email address and phone/WhatsApp number, if provided</ListItem>
               <ListItem>Details about your project — what you're building, budget and timeline</ListItem>
+              <ListItem>
+                The messages you type into the AI consultation chat (and any contact details you
+                choose to share in it)
+              </ListItem>
             </ul>
             <Paragraph>
-              We do not use analytics, tracking pixels or cookies on this website, and we do not
-              automatically collect browsing behaviour, device fingerprints or location data.
+              To limit spam and abuse we also keep a short-lived, non-reversible token derived from
+              your IP address (not the address itself) and your browser's user-agent text alongside
+              a contact-form submission. We do not use analytics, tracking pixels or advertising
+              cookies on this website, and we do not collect browsing behaviour, device fingerprints
+              or location data. (Our staff sign in to a private admin area using a strictly
+              necessary session cookie; visitors never receive one.)
             </Paragraph>
           </PolicySection>
         </Reveal>
 
         <Reveal delay={0.08}>
-          <PolicySection id="how-the-contact-form-works" title="How the contact form works">
+          <PolicySection id="how-the-contact-form-works" title="Contact form and AI chat">
             <Paragraph>
-              The contact form on this site does not submit your details to a server or database
-              we operate. Filling it in and submitting it opens a pre-filled email in your own email
-              application, addressed to us — you choose whether to actually send it. If you don't
-              send it, we never receive or store what you typed.
+              When you submit the contact form, your details are sent to our own server, which
+              saves them in our database on our hosting account and emails an alert to our team so
+              we can reply. Only our authorised staff can view them. If our server cannot be reached
+              or is unavailable, the form falls back to opening a pre-filled email in your own email
+              application instead.
             </Paragraph>
             <Paragraph>
-              If you do send it (or email/call us directly), your message reaches our email inbox
-              like any other email, and is handled the same way — see below.
+              The AI consultation chat sends your messages to our chat service, which uses a
+              third-party AI model provider to generate replies. We may save the conversation so a
+              member of our team can review it and follow up. Please don't share passwords,
+              payment details or other sensitive personal information in the chat.
             </Paragraph>
           </PolicySection>
         </Reveal>
@@ -128,9 +138,9 @@ function ContentSection() {
         <Reveal delay={0.16}>
           <PolicySection id="data-retention" title="Data retention">
             <Paragraph>
-              We keep inquiry emails for as long as reasonably needed to respond to you and, if we
-              work together, for the duration of the engagement and a reasonable period afterward
-              for our own records. You can ask us to delete correspondence at any time (see
+              We keep inquiries, chat conversations and related emails for as long as reasonably
+              needed to respond to you and, if we work together, for the duration of the engagement
+              and a reasonable period afterward for our own records. You can ask us to delete correspondence at any time (see
               "Your rights" below).
             </Paragraph>
           </PolicySection>
@@ -142,7 +152,9 @@ function ContentSection() {
               This website is hosted by a third-party hosting provider, which processes standard
               web server logs (such as IP address and request timestamps) as part of operating the
               server — this is standard for any website and is not something we separately access
-              or analyse. We do not embed third-party advertising, social widgets or analytics
+              or analyse. The AI chat uses Cloudflare (to run our chat service) and an AI model
+              provider (to generate replies), which process the messages you send in the chat for
+              that purpose. We do not embed third-party advertising, social widgets or analytics
               scripts on this site.
             </Paragraph>
           </PolicySection>
@@ -171,8 +183,8 @@ function ContentSection() {
           <PolicySection id="changes" title="Changes to this policy">
             <Paragraph>
               If how this website collects or handles information changes — for example, if we add
-              analytics or a server-side contact form in the future — we'll update this page and
-              its "Last updated" date accordingly.
+              analytics in the future — we'll update this page and its "Last updated" date
+              accordingly.
             </Paragraph>
           </PolicySection>
         </Reveal>

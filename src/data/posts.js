@@ -8,6 +8,7 @@
 //   service { label, to }, related [slugs], intro, takeaways [], blocks [], faqs [].
 
 import { countWords, readMinutes } from '../lib/article.js'
+import snapshot from './cms-snapshot.js'
 import aiAgents from './posts/ai-agents-for-business.js'
 import aiChatbot from './posts/ai-chatbot-vs-live-chat.js'
 import automation from './posts/business-process-automation.js'
@@ -29,13 +30,24 @@ const ordered = [
   automation,
 ]
 
-export const posts = ordered.map((post) => ({
+const enrich = (post) => ({
   ...post,
   wordCount: countWords(post),
   readMinutes: readMinutes(post),
-}))
+})
 
-export const getPostBySlug = (slug) => posts.find((post) => post.slug === slug)
+export const enrichPosts = (list) => list.map(enrich)
 
-export const getRelatedPosts = (post) =>
-  post.related.map((slug) => getPostBySlug(slug)).filter(Boolean)
+// The articles shipped in code — also the starter content the admin installer loads.
+export const staticPosts = enrichPosts(ordered)
+
+// What this build ships: the admin's published articles once the backend manages posts
+// (src/data/cms-snapshot.js is generated in CI from the admin), otherwise the code articles.
+// Browser code should read posts through usePosts() so live admin edits show up before the
+// next rebuild; Node scripts (prerender, og-images) use this baked list.
+export const posts = snapshot.managed?.posts ? enrichPosts(snapshot.posts) : staticPosts
+
+export const getPostBySlug = (slug, list = posts) => list.find((post) => post.slug === slug)
+
+export const getRelatedPosts = (post, list = posts) =>
+  (post.related ?? []).map((slug) => getPostBySlug(slug, list)).filter(Boolean)

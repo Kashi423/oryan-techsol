@@ -1,9 +1,10 @@
 import { useId, useState } from 'react'
-import { ArrowRight, CalendarCheck, FileText, Lock, Mail, MapPin, Phone, Send } from 'lucide-react'
+import { ArrowRight, CalendarCheck, CheckCircle2, FileText, Lock, Mail, MapPin, Phone, Send } from 'lucide-react'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import Seo from '@/components/seo/Seo'
 import { Badge, Button, Card, Field, Input, Reveal, Section, Select, Textarea } from '@/components/ui'
 import { contactInfo } from '@/config/site'
+import { api, ApiError } from '@/lib/cms/api'
 
 const projectTypes = [
   'App Development',
@@ -154,25 +155,82 @@ function ContactMethod({ icon: Icon, value, href }) {
 
 function InquiryForm() {
   const idBase = useId()
-  const [submitted, setSubmitted] = useState(false)
+  // idle → sending → sent (saved by the backend) | mailto (backend unavailable: email fallback)
+  const [status, setStatus] = useState('idle')
+  const [message, setMessage] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
+  const [renderedAt] = useState(() => Date.now())
   const id = (key) => `${idBase}-${key}`
 
-  function handleSubmit(event) {
-    event.preventDefault()
-    const form = event.currentTarget
-    if (!form.reportValidity()) return
-
-    const data = new FormData(form)
+  function openEmailClient(data) {
     const bodyLines = fieldOrder.map(({ key, label }) => `${label}: ${data.get(key) || '—'}`)
     const subject = `New project inquiry — ${data.get('projectType') || 'General'}`
-    const mailto = `mailto:${contactInfo.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`
+    window.location.href = `mailto:${contactInfo.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`
+  }
 
-    window.location.href = mailto
-    setSubmitted(true)
+  async function handleSubmit(event) {
+    event.preventDefault()
+    const form = event.currentTarget
+    if (!form.reportValidity() || status === 'sending') return
+
+    const data = new FormData(form)
+    setStatus('sending')
+    setMessage('')
+    setFieldErrors({})
+    try {
+      await api('/public/contact', {
+        method: 'POST',
+        body: { ...Object.fromEntries(data.entries()), source: window.location.pathname, ts: renderedAt },
+      })
+      setStatus('sent')
+      form.reset()
+    } catch (error) {
+      if (error instanceof ApiError && (error.status === 422 || error.status === 429)) {
+        setStatus('idle')
+        setFieldErrors(error.data?.fields ?? {})
+        setMessage(error.message)
+        return
+      }
+      // Backend not reachable / not installed yet: fall back to the visitor's email app so an
+      // inquiry is never lost.
+      openEmailClient(data)
+      setStatus('mailto')
+    }
+  }
+
+  if (status === 'sent') {
+    return (
+      <Card>
+        <div className="flex items-start gap-4">
+          <CheckCircle2 className="mt-1 size-7 shrink-0 text-success" aria-hidden="true" />
+          <div>
+            <h3 className="font-display text-xl font-bold text-fg">Thank you — we've got your inquiry.</h3>
+            <p className="mt-2 leading-relaxed text-fg-muted">
+              A member of the team will read it and reply personally, usually by email. If it's urgent, you can also
+              reach us at{' '}
+              <a href={`mailto:${contactInfo.email}`} className="font-semibold text-highlight hover:underline">
+                {contactInfo.email}
+              </a>
+              .
+            </p>
+            <Button type="button" variant="secondary" className="mt-5" onClick={() => setStatus('idle')}>
+              Send another inquiry
+            </Button>
+          </div>
+        </div>
+      </Card>
+    )
   }
 
   return (
-    <Card as="form" onSubmit={handleSubmit}>
+    <Card as="form" onSubmit={handleSubmit} noValidate={false}>
+      {/* Honeypot: hidden from people, irresistible to form-filling bots. */}
+      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+        <label>
+          Leave this field empty
+          <input name="hp" type="text" tabIndex={-1} autoComplete="off" />
+        </label>
+      </div>
       <div className="grid gap-6 sm:grid-cols-2">
         <Field htmlFor={id('name')} label="Name" required>
           <Input id={id('name')} name="name" autoComplete="name" required />
@@ -248,15 +306,23 @@ function InquiryForm() {
         </Field>
       </div>
 
-      <Button type="submit" size="lg" className="mt-8 w-full sm:w-auto">
+      {message && (
+        <p role="alert" className="mt-6 rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-fg">
+          {message}
+          {Object.values(fieldErrors).length > 0 && (
+            <span className="mt-1 block text-fg-muted">{Object.values(fieldErrors).join(' ')}</span>
+          )}
+        </p>
+      )}
+
+      <Button type="submit" size="lg" className="mt-8 w-full sm:w-auto" loading={status === 'sending'}>
         Send Project Inquiry
         <Send aria-hidden="true" />
       </Button>
 
-      {submitted && (
+      {status === 'mailto' && (
         <output className="mt-4 block text-sm text-fg-muted">
-          Your email client should now be open with the message ready to send — just hit
-          send from there.
+          Your email app should now be open with the message ready to send — just hit send from there.
         </output>
       )}
     </Card>
