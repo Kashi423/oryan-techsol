@@ -62,7 +62,9 @@ export default function BlogPost() {
           '@type': 'BlogPosting',
           headline: post.title,
           description: post.description,
-          image: new URL(cover?.src ?? image, siteConfig.url).href,
+          image: cover
+            ? { '@type': 'ImageObject', url: new URL(cover.src, siteConfig.url).href, width: cover.width, height: cover.height, caption: cover.alt }
+            : new URL(image, siteConfig.url).href,
           datePublished: post.date,
           dateModified: post.updated,
           mainEntityOfPage: { '@type': 'WebPage', '@id': url },

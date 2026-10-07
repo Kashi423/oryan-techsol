@@ -195,16 +195,23 @@ async function main() {
 // drifts from what ships.
 async function writeSitemap() {
   const origin = (process.env.VITE_SITE_URL || 'https://oryantechsol.com').replace(/\/$/, '')
+  const covers = new Map(posts.filter((post) => post.cover?.src?.startsWith('/')).map((post) => [`/blog/${post.slug}`, `${origin}${post.cover.src}`]))
+  // Image sitemap entries: the cover photo of each article, so Google Images can index it.
+  const coverByRoute = new Map(
+    posts.filter((post) => post.cover?.src?.startsWith('/')).map((post) => [`/blog/${post.slug}`, post.cover.src]),
+  )
   const lastmod = new Map(posts.map((post) => [`/blog/${post.slug}`, post.updated ?? post.date]))
   const entries = routes.map((route) => {
     const loc = origin + (route === '/' ? '/' : route)
     const mod = lastmod.get(route)
     const modTag = mod ? `\n    <lastmod>${mod}</lastmod>` : ''
-    return `  <url>\n    <loc>${loc}</loc>${modTag}\n  </url>`
+    const cover = coverByRoute.get(route)
+    const imgTag = cover ? `\n    <image:image>\n      <image:loc>${origin}${cover}</image:loc>\n    </image:image>` : ''
+    return `  <url>\n    <loc>${loc}</loc>${modTag}${imgTag}\n  </url>`
   })
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
     ...entries,
     '</urlset>',
     '',

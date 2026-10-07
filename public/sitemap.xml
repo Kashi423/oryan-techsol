@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://oryantechsol.com/</loc>
   </url>
@@ -45,34 +45,58 @@
   <url>
     <loc>https://oryantechsol.com/blog/how-much-does-a-mobile-app-cost</loc>
     <lastmod>2026-10-07</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/how-much-does-a-mobile-app-cost.webp</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/react-native-vs-flutter-vs-native</loc>
     <lastmod>2026-10-07</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/react-native-vs-flutter-vs-native.webp</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/how-to-choose-a-software-development-company</loc>
     <lastmod>2026-10-07</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/how-to-choose-a-software-development-company.webp</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/ai-agents-for-business-explained</loc>
     <lastmod>2026-10-07</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/ai-agents-for-business-explained.webp</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/ai-chatbot-vs-live-chat-for-small-business</loc>
     <lastmod>2026-10-07</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/ai-chatbot-vs-live-chat-for-small-business.webp</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/custom-software-vs-off-the-shelf</loc>
     <lastmod>2026-10-07</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/custom-software-vs-off-the-shelf.webp</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/what-is-api-integration</loc>
     <lastmod>2026-10-07</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/what-is-api-integration.webp</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/business-process-automation-where-to-start</loc>
     <lastmod>2026-10-07</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/business-process-automation-where-to-start.webp</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://oryantechsol.com/contact</loc>
