@@ -701,7 +701,7 @@ function FeaturedAiCard() {
               to="/ai-bots"
               className="mt-8 inline-flex items-center gap-2 font-display text-sm font-semibold text-highlight after:absolute after:inset-0"
             >
-              Learn more
+              Learn more<span className="sr-only"> about AI bots and automation</span>
               <span
                 aria-hidden="true"
                 className="inline-flex size-6 items-center justify-center rounded-full bg-highlight/10 transition-[background-color,transform] duration-200 group-hover:translate-x-1 group-hover:bg-highlight/20"

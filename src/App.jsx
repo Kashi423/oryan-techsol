@@ -4,26 +4,69 @@ import Layout from '@/components/layout/Layout'
 import Home from '@/pages/Home'
 import { useCms, useCmsSync } from '@/lib/cms/store'
 
+// Code-split page. `page()` behaves like React.lazy, with one difference: once the chunk has been
+// preloaded (see preloadRoute, called before the first render in main.jsx) it renders synchronously.
+// The site ships pre-rendered HTML that the client replaces on load; without this the swap went
+// through an empty Suspense placeholder, which blanked the page and moved the footer (CLS ~0.4).
+const loadedPages = new Map()
+const pageLoaders = new Map()
+function page(name, loader) {
+  const load = () => loader().then((mod) => (loadedPages.set(name, mod.default), mod))
+  pageLoaders.set(name, load)
+  const Lazy = lazy(load)
+  return function Page(props) {
+    const Loaded = loadedPages.get(name)
+    return Loaded ? <Loaded {...props} /> : <Lazy {...props} />
+  }
+}
+
+const routePages = {
+  '/app-development': 'AppDevelopment',
+  '/ai-bots': 'AiBots',
+  '/web-development': 'WebDevelopment',
+  '/custom-software': 'CustomSoftware',
+  '/business-automation': 'BusinessAutomation',
+  '/ecommerce': 'Ecommerce',
+  '/saas-development': 'SaasDevelopment',
+  '/api-integrations': 'ApiIntegrations',
+  '/portfolio': 'Portfolio',
+  '/about': 'About',
+  '/faq': 'Faq',
+  '/blog': 'Blog',
+  '/privacy': 'Privacy',
+  '/terms': 'Terms',
+  '/contact': 'Contact',
+}
+
+/** Starts loading (and resolves when ready) the code for the page at `pathname`. Never rejects. */
+export function preloadRoute(pathname) {
+  const path = pathname.replace(/\/+$/, '') || '/'
+  if (path === '/' || path.startsWith('/admin')) return Promise.resolve()
+  const name = routePages[path] ?? (/^\/blog\/[^/]+$/.test(path) ? 'BlogPost' : /^\/portfolio\/[^/]+$/.test(path) ? 'CaseStudyDetail' : 'NotFound')
+  return pageLoaders.get(name)().catch(() => {})
+}
+
 // Home is bundled with the app shell (it is the landing page — no extra round trip).
 // Every other page is code-split and loaded on navigation.
-const NotFound = lazy(() => import('@/pages/NotFound'))
-const CaseStudyDetail = lazy(() => import('@/pages/CaseStudyDetail'))
-const AppDevelopment = lazy(() => import('@/pages/AppDevelopment'))
-const AiBots = lazy(() => import('@/pages/AiBots'))
-const WebDevelopment = lazy(() => import('@/pages/WebDevelopment'))
-const CustomSoftware = lazy(() => import('@/pages/CustomSoftware'))
-const BusinessAutomation = lazy(() => import('@/pages/BusinessAutomation'))
-const Ecommerce = lazy(() => import('@/pages/Ecommerce'))
-const SaasDevelopment = lazy(() => import('@/pages/SaasDevelopment'))
-const ApiIntegrations = lazy(() => import('@/pages/ApiIntegrations'))
-const Portfolio = lazy(() => import('@/pages/Portfolio'))
-const About = lazy(() => import('@/pages/About'))
-const Faq = lazy(() => import('@/pages/Faq'))
-const Blog = lazy(() => import('@/pages/Blog'))
-const BlogPost = lazy(() => import('@/pages/BlogPost'))
-const Privacy = lazy(() => import('@/pages/Privacy'))
-const Terms = lazy(() => import('@/pages/Terms'))
-const Contact = lazy(() => import('@/pages/Contact'))
+const NotFound = page('NotFound', () => import('@/pages/NotFound'))
+const CaseStudyDetail = page('CaseStudyDetail', () => import('@/pages/CaseStudyDetail'))
+const AppDevelopment = page('AppDevelopment', () => import('@/pages/AppDevelopment'))
+const AiBots = page('AiBots', () => import('@/pages/AiBots'))
+const WebDevelopment = page('WebDevelopment', () => import('@/pages/WebDevelopment'))
+const CustomSoftware = page('CustomSoftware', () => import('@/pages/CustomSoftware'))
+const BusinessAutomation = page('BusinessAutomation', () => import('@/pages/BusinessAutomation'))
+const Ecommerce = page('Ecommerce', () => import('@/pages/Ecommerce'))
+const SaasDevelopment = page('SaasDevelopment', () => import('@/pages/SaasDevelopment'))
+const ApiIntegrations = page('ApiIntegrations', () => import('@/pages/ApiIntegrations'))
+const Portfolio = page('Portfolio', () => import('@/pages/Portfolio'))
+const About = page('About', () => import('@/pages/About'))
+const Faq = page('Faq', () => import('@/pages/Faq'))
+const Blog = page('Blog', () => import('@/pages/Blog'))
+const BlogPost = page('BlogPost', () => import('@/pages/BlogPost'))
+const Privacy = page('Privacy', () => import('@/pages/Privacy'))
+const Terms = page('Terms', () => import('@/pages/Terms'))
+const Contact = page('Contact', () => import('@/pages/Contact'))
+
 // Private admin area (leads, blog editor, …) — a separate lazy chunk that normal visitors never download.
 const AdminApp = lazy(() => import('@/admin/AdminApp'))
 // The on-site text editor for signed-in admins (src/admin/EditToolbar.jsx). Separate lazy chunk,

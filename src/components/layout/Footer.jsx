@@ -124,7 +124,7 @@ export default function Footer() {
               <ul className="mt-4 space-y-3">
                 <ContactLine icon={Mail} value={contactInfo.email} href={`mailto:${contactInfo.email}`} />
                 <ContactLine icon={Phone} value={contactInfo.phone} href={`tel:${contactInfo.phoneHref}`} />
-                <ContactLine icon={MapPin} value={contactInfo.location} />
+                <ContactLine icon={MapPin} value={contactInfo.location} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contactInfo.location)}`} />
               </ul>
             </div>
           </div>

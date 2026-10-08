@@ -15,7 +15,9 @@ import ScrollToTop from './ScrollToTop'
 // avoid content starting underneath it — except the hero routes it's designed to overlay,
 // which intentionally start at y=0. Keep this h-16/lg:h-20 in sync with Header's own.
 export default function Layout() {
-  const { pathname } = useLocation()
+  const location = useLocation()
+  // '/faq/' and '/faq' are the same page; ignore the trailing slash when matching routes.
+  const pathname = location.pathname.replace(/\/+$/, '') || '/'
   const overlaysHero =
     transparentHeaderRoutes.includes(pathname) ||
     transparentHeaderPrefixes.some((prefix) => pathname.startsWith(prefix))
