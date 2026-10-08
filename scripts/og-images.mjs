@@ -67,6 +67,38 @@ const template = ({ kicker, title, footer, cover }) => `<!doctype html>
   </script>
 </body></html>`.replace('${size}', '64')
 
+// Vertical 2:3 Pinterest pin (public/pins/<slug>.jpg): cover photo on top, title panel below.
+const pinTemplate = ({ kicker, title, cover }) => `<!doctype html>
+<html><head><meta charset="utf-8" />
+<style>
+  @font-face { font-family: 'SG'; src: url('${fontUrl}'); font-weight: 300 700; }
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1000px; height: 1500px; overflow: hidden; position: relative; font-family: 'SG', sans-serif; color: #fff; background: #030f2d; }
+  .photo { position: absolute; left: 0; right: 0; top: 0; height: 720px; background: url('${cover ?? ''}') center / cover no-repeat; }
+  .fade { position: absolute; left: 0; right: 0; top: 520px; height: 200px; background: linear-gradient(to bottom, transparent, #030f2d); }
+  .panel { position: absolute; left: 0; right: 0; top: 720px; bottom: 0; padding: 44px 72px 56px; display: flex; flex-direction: column; justify-content: space-between;
+    background: radial-gradient(700px 400px at 100% 100%, rgba(16,161,198,.25), transparent 60%), #030f2d; }
+  .kicker { align-self: flex-start; background: #0fd1e8; color: #030f2d; font: 700 26px 'SG'; letter-spacing: .12em; text-transform: uppercase; padding: 12px 22px; border-radius: 10px; }
+  h1 { font: 700 76px/1.1 'SG'; letter-spacing: -0.02em; }
+  .foot { display: flex; align-items: center; gap: 16px; }
+  .mark { width: 60px; height: 60px; background: linear-gradient(75deg, #3a7bd5, #1b8fd0 35%, #17a8d8 65%, #4ee3f8);
+    -webkit-mask: url('${markUrl}') center / contain no-repeat; mask: url('${markUrl}') center / contain no-repeat; }
+  .brand { font: 700 28px 'SG'; letter-spacing: .06em; }
+  .url { margin-left: auto; font: 600 26px 'SG'; color: #6cd0e7; }
+</style></head>
+<body>
+  <div class="photo"></div><div class="fade"></div>
+  <div class="panel">
+    <div class="kicker">${escapeHtml(kicker)}</div>
+    <h1 id="t">${escapeHtml(title)}</h1>
+    <div class="foot"><div class="mark"></div><div class="brand">ORYAN TECHSOL</div><div class="url">oryantechsol.com</div></div>
+  </div>
+  <script>
+    const h = document.getElementById('t'); let s = 76; h.style.fontSize = s + 'px';
+    while (h.getBoundingClientRect().height > 430 && s > 40) { s -= 2; h.style.fontSize = s + 'px'; }
+  </script>
+</body></html>`
+
 const cards = [
   { file: 'default.jpg', kicker: 'Apps · Software · AI', title: 'Custom software, apps, websites and AI automation for growing companies.', footer: 'oryantechsol.com' },
   ...posts.map((post) => ({
@@ -79,7 +111,9 @@ const cards = [
   })),
 ]
 
+const pinDir = path.join(rootDir, 'public', 'pins')
 await fs.mkdir(outDir, { recursive: true })
+await fs.mkdir(pinDir, { recursive: true })
 const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--allow-file-access-from-files'] })
 const tmpFile = path.join(os.tmpdir(), 'oryan-og.html')
 
@@ -93,5 +127,16 @@ for (const card of cards) {
   await page.screenshot({ path: path.join(outDir, card.file), type: 'jpeg', quality: 90 })
   await page.close()
   console.log('wrote public/og/' + card.file)
+}
+for (const card of cards.filter((c) => c.file !== 'default.jpg')) {
+  await fs.writeFile(tmpFile, pinTemplate(card))
+  const page = await browser.newPage()
+  await page.setViewport({ width: 1000, height: 1500 })
+  await page.goto(pathToFileURL(tmpFile).href, { waitUntil: 'networkidle0' })
+  await page.evaluate(() => document.fonts.ready)
+  await new Promise((resolve) => setTimeout(resolve, 150))
+  await page.screenshot({ path: path.join(pinDir, card.file), type: 'jpeg', quality: 88 })
+  await page.close()
+  console.log('wrote public/pins/' + card.file)
 }
 await browser.close()

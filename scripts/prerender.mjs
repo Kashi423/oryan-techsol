@@ -284,6 +284,44 @@ async function writeFeed(origin) {
   await fs.writeFile(path.join(distDir, 'feed.xml'), xml)
   await fs.writeFile(path.join(rootDir, 'public', 'feed.xml'), xml)
   console.log(`Wrote feed.xml (${items.length} items)`)
+  await writePinterestFeed(origin, esc)
+}
+
+// Feed for Pinterest's RSS auto-publish: same articles, but each item carries the vertical
+// 1000x1500 JPEG pin image (public/pins, made by og-images.mjs) and the description as pin text.
+async function writePinterestFeed(origin, esc) {
+  const items = [...posts]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 30)
+    .map((post) => {
+      const link = `${origin}/blog/${post.slug}`
+      const pin = `${origin}/pins/${post.slug}.jpg`
+      return `    <item>
+      <title>${esc(post.title)}</title>
+      <link>${link}</link>
+      <guid isPermaLink="true">${link}</guid>
+      <pubDate>${new Date(post.date + 'T09:00:00Z').toUTCString()}</pubDate>
+      <description>${esc(post.description)}</description>
+      <enclosure url="${pin}" type="image/jpeg" length="0" />
+      <media:content url="${pin}" medium="image" type="image/jpeg" width="1000" height="1500" />
+    </item>`
+    })
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">',
+    '  <channel>',
+    '    <title>Oryan Techsol Blog (Pinterest)</title>',
+    `    <link>${origin}/blog</link>`,
+    '    <description>Practical guides on apps, websites, custom software, AI bots and automation.</description>',
+    '    <language>en-us</language>',
+    ...items,
+    '  </channel>',
+    '</rss>',
+    '',
+  ].join('\n')
+  await fs.writeFile(path.join(distDir, 'pinterest.xml'), xml)
+  await fs.writeFile(path.join(rootDir, 'public', 'pinterest.xml'), xml)
+  console.log(`Wrote pinterest.xml (${items.length} items)`)
 }
 
 main().catch((error) => {
