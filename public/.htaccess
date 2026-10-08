@@ -71,3 +71,5 @@ ErrorDocument 404 /404.html
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
   Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
 </IfModule>
+
+AddType application/manifest+json .webmanifest
