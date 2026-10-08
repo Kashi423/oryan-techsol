@@ -298,7 +298,7 @@ async function writePinterestFeed(origin, esc) {
       const pin = `${origin}/pins/${post.slug}.jpg`
       return `    <item>
       <title>${esc(post.title)}</title>
-      <link>${link}</link>
+      <link>${link}?utm_source=pinterest&amp;utm_medium=social&amp;utm_campaign=auto-publish</link>
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${new Date(post.date + 'T09:00:00Z').toUTCString()}</pubDate>
       <description>${esc(post.description)}</description>
