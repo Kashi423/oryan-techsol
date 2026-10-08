@@ -5,6 +5,7 @@ import PostCard from '@/components/blog/PostCard'
 import ReadingProgress from '@/components/blog/ReadingProgress'
 import RichText from '@/components/blog/RichText'
 import ShareRow from '@/components/blog/ShareRow'
+import PinSaveButton from '@/components/blog/PinSaveButton'
 import TableOfContents from '@/components/blog/TableOfContents'
 import PageHero from '@/components/layout/PageHero'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
@@ -106,7 +107,8 @@ export default function BlogPost() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_17rem] xl:grid-cols-[minmax(0,1fr)_19rem]">
           <article id="article-content" className="min-w-0 max-w-3xl">
             {cover && (
-              <figure className="mb-8 overflow-hidden rounded-3xl border border-line">
+              <figure className="relative mb-8 overflow-hidden rounded-3xl border border-line">
+                <PinSaveButton slug={post.slug} title={post.title} path={path} />
                 <img
                   src={cover.src}
                   alt={cover.alt}
@@ -164,7 +166,7 @@ export default function BlogPost() {
             </section>
 
             <div className="mt-14 border-t border-line pt-6">
-              <ShareRow path={path} title={post.title} />
+              <ShareRow path={path} title={post.title} slug={post.slug} />
             </div>
 
             <div
