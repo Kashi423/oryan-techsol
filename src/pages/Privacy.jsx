@@ -112,6 +112,11 @@ function ContentSection() {
               application instead.
             </Paragraph>
             <Paragraph>
+              If you subscribe to our guides by email, we save your email address and the page you
+              signed up from in the same database, and use it only to send you those guides. You can
+              ask us to remove it at any time.
+            </Paragraph>
+            <Paragraph>
               The AI consultation chat sends your messages to our chat service, which uses a
               third-party AI model provider to generate replies. We may save the conversation so a
               member of our team can review it and follow up. Please don't share passwords,

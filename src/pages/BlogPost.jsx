@@ -5,6 +5,7 @@ import PostCard from '@/components/blog/PostCard'
 import ReadingProgress from '@/components/blog/ReadingProgress'
 import RichText from '@/components/blog/RichText'
 import ShareRow from '@/components/blog/ShareRow'
+import NewsletterSignup from '@/components/blog/NewsletterSignup'
 import PinSaveButton from '@/components/blog/PinSaveButton'
 import TableOfContents from '@/components/blog/TableOfContents'
 import PageHero from '@/components/layout/PageHero'
@@ -168,6 +169,8 @@ export default function BlogPost() {
             <div className="mt-14 border-t border-line pt-6">
               <ShareRow path={path} title={post.title} slug={post.slug} />
             </div>
+
+            <NewsletterSignup />
 
             <div
               data-tone="inverse"

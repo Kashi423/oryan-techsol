@@ -1,4 +1,5 @@
 import { ArrowRight, BarChart3, CreditCard, LayoutGrid, Rocket, Settings, ShieldCheck, Users } from 'lucide-react'
+import RelatedGuides from '@/components/blog/RelatedGuides'
 import Seo from '@/components/seo/Seo'
 import ServiceSchema from '@/components/seo/ServiceSchema'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
@@ -251,6 +252,7 @@ export default function SaasDevelopment() {
       <HeroSection />
       <CapabilitiesSection />
       <FaqSection />
+      <RelatedGuides path="/saas-development" />
       <FinalCtaSection />
     </>
   )

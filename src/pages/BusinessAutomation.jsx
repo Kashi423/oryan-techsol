@@ -22,6 +22,7 @@ import { Fragment } from 'react'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import FaqSchema from '@/components/seo/FaqSchema'
 import ServiceSchema from '@/components/seo/ServiceSchema'
+import RelatedGuides from '@/components/blog/RelatedGuides'
 import Seo from '@/components/seo/Seo'
 import {
   Accordion,
@@ -444,6 +445,7 @@ export default function BusinessAutomation() {
       <TailoredSection />
       <PortfolioSection />
       <FaqSection />
+      <RelatedGuides path="/business-automation" />
       <FinalCtaSection />
     </>
   )

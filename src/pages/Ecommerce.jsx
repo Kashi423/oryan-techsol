@@ -14,6 +14,7 @@ import {
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import FaqSchema from '@/components/seo/FaqSchema'
 import ServiceSchema from '@/components/seo/ServiceSchema'
+import RelatedGuides from '@/components/blog/RelatedGuides'
 import Seo from '@/components/seo/Seo'
 import { Accordion, Badge, Button, Reveal, Section, SectionHeading, ServiceCard, TypeCard } from '@/components/ui'
 import { primaryCta } from '@/config/site'
@@ -307,6 +308,7 @@ export default function Ecommerce() {
       <CapabilitiesSection />
       <FaqSection />
       <RelatedServicesSection />
+      <RelatedGuides path="/ecommerce" />
       <FinalCtaSection />
     </>
   )

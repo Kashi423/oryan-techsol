@@ -12,6 +12,7 @@ import {
   Webhook,
   Zap,
 } from 'lucide-react'
+import RelatedGuides from '@/components/blog/RelatedGuides'
 import Seo from '@/components/seo/Seo'
 import ServiceSchema from '@/components/seo/ServiceSchema'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
@@ -240,6 +241,7 @@ export default function ApiIntegrations() {
       <HeroSection />
       <CapabilitiesSection />
       <FaqSection />
+      <RelatedGuides path="/api-integrations" />
       <FinalCtaSection />
     </>
   )
