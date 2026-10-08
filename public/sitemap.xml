@@ -43,13 +43,6 @@
     <loc>https://oryantechsol.com/blog</loc>
   </url>
   <url>
-    <loc>https://oryantechsol.com/blog/how-much-does-a-mobile-app-cost</loc>
-    <lastmod>2026-10-07</lastmod>
-    <image:image>
-      <image:loc>https://oryantechsol.com/blog/covers/how-much-does-a-mobile-app-cost.webp</image:loc>
-    </image:image>
-  </url>
-  <url>
     <loc>https://oryantechsol.com/blog/react-native-vs-flutter-vs-native</loc>
     <lastmod>2026-10-07</lastmod>
     <image:image>
@@ -68,6 +61,13 @@
     <lastmod>2026-10-07</lastmod>
     <image:image>
       <image:loc>https://oryantechsol.com/blog/covers/ai-agents-for-business-explained.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/how-much-does-a-mobile-app-cost</loc>
+    <lastmod>2026-10-07</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/how-much-does-a-mobile-app-cost.webp</image:loc>
     </image:image>
   </url>
   <url>

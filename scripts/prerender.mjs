@@ -90,6 +90,23 @@ async function main() {
     // continuous animations and scroll listeners accumulate across navigations in a single
     // long-lived tab and previously crashed Chrome mid-run ("Navigating frame was detached").
     const page = await browser.newPage()
+    // SITE_TODAY=YYYY-MM-DD previews scheduled posts: the page's own clock is shifted to that day too.
+    if (process.env.SITE_TODAY) {
+      await page.evaluateOnNewDocument((day) => {
+        const RealDate = Date
+        const fixed = new RealDate(day + 'T12:00:00Z').getTime()
+        class FakeDate extends RealDate {
+          constructor(...args) {
+            if (args.length === 0) super(fixed)
+            else super(...args)
+          }
+          static now() {
+            return fixed
+          }
+        }
+        window.Date = FakeDate
+      }, process.env.SITE_TODAY)
+    }
     await page.goto(new URL(route, base).href, { waitUntil: 'networkidle0' })
     // Let Seo's cleanup effect and Reveal's entrance animations settle.
     await new Promise((resolve) => setTimeout(resolve, 600))

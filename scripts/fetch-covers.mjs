@@ -14,7 +14,7 @@ import puppeteer from 'puppeteer'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { execFile } from 'node:child_process'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
 
 const run = promisify(execFile)
@@ -139,7 +139,8 @@ async function download(file, picksFile) {
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] })
   const page = await browser.newPage()
   await page.goto('about:blank')
-  const covers = {}
+  // Merge with the covers already shipped so adding a batch never drops earlier ones.
+  const covers = (await import(pathToFileURL(path.join(root, 'src/data/posts/covers.js')).href + '?t=' + Date.now())).default
   for (const [slug, index] of Object.entries(picks)) {
     const item = data[slug]?.items?.[index]
     if (!item) {
