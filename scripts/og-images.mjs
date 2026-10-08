@@ -99,6 +99,48 @@ const pinTemplate = ({ kicker, title, cover }) => `<!doctype html>
   </script>
 </body></html>`
 
+// Extra pin designs per article (Pinterest rewards several different pins for the same URL):
+//   -list: light "What's inside" checklist built from the article's own section headings
+//   -tip:  dark "Key takeaway" pin built from the article's own takeaway text
+const pinBase = `@font-face { font-family: 'SG'; src: url('${fontUrl}'); font-weight: 300 700; } * { box-sizing: border-box; margin: 0; }
+  body { width: 1000px; height: 1500px; overflow: hidden; position: relative; font-family: 'SG', sans-serif; }
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 56px; display: flex; align-items: center; gap: 16px; }
+  .mark { width: 60px; height: 60px; background: linear-gradient(75deg, #3a7bd5, #1b8fd0 35%, #17a8d8 65%, #4ee3f8);
+    -webkit-mask: url('${markUrl}') center / contain no-repeat; mask: url('${markUrl}') center / contain no-repeat; }
+  .brand { font: 700 28px 'SG'; letter-spacing: .06em; } .url { margin-left: auto; font: 600 26px 'SG'; }`
+
+const listPinTemplate = ({ kicker, title, items }) => `<!doctype html><html><head><meta charset="utf-8" /><style>${pinBase}
+  body { background: #f3f9fd; color: #051c4e; }
+  .band { position: absolute; left: 0; right: 0; top: 0; height: 12px; background: linear-gradient(90deg, #3a7bd5, #0fd1e8); }
+  .wrap { position: absolute; left: 72px; right: 72px; top: 90px; bottom: 150px; display: flex; flex-direction: column; }
+  .kicker { align-self: flex-start; background: #051c4e; color: #fff; font: 700 26px 'SG'; letter-spacing: .12em; text-transform: uppercase; padding: 12px 22px; border-radius: 10px; }
+  h1 { font: 700 64px/1.12 'SG'; letter-spacing: -0.02em; margin: 36px 0 28px; }
+  .label { font: 700 30px 'SG'; color: #1b8fd0; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px; }
+  ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 20px; }
+  li { display: flex; gap: 20px; align-items: flex-start; font: 600 40px/1.22 'SG'; background: #fff; border-radius: 20px; padding: 30px 32px; box-shadow: 0 4px 18px rgba(5,28,78,.08); }
+  li b { flex: none; width: 56px; height: 56px; border-radius: 50%; background: #0fd1e8; color: #051c4e; display: grid; place-items: center; font: 700 30px 'SG'; }
+  .url { color: #1b8fd0; }
+</style></head><body><div class="band"></div>
+  <div class="wrap"><div class="kicker">${escapeHtml(kicker)}</div><h1 id="t">${escapeHtml(title)}</h1><div class="label">What's inside</div>
+  <ul>${items.map((item, i) => `<li><b>${i + 1}</b><span>${escapeHtml(item)}</span></li>`).join('')}</ul></div>
+  <div class="foot"><div class="mark"></div><div class="brand">ORYAN TECHSOL</div><div class="url">Read the full guide · oryantechsol.com</div></div>
+  <script>const h = document.getElementById('t'); let s = 64; while (h.getBoundingClientRect().height > 230 && s > 40) { s -= 2; h.style.fontSize = s + 'px'; }</script>
+</body></html>`
+
+const tipPinTemplate = ({ kicker, title, tip }) => `<!doctype html><html><head><meta charset="utf-8" /><style>${pinBase}
+  body { color: #fff; background: radial-gradient(900px 700px at 0% 0%, rgba(11,177,199,.35), transparent 60%), radial-gradient(800px 700px at 100% 100%, rgba(16,161,198,.3), transparent 60%), linear-gradient(160deg, #030f2d, #051c4e); }
+  .wrap { position: absolute; left: 72px; right: 72px; top: 110px; bottom: 150px; display: flex; flex-direction: column; justify-content: center; }
+  .kicker { align-self: flex-start; background: #0fd1e8; color: #030f2d; font: 700 26px 'SG'; letter-spacing: .12em; text-transform: uppercase; padding: 12px 22px; border-radius: 10px; }
+  .q { font: 700 150px/1 'SG'; color: #0fd1e8; margin: 40px 0 0; height: 110px; }
+  p { font: 700 60px/1.18 'SG'; letter-spacing: -0.01em; margin-top: 10px; }
+  .src { margin-top: 48px; font: 600 32px/1.3 'SG'; color: #9fdcee; border-left: 6px solid #0fd1e8; padding-left: 24px; }
+  .url { color: #6cd0e7; }
+</style></head><body>
+  <div class="wrap"><div class="kicker">${escapeHtml(kicker)}</div><div class="q">&ldquo;</div><p id="t">${escapeHtml(tip)}</p><div class="src">From: ${escapeHtml(title)}</div></div>
+  <div class="foot"><div class="mark"></div><div class="brand">ORYAN TECHSOL</div><div class="url">oryantechsol.com</div></div>
+  <script>const h = document.getElementById('t'); let s = 60; while (h.getBoundingClientRect().height > 640 && s > 34) { s -= 2; h.style.fontSize = s + 'px'; }</script>
+</body></html>`
+
 const cards = [
   { file: 'default.jpg', kicker: 'Apps · Software · AI', title: 'Custom software, apps, websites and AI automation for growing companies.', footer: 'oryantechsol.com' },
   ...posts.map((post) => ({
@@ -138,5 +180,23 @@ for (const card of cards.filter((c) => c.file !== 'default.jpg')) {
   await page.screenshot({ path: path.join(pinDir, card.file), type: 'jpeg', quality: 88 })
   await page.close()
   console.log('wrote public/pins/' + card.file)
+}
+for (const post of posts) {
+  const items = post.blocks.filter((b) => b.type === 'h2').map((b) => b.text.replace(/[*_]/g, '')).slice(0, 5)
+  const tip = [...(post.takeaways ?? [])].sort((a, b) => a.length - b.length).find((t) => t.length >= 60 && t.length <= 230)
+  const variants = []
+  if (items.length >= 3) variants.push(['list', listPinTemplate({ kicker: post.category, title: post.title, items })])
+  if (tip) variants.push(['tip', tipPinTemplate({ kicker: post.category, title: post.shortTitle ?? post.title, tip })])
+  for (const [name, html] of variants) {
+    await fs.writeFile(tmpFile, html)
+    const page = await browser.newPage()
+    await page.setViewport({ width: 1000, height: 1500 })
+    await page.goto(pathToFileURL(tmpFile).href, { waitUntil: 'networkidle0' })
+    await page.evaluate(() => document.fonts.ready)
+    await new Promise((resolve) => setTimeout(resolve, 150))
+    await page.screenshot({ path: path.join(pinDir, `${post.slug}-${name}.jpg`), type: 'jpeg', quality: 88 })
+    await page.close()
+    console.log(`wrote public/pins/${post.slug}-${name}.jpg`)
+  }
 }
 await browser.close()
