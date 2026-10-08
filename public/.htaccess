@@ -16,8 +16,12 @@
   RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
   RewriteRule ^(.+?)/?$ /$1/index.html [L]
 
+  # Client-side-only areas still get the SPA shell (admin app, legacy /services/* redirects,
+  # case-study and blog URLs for content added in the admin after the last build). Every
+  # other unknown URL gets a real 404 with the prerendered not-found page.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} ^/(admin|services|portfolio|blog)(/|$)
   RewriteRule . /index.html [L]
 </IfModule>
 
@@ -26,6 +30,8 @@
 # serving it (mod_dir's default DirectorySlash behaviour) — a redirect hop that doesn't match
 # that page's own canonical tag or any internal link/sitemap entry, which all use no trailing
 # slash. Serve the directory's index.html directly at the no-slash URL instead.
+ErrorDocument 404 /404.html
+
 <IfModule mod_dir.c>
   DirectorySlash Off
 </IfModule>

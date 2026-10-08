@@ -50,7 +50,9 @@ const routes = [
 // The homepage is rendered LAST: it overwrites dist/index.html, which vite preview serves as the
 // SPA shell for every route. Rendering it first would make every later route start from the
 // homepage's finished tags (duplicate og:*/robots/twitter:* in every page's head).
-const renderOrder = [...routes.filter((route) => route !== '/'), '/']
+// '/page-not-found' is rendered only to produce dist/404.html (the real-404 page Apache serves for unknown URLs).
+const notFoundRoute = '/page-not-found'
+const renderOrder = [...routes.filter((route) => route !== '/'), notFoundRoute, '/']
 
 async function main() {
   // The pristine build's own static <head> defaults (before any route overwrites dist/index.html)
@@ -196,6 +198,12 @@ async function main() {
     const html = (await page.content()).replaceAll(previewOrigin, '')
     const outPath =
       route === '/' ? path.join(distDir, 'index.html') : path.join(distDir, route.slice(1), 'index.html')
+    if (route === notFoundRoute) {
+      await fs.writeFile(path.join(distDir, '404.html'), html)
+      console.log('Prerendered 404 page -> dist/404.html')
+      await page.close()
+      continue
+    }
     await fs.mkdir(path.dirname(outPath), { recursive: true })
     await fs.writeFile(outPath, html)
     console.log(`Prerendered ${route} -> ${path.relative(rootDir, outPath)}`)
