@@ -91,6 +91,7 @@ export const navItems = [
     ],
   },
   { label: 'Portfolio', to: '/portfolio' },
+  { label: 'Blog', to: '/blog' },
   { label: 'About', to: '/about' },
   { label: 'Contact', to: '/contact' },
 ]

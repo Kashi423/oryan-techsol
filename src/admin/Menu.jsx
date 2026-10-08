@@ -58,7 +58,7 @@ export default function Menu() {
     <>
       <PageHeader
         title="Menu"
-        description="Add your own buttons and links to the top menu. They appear after the built-in items (Services, Portfolio, About, Contact)."
+        description="Add your own buttons and links to the top menu. They appear after the built-in items (Services, Portfolio, Blog, About, Contact)."
         actions={
           <button type="button" className={btn.primary} onClick={() => setEditing({ ...blank })}>
             <Plus className="size-4" aria-hidden="true" />
