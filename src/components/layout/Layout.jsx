@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { transparentHeaderPrefixes, transparentHeaderRoutes } from '@/config/site'
 import { cn } from '@/lib/cn'
+import ConsentBanner from './ConsentBanner'
 import ConsultationWidget from './ConsultationWidget'
 import Footer from './Footer'
 import Header from './Header'
@@ -37,6 +38,7 @@ export default function Layout() {
       <Footer />
       <ScrollToTop />
       <ConsultationWidget />
+      <ConsentBanner />
     </div>
   )
 }

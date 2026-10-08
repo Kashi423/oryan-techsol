@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarDays, Clock, FileText, Lightbulb } from 'lucide-react'
+import { ArrowRight, CalendarDays, Clock, FileText, Lightbulb, User } from 'lucide-react'
 import { Link, useParams } from 'react-router'
 import ArticleBody from '@/components/blog/ArticleBody'
 import PostCard from '@/components/blog/PostCard'
@@ -10,6 +10,7 @@ import PageHero from '@/components/layout/PageHero'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import FaqSchema from '@/components/seo/FaqSchema'
 import JsonLd from '@/components/seo/JsonLd'
+import { teamLead } from '@/data/team'
 import Seo from '@/components/seo/Seo'
 import { Accordion, Button, Reveal, Section } from '@/components/ui'
 import { primaryCta, siteConfig } from '@/config/site'
@@ -72,7 +73,14 @@ export default function BlogPost() {
           keywords: post.keywords,
           wordCount: post.wordCount,
           inLanguage: 'en-US',
-          author: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
+          author: {
+            '@type': 'Person',
+            '@id': `${siteConfig.url}/about#waqas-ahmad-asghar`,
+            name: teamLead.name,
+            jobTitle: teamLead.role,
+            url: `${siteConfig.url}/about`,
+            worksFor: { '@id': `${siteConfig.url}/#organization` },
+          },
           publisher: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
         }}
       />
@@ -87,6 +95,7 @@ export default function BlogPost() {
         description={post.description}
         crumbs={[{ name: 'Blog', to: '/blog' }, { name: post.shortTitle }]}
         meta={[
+          { icon: User, label: `By ${teamLead.name}` },
           { icon: CalendarDays, label: `Updated ${formatDate(post.updated)}` },
           { icon: Clock, label: `${post.readMinutes} min read` },
           { icon: FileText, label: `${post.wordCount.toLocaleString('en-US')} words` },

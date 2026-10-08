@@ -45,6 +45,7 @@ jobs:
         run: npm run build
         env:
           VITE_SITE_URL: https://oryantechsol.com
+          VITE_GA_ID: ${{ vars.GA_ID }}
 
       - name: Stamp build version
         run: echo "$GITHUB_SHA" > dist/deploy-version.txt
@@ -62,6 +63,10 @@ jobs:
             **/.git*/**
 
       # Fails the run if the upload went to the wrong folder (green FTP step, unchanged site).
+      - name: Notify IndexNow of new URLs
+        continue-on-error: true
+        run: node scripts/indexnow.mjs
+
       - name: Verify live site serves this build
         run: |
           for i in 1 2 3 4 5; do

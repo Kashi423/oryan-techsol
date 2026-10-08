@@ -19,6 +19,8 @@ import LogoMark from '@/components/brand/LogoMark'
 import TeamSection from '@/components/team/TeamSection'
 import Seo from '@/components/seo/Seo'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
+import JsonLd from '@/components/seo/JsonLd'
+import { teamLead } from '@/data/team'
 import { Badge, Button, Reveal, Section, SectionHeading, TypeCard } from '@/components/ui'
 import { primaryCta, siteConfig } from '@/config/site'
 
@@ -217,6 +219,18 @@ export default function About() {
     <>
       <Seo title="About" description={pageDescription} />
       <BreadcrumbSchema items={[{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }]} />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Person',
+          '@id': `${siteConfig.url}/about#waqas-ahmad-asghar`,
+          name: teamLead.name,
+          jobTitle: teamLead.role,
+          url: `${siteConfig.url}/about`,
+          image: new URL(teamLead.photo, siteConfig.url).href,
+          worksFor: { '@id': `${siteConfig.url}/#organization` },
+        }}
+      />
       <HeroSection />
       <ApproachSection />
       <DifferentiatorsSection />

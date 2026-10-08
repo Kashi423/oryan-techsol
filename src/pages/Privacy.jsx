@@ -14,8 +14,8 @@ const lastUpdated = 'October 2026'
 // Everything below reflects what this website actually does today: the contact form is saved by
 // our own backend (public/api → database, plus an email alert), the AI chat transcript is saved
 // there too and replies come from a third-party AI provider via a Cloudflare Worker (worker/),
-// and no analytics, tracking pixel or visitor cookie exists in this codebase. If any of that
-// changes (e.g. analytics is added), this page must be updated to match — don't let it go stale.
+// and the only visitor cookies are the optional Google Analytics ones, loaded after consent (see
+// src/lib/consent.js). If any of that changes, this page must be updated to match — don't let it go stale.
 function Paragraph({ children }) {
   return <p className="leading-relaxed text-fg-muted">{children}</p>
 }
@@ -92,9 +92,11 @@ function ContentSection() {
             <Paragraph>
               To limit spam and abuse we also keep a short-lived, non-reversible token derived from
               your IP address (not the address itself) and your browser's user-agent text alongside
-              a contact-form submission. We do not use analytics, tracking pixels or advertising
-              cookies on this website, and we do not collect browsing behaviour, device fingerprints
-              or location data. (Our staff sign in to a private admin area using a strictly
+              a contact-form submission. We do not use advertising cookies or tracking pixels, and we do
+              not collect device fingerprints or location data. If you choose "Accept analytics" in
+              the cookie banner, we use Google Analytics 4 (with IP anonymisation) to see which
+              pages are visited; it sets cookies only after you accept, and you can withdraw consent
+              at any time through "Cookie settings" in the footer. (Our staff sign in to a private admin area using a strictly
               necessary session cookie; visitors never receive one.)
             </Paragraph>
           </PolicySection>

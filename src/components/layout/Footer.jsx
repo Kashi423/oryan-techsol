@@ -2,6 +2,7 @@ import { Mail, MapPin, Phone } from 'lucide-react'
 import { Link } from 'react-router'
 import Logo from '@/components/brand/Logo'
 import { Button, Container } from '@/components/ui'
+import { resetConsent } from '@/lib/consent'
 import { contactInfo, footerNav, primaryCta, siteConfig, socialLinks } from '@/config/site'
 
 // lucide-react ships no brand/social marks, so these are hand-drawn (same approach as the
@@ -131,6 +132,14 @@ export default function Footer() {
 
         <p className="mt-12 border-t border-line pt-6 text-sm text-fg-subtle">
           © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+          {siteConfig.analyticsId && (
+            <>
+              {' · '}
+              <button type="button" onClick={resetConsent} className="underline underline-offset-2 hover:text-fg">
+                Cookie settings
+              </button>
+            </>
+          )}
         </p>
       </Container>
     </footer>

@@ -6,6 +6,11 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="color-scheme" content="light" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="alternate" type="application/rss+xml" title="Oryan Techsol Blog" href="/feed.xml" />
 
     <!-- Site-wide defaults for crawlers and link scrapers that do not run JS.
@@ -47,11 +52,35 @@
         "@context": "https://schema.org",
         "@graph": [
           {
-            "@type": "Organization",
+            "@type": ["Organization", "ProfessionalService"],
             "@id": "%VITE_SITE_URL%/#organization",
             "name": "Oryan Techsol",
             "url": "%VITE_SITE_URL%/",
-            "description": "Custom mobile apps, software, web development, AI bots and business automation."
+            "logo": "%VITE_SITE_URL%/logo.png",
+            "image": "%VITE_SITE_URL%/og/default.jpg",
+            "description": "Custom mobile apps, software, web development, AI bots and business automation.",
+            "email": "hello@oryantechsol.com",
+            "telephone": "+19172170535",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "1938 West 7th Street",
+              "addressLocality": "Brooklyn",
+              "addressRegion": "NY",
+              "addressCountry": "US"
+            },
+            "areaServed": "Worldwide",
+            "founder": { "@id": "%VITE_SITE_URL%/about#waqas-ahmad-asghar" },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "sales",
+                "email": "hello@oryantechsol.com",
+                "telephone": "+19172170535",
+                "availableLanguage": ["English"]
+              }
+            ],
+            "sameAs": ["https://www.facebook.com/profile.php?id=61593868535933"],
+            "knowsAbout": ["Mobile app development", "Custom software development", "Web development", "AI chatbots and agents", "Business process automation", "API integration"]
           },
           {
             "@type": "WebSite",
