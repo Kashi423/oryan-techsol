@@ -53,12 +53,18 @@ const graph = async (path, { method = 'GET', params = {} } = {}) => {
   return data
 }
 
+// Best effort: reading the Page feed needs pages_read_engagement / Page Public Content Access, which
+// Facebook may refuse for a development-mode app. If so, carry on without the duplicate check.
 let alreadyPosted = new Set()
 if (!dryRun) {
-  const feed = await graph(`${pageId}/feed`, { params: { fields: 'link,message', limit: '100' } })
-  alreadyPosted = new Set(
-    (feed.data ?? []).flatMap((item) => [item.link, item.message].filter(Boolean)).join('\n').match(/https:\/\/oryantechsol\.com\/blog\/[a-z0-9-]+/g) ?? [],
-  )
+  try {
+    const feed = await graph(`${pageId}/feed`, { params: { fields: 'link,message', limit: '100' } })
+    alreadyPosted = new Set(
+      (feed.data ?? []).flatMap((item) => [item.link, item.message].filter(Boolean)).join('\n').match(/https:\/\/oryantechsol\.com\/blog\/[a-z0-9-]+/g) ?? [],
+    )
+  } catch (error) {
+    console.warn(`Facebook: could not read the Page feed for the duplicate check (${error.message}). Posting anyway.`)
+  }
 }
 
 let failed = false
