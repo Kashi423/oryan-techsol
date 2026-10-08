@@ -6,7 +6,7 @@
 //   FACEBOOK_PAGE_ID, FACEBOOK_PAGE_TOKEN  required to post (a long-lived Page access token)
 //   FACEBOOK_POST_SLUG                      post this article instead of today's (manual backfill)
 //   FACEBOOK_DRY_RUN=1                      print the posts, send nothing
-//   FACEBOOK_GRAPH_VERSION                  default v23.0
+//   FACEBOOK_GRAPH_VERSION                  default v25.0
 //
 // Safe to run many times a day: an article whose link is already on the Page is skipped.
 
@@ -14,7 +14,7 @@ import { posts, todayUtc } from '../src/data/posts.js'
 
 const pageId = process.env.FACEBOOK_PAGE_ID
 const token = process.env.FACEBOOK_PAGE_TOKEN
-const version = process.env.FACEBOOK_GRAPH_VERSION || 'v23.0'
+const version = process.env.FACEBOOK_GRAPH_VERSION || 'v25.0'
 const dryRun = process.env.FACEBOOK_DRY_RUN === '1'
 const origin = 'https://oryantechsol.com'
 const maxPerRun = 3

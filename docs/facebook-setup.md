@@ -3,7 +3,7 @@
 Each day's new blog article is posted to the Oryan Techsol Facebook Page by `scripts/facebook-post.mjs`, as the last step of the daily deploy workflow. Until the two secrets below exist, the step skips quietly and nothing is posted.
 
 - Page: https://www.facebook.com/profile.php?id=61593868535933
-- Page ID: `61593868535933`
+- Page ID (Business Suite asset id): `1304484202743571` (confirm with `/me/accounts` in step 3; the number in the Page profile URL, 61593868535933, is a different identifier)
 
 ## One-time setup (about 15 minutes, done by the Page admin)
 
@@ -14,18 +14,18 @@ Facebook's screens change often, so labels may differ slightly.
 3. **Make it long-lived, then get the Page token.** In a terminal (replace the capitals):
 
    ```bash
-   curl "https://graph.facebook.com/v23.0/oauth/access_token?grant_type=fb_exchange_token&client_id=APP_ID&client_secret=APP_SECRET&fb_exchange_token=SHORT_USER_TOKEN"
+   curl "https://graph.facebook.com/v25.0/oauth/access_token?grant_type=fb_exchange_token&client_id=APP_ID&client_secret=APP_SECRET&fb_exchange_token=SHORT_USER_TOKEN"
    ```
 
    Then, using the `access_token` that returns (the long-lived user token):
 
    ```bash
-   curl "https://graph.facebook.com/v23.0/me/accounts?access_token=LONG_USER_TOKEN"
+   curl "https://graph.facebook.com/v25.0/me/accounts?access_token=LONG_USER_TOKEN"
    ```
 
-   Find the entry whose `id` is `61593868535933`. Its `access_token` is the **Page access token**. A Page token obtained this way from a long-lived user token does not expire.
+   Find the entry named "Oryan Techsol" (its `id` should be `1304484202743571`). Its `access_token` is the **Page access token**. A Page token obtained this way from a long-lived user token does not expire.
 4. **Store the secrets in GitHub.** Repo → Settings → Secrets and variables → Actions (use the same place as the FTP secrets, the "FTP Server" environment, or repository secrets):
-   - `FACEBOOK_PAGE_ID` = `61593868535933`
+   - `FACEBOOK_PAGE_ID` = the `id` of that entry (`1304484202743571`)
    - `FACEBOOK_PAGE_TOKEN` = the Page access token
 
    Never paste the token into chat, a file or the repo.
