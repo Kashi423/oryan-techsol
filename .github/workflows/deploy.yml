@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      facebook_slug:
+        description: 'Optional: post this article slug to Facebook (backfill). Leave empty for the normal daily post.'
+        required: false
+        default: ''
   # Rebuild shortly after midnight UTC so the day's scheduled blog article goes live.
   schedule:
     - cron: '20 0 * * *'
@@ -76,3 +81,13 @@ jobs:
             sleep 10
           done
           echo "Live site does not have this build — check FTP server-dir / account folder"; exit 1
+
+      # Posts the day's new article to the Facebook Page. Skips quietly until FACEBOOK_PAGE_ID and
+      # FACEBOOK_PAGE_TOKEN exist as secrets; never fails the deploy (the site is already live).
+      - name: Post today's article to Facebook
+        continue-on-error: true
+        run: node scripts/facebook-post.mjs
+        env:
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
+          FACEBOOK_POST_SLUG: ${{ github.event.inputs.facebook_slug }}
