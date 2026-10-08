@@ -45,7 +45,7 @@ jobs:
         run: npm run build
         env:
           VITE_SITE_URL: https://oryantechsol.com
-          VITE_GA_ID: ${{ vars.GA_ID }}
+          VITE_GA_ID: G-0X3VJMEGLP
 
       - name: Stamp build version
         run: echo "$GITHUB_SHA" > dist/deploy-version.txt
