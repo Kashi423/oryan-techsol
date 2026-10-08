@@ -33,7 +33,7 @@ Facebook's screens change often, so labels may differ slightly.
 
 ## What gets posted
 
-- On each daily run (00:20 UTC) and on every push, any article **dated today** is posted (at most 3 per run). An article already on the Page is skipped, so repeated runs do not duplicate.
+- On the daily scheduled run (00:20 UTC), any article **dated today** is posted (at most 3). Pushes never post. When Facebook allows reading the Page feed, an article already on the Page is skipped.
 - Post text: the article title, its description and hashtags, plus the link (Facebook builds the preview from the page's `og:` tags and the share image).
 - The first 8 articles (dated 7 October) are not posted automatically. Use the *facebook_slug* box to post any of them by hand.
 

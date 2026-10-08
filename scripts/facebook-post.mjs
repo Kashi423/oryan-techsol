@@ -25,6 +25,11 @@ if (!dryRun && (!pageId || !token)) {
 }
 
 const only = process.env.FACEBOOK_POST_SLUG?.trim()
+// Pushes redeploy the site many times a day; only the daily schedule (or a manual run) posts.
+if (!only && process.env.GITHUB_EVENT_NAME === 'push') {
+  console.log('Facebook: push-triggered run — the daily scheduled run posts new articles. Skipping.')
+  process.exit(0)
+}
 const today = todayUtc()
 const due = (only ? posts.filter((post) => post.slug === only) : posts.filter((post) => post.date === today)).slice(0, maxPerRun)
 if (due.length === 0) {
