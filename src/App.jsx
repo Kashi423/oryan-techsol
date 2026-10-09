@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router'
 import Layout from '@/components/layout/Layout'
 import Home from '@/pages/Home'
-import { useCms, useCmsSync } from '@/lib/cms/store'
+import { loadPostBody, useCms, useCmsSync } from '@/lib/cms/store'
 
 // Code-split page. `page()` behaves like React.lazy, with one difference: once the chunk has been
 // preloaded (see preloadRoute, called before the first render in main.jsx) it renders synchronously.
@@ -43,7 +43,8 @@ export function preloadRoute(pathname) {
   const path = pathname.replace(/\/+$/, '') || '/'
   if (path === '/' || path.startsWith('/admin')) return Promise.resolve()
   const name = routePages[path] ?? (/^\/blog\/[^/]+$/.test(path) ? 'BlogPost' : /^\/portfolio\/[^/]+$/.test(path) ? 'CaseStudyDetail' : 'NotFound')
-  return pageLoaders.get(name)().catch(() => {})
+  const slug = name === 'BlogPost' ? path.split('/')[2] : null
+  return Promise.all([pageLoaders.get(name)().catch(() => {}), slug ? loadPostBody(slug) : null]).then(() => {})
 }
 
 // Home is bundled with the app shell (it is the landing page — no extra round trip).

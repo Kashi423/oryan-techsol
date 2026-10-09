@@ -7,9 +7,9 @@
 //   slug, title, shortTitle, description (<=160 chars), date, updated, category, keywords,
 //   service { label, to }, related [slugs], intro, takeaways [], blocks [], faqs [].
 
-import { countWords, readMinutes } from '../lib/article.js'
 import snapshot from './cms-snapshot.js'
-import covers from './posts/covers.js'
+import cmsPosts from './cms-posts.js'
+import { enrichPosts, isPublished, publishedOnly, todayUtc } from './posts-light.js'
 import aiAgents from './posts/ai-agents-for-business.js'
 import aiChatbot from './posts/ai-chatbot-vs-live-chat.js'
 import automation from './posts/business-process-automation.js'
@@ -271,26 +271,8 @@ const ordered = [
   automation,
 ]
 
-// A post's cover: the self-hosted stock photo from covers.js, or — for articles created in the admin —
-// the image chosen there.
-const enrich = (post) => ({
-  ...post,
-  cover: covers[post.slug] ? { ...covers[post.slug], alt: `Cover image for ${post.shortTitle ?? post.title}` } : (post.image ? { src: post.image, alt: post.title, width: 1200, height: 675 } : null),
-  wordCount: countWords(post),
-  readMinutes: readMinutes(post),
-})
-
-export const enrichPosts = (list) => list.map(enrich)
-
-// Scheduled publishing: an article's `date` is its publish day (UTC). Until that day it is
-// hidden everywhere — blog index, its own URL, sitemap, feed. A daily GitHub Actions run rebuilds
-// the site just after midnight UTC (see .github/workflows/deploy.yml) so the prerendered HTML and
-// sitemap pick up the day's new article; browsers also re-check the date themselves.
-// SITE_TODAY lets a Node script preview a future date (e.g. to test scheduled posts).
-export const todayUtc = () =>
-  (typeof process !== 'undefined' && process.env?.SITE_TODAY) || new Date().toISOString().slice(0, 10)
-export const isPublished = (post, today = todayUtc()) => post.date <= today
-export const publishedOnly = (list, today = todayUtc()) => list.filter((post) => isPublished(post, today))
+// Re-exported so existing imports keep working; the implementations live in ./posts-light.js.
+export { enrichPosts, isPublished, publishedOnly, todayUtc }
 
 // The articles shipped in code — also the starter content the admin installer loads.
 export const staticPosts = enrichPosts(ordered)
@@ -300,7 +282,7 @@ export const staticPosts = enrichPosts(ordered)
 // Browser code should read posts through usePosts() so live admin edits show up before the
 // next rebuild; Node scripts (prerender, og-images) use this baked list.
 // Every article including scheduled ones (browser code filters by date at render time).
-export const allPosts = snapshot.managed?.posts ? enrichPosts(snapshot.posts) : staticPosts
+export const allPosts = snapshot.managed?.posts ? enrichPosts(cmsPosts) : staticPosts
 
 // Articles that are live today — what Node scripts (prerender, og-images, sitemap, feed) use.
 export const posts = publishedOnly(allPosts)

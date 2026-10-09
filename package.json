@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node scripts/prerender.mjs",
+    "dev": "node scripts/build-post-index.mjs && vite",
+    "build": "node scripts/build-post-index.mjs && vite build && node scripts/prerender.mjs",
     "prerender": "node scripts/prerender.mjs",
     "og": "node scripts/og-images.mjs",
     "seed": "node scripts/export-seed.mjs",

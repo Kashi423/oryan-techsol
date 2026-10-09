@@ -16,8 +16,8 @@ import { teamLead } from '@/data/team'
 import Seo from '@/components/seo/Seo'
 import { Accordion, Button, Reveal, Section } from '@/components/ui'
 import { primaryCta, siteConfig } from '@/config/site'
-import { getPostBySlug, getRelatedPosts } from '@/data/posts'
-import { usePosts } from '@/lib/cms/store'
+import { getPostBySlug, getRelatedPosts } from '@/data/posts-light'
+import { useFullPost, usePosts } from '@/lib/cms/store'
 import { tocFromBlocks } from '@/lib/article'
 import { formatDate } from '@/lib/format'
 import NotFound from './NotFound'
@@ -29,9 +29,11 @@ import NotFound from './NotFound'
 export default function BlogPost() {
   const { slug } = useParams()
   const posts = usePosts()
-  const post = getPostBySlug(slug, posts)
+  const listed = getPostBySlug(slug, posts)
+  const post = useFullPost(listed)
 
-  if (!post) return <NotFound />
+  if (!listed) return <NotFound />
+  if (!post) return <div className="min-h-[60vh]" aria-hidden="true" /> // article text still loading (preloaded on first visit)
 
   const toc = tocFromBlocks(post.blocks)
   const related = getRelatedPosts(post, posts)

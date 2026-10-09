@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { contactInfo, socialLinks } from '@/config/site'
 import snapshot from '@/data/cms-snapshot'
 import { caseStudies } from '@/data/caseStudies'
-import { allPosts as bakedPosts, enrichPosts, publishedOnly } from '@/data/posts'
+import postsIndex from '@/data/posts-index.json'
+import { enrichPosts, publishedOnly } from '@/data/posts-light'
 import { teamLead, teamMembers } from '@/data/team'
 import { api } from './api'
 import { setTexts } from './translate'
@@ -37,7 +38,7 @@ let state = {
   settings: snapshot.settings ?? {},
   team: snapshot.managed?.team && snapshot.team?.lead ? snapshot.team : staticTeam,
   projects: snapshot.managed?.projects ? snapshot.projects : caseStudies,
-  posts: bakedPosts,
+  posts: postsIndex, // light (no article bodies); see loadFullPosts()
   postsVersion: snapshot.version,
   remountKey: 0,
 }
@@ -113,6 +114,42 @@ export async function syncContent() {
   } catch {
     // No backend (or offline): keep the baked content.
   }
+}
+
+// Full article text (intro, takeaways, blocks, faqs): one small JSON file per article
+// (src/data/post-bodies/, written by scripts/build-post-index.mjs), loaded only for the article being
+// read. The blog index, cards and related-guide lists run on the light index above.
+const bodyLoaders = import.meta.glob('/src/data/post-bodies/*.json', { import: 'default' })
+const bodies = new Map() // slug -> body
+const merged = new Map() // slug -> light post + body (stable identity between renders)
+
+/** Fetches one article's text (resolves once it is cached). Never rejects. */
+export function loadPostBody(slug) {
+  if (bodies.has(slug)) return Promise.resolve()
+  const load = bodyLoaders[`/src/data/post-bodies/${slug}.json`]
+  if (!load) return Promise.resolve()
+  return load().then((body) => void bodies.set(slug, body), () => {})
+}
+
+/** The complete article for a light post: the live admin version if one is loaded, else the baked text. */
+export function getFullPost(post) {
+  if (!post) return null
+  if (post.blocks) return post
+  const body = bodies.get(post.slug)
+  if (!body) return null
+  if (!merged.has(post.slug)) merged.set(post.slug, { ...post, ...body })
+  return merged.get(post.slug)
+}
+
+/** Like getFullPost, but fetches the article text on demand; returns null until it has arrived. */
+export function useFullPost(post) {
+  const [, setLoaded] = useState(0)
+  const missing = Boolean(post) && !post.blocks && !bodies.has(post.slug)
+  const slug = post?.slug
+  useEffect(() => {
+    if (missing) loadPostBody(slug).then(() => setLoaded((n) => n + 1))
+  }, [missing, slug])
+  return getFullPost(post)
 }
 
 /** Blog pages call this: fetches full live articles when the baked ones are out of date. */

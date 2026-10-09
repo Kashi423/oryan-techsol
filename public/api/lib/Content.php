@@ -395,6 +395,8 @@ final class Content
                 if (!is_array($p) || empty($p['slug']) || Db::val('SELECT COUNT(*) FROM posts WHERE slug = ?', [$p['slug']])) {
                     continue;
                 }
+                // 00:00 UTC: the article goes public at the start of its day, in time for the daily rebuild
+                // (00:20 UTC) that bakes it into the pages, sitemap, feed and social posts.
                 $date = (string) ($p['date'] ?? gmdate('Y-m-d'));
                 Db::insert('posts', [
                     'slug' => Http::str($p['slug'], 160),
@@ -411,9 +413,9 @@ final class Content
                     'faqs' => self::encode(self::cleanFaqs($p['faqs'] ?? [])),
                     'related' => self::encode(self::strings($p['related'] ?? [], 6, 160)),
                     'status' => 'published',
-                    'published_at' => $date . ' 09:00:00',
-                    'created_at' => $date . ' 09:00:00',
-                    'updated_at' => ((string) ($p['updated'] ?? $date)) . ' 09:00:00',
+                    'published_at' => $date . ' 00:00:00',
+                    'created_at' => $date . ' 00:00:00',
+                    'updated_at' => ((string) ($p['updated'] ?? $date)) . ' 00:00:00',
                 ]);
                 $counts['posts']++;
             }
