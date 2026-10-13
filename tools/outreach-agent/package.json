@@ -5,6 +5,7 @@
   "description": "Finds local businesses that could use a website/app and sends them guarded, personalised outreach emails.",
   "scripts": {
     "agent": "node src/cli.js",
+    "start": "node --disable-warning=ExperimentalWarning src/start.js",
     "test": "node --test --disable-warning=ExperimentalWarning test/*.test.js"
   },
   "engines": { "node": ">=22.5" },

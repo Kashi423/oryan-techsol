@@ -58,3 +58,9 @@ npm run agent run --live           # replies -> follow-ups -> send (put this on 
 - **Law**: US (CAN-SPAM) B2B cold email is allowed with a truthful sender/subject, postal address and a working opt-out, which this does. If you target the UK/EU/Canada, rules are stricter (consent or "implied B2B interest" tests); stay US-only unless you check.
 - **No open/click tracking** on purpose: it hurts deliverability and privacy.
 - Data lives in `data/outreach.db` (SQLite, gitignored).
+
+## Easiest way: the local app
+
+Double-click `start-agent.bat` (or run `npm start`). A page opens at http://localhost:4477 with four tabs:
+Setup (paste three keys once), Find customers, Review & send, Sent & replies. No terminal commands, no config files.
+The app only listens on your own computer. Close its window to stop it.

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oryan Outreach</title>
+<style>
+  :root { --bg:#f5f7fb; --card:#fff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --brand:#0891b2; --ok:#16a34a; --bad:#dc2626; --warn:#d97706; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0b1220; --card:#111a2e; --ink:#e5edf9; --muted:#94a3b8; --line:#243049; --brand:#22d3ee; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  header { display:flex; align-items:center; gap:16px; padding:14px 24px; border-bottom:1px solid var(--line); background:var(--card); flex-wrap:wrap; }
+  header h1 { font-size:17px; margin:0; }
+  header .stats { margin-left:auto; color:var(--muted); font-size:13px; display:flex; gap:16px; flex-wrap:wrap; }
+  nav { display:flex; gap:4px; padding:12px 24px 0; flex-wrap:wrap; }
+  nav button { border:0; background:none; color:var(--muted); padding:10px 14px; font:inherit; cursor:pointer; border-bottom:2px solid transparent; }
+  nav button.on { color:var(--ink); border-color:var(--brand); font-weight:600; }
+  main { max-width:960px; margin:0 auto; padding:20px 24px 80px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:16px; }
+  h2 { font-size:16px; margin:0 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 12px; font-size:13.5px; }
+  label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+  input, textarea { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); font:inherit; }
+  textarea { min-height:140px; resize:vertical; }
+  button.btn { background:var(--brand); color:#fff; border:0; padding:10px 16px; border-radius:8px; font:inherit; font-weight:600; cursor:pointer; }
+  button.btn.ghost { background:none; color:var(--ink); border:1px solid var(--line); }
+  button.btn.bad { background:var(--bad); }
+  button.btn:disabled { opacity:.5; cursor:not-allowed; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
+  .row > * { flex:1 1 180px; }
+  .row > button { flex:0 0 auto; }
+  .pill { display:inline-block; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
+  .pill.ok { background:#16a34a22; color:var(--ok); } .pill.no { background:#d9770622; color:var(--warn); }
+  .log { background:#0b1220; color:#cbd5e1; font:12.5px/1.6 ui-monospace,Consolas,monospace; padding:12px; border-radius:8px; max-height:220px; overflow:auto; white-space:pre-wrap; }
+  .draft { border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:12px; }
+  .draft .meta { color:var(--muted); font-size:13px; margin-bottom:8px; }
+  .draft input { font-weight:600; margin-bottom:8px; }
+  .banner { padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:14px; }
+  .banner.warn { background:#d9770622; color:var(--warn); } .banner.bad { background:#dc262622; color:var(--bad); } .banner.ok { background:#16a34a22; color:var(--ok); }
+  table { width:100%; border-collapse:collapse; font-size:14px; } td,th { text-align:left; padding:8px; border-bottom:1px solid var(--line); }
+  a { color:var(--brand); }
+  .steps li { margin-bottom:6px; }
+  .hide { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Oryan Outreach</h1>
+  <div class="stats" id="stats"></div>
+</header>
+<nav id="tabs">
+  <button data-t="setup">1. Setup</button>
+  <button data-t="find">2. Find customers</button>
+  <button data-t="review">3. Review &amp; send</button>
+  <button data-t="sent">4. Sent &amp; replies</button>
+</nav>
+<main>
+  <div id="job" class="card hide"><strong id="jobname"></strong><div class="log" id="joblog" style="margin-top:8px"></div></div>
+
+  <section id="t-setup">
+    <div class="banner warn" id="setupBanner"></div>
+
+    <div class="card">
+      <h2>A. Sending email (Gmail)</h2>
+      <p class="sub">Sign in as <b>asad@oryantechsol.com</b>, turn on 2-Step Verification, then
+        <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">create an App Password</a>. Paste the 16 characters here.</p>
+      <div class="row">
+        <div><label>Sending address</label><input id="gmailUser" placeholder="asad@oryantechsol.com"></div>
+        <div><label>App Password</label><input id="gmailAppPassword" type="password" placeholder="xxxx xxxx xxxx xxxx" autocomplete="off"></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <div><label>Name shown on emails</label><input id="fromName" placeholder="Rai at Oryan Techsol"></div>
+        <div><label>Name emails are signed with</label><input id="signOffName" placeholder="Rai"></div>
+        <div><label>Replies also go to</label><input id="replyTo" placeholder="sales@oryantechsol.com"></div>
+      </div>
+      <p style="margin-top:12px"><button class="btn" data-save="gmail">Save and send me a test email</button> <span id="r-gmail"></span></p>
+    </div>
+
+    <div class="card">
+      <h2>B. Claude key (writes the emails)</h2>
+      <p class="sub">Create a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a> and paste it.</p>
+      <input id="anthropicKey" type="password" placeholder="sk-ant-..." autocomplete="off">
+      <p style="margin-top:12px"><button class="btn" data-save="anthropic">Save and test</button> <span id="r-anthropic"></span></p>
+    </div>
+
+    <div class="card">
+      <h2>C. Google Maps key (finds businesses)</h2>
+      <p class="sub">Open <a href="https://console.cloud.google.com/apis/library/places.googleapis.com" target="_blank" rel="noopener">Places API (New)</a>, click Enable, then
+        <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Credentials &rarr; Create API key</a>. Billing must be on.</p>
+      <input id="placesKey" type="password" placeholder="AIza..." autocomplete="off">
+      <p style="margin-top:12px"><button class="btn" data-save="places">Save and test</button> <span id="r-places"></span></p>
+    </div>
+
+    <div class="card">
+      <h2>Safety limits</h2>
+      <p class="sub">Emails per day. Start at 10 with a new mailbox and raise slowly. Sends only Mon&ndash;Fri, 9:00&ndash;17:00 on this computer.</p>
+      <div class="row"><div><label>Emails per day</label><input id="dailyCap" type="number" min="1" max="100"></div>
+      <button class="btn ghost" id="saveCap">Save</button></div>
+    </div>
+  </section>
+
+  <section id="t-find" class="hide">
+    <div class="card">
+      <h2>Find businesses that may need a website or app</h2>
+      <p class="sub">Type the kind of business and the area. The agent searches Google Maps, reads each site for a public email, and writes a draft for your approval. Nothing is sent yet.</p>
+      <div class="row">
+        <div><label>Business type</label><input id="q" placeholder="dentists, restaurants, gyms, plumbers..."></div>
+        <div><label>Area</label><input id="area" placeholder="Austin, TX"></div>
+        <div style="flex:0 0 100px"><label>How many</label><input id="max" type="number" value="20" min="5" max="60"></div>
+        <button class="btn" id="go">Find &amp; write drafts</button>
+      </div>
+    </div>
+    <div class="card"><h2>Status</h2><table id="counts"></table></div>
+  </section>
+
+  <section id="t-review" class="hide">
+    <div class="card">
+      <div class="row">
+        <div><h2>Drafts waiting for you</h2><p class="sub" id="reviewSub"></p></div>
+        <button class="btn ghost" id="approveAll">Approve all</button>
+        <button class="btn" id="sendNow">Send approved now</button>
+      </div>
+      <label style="display:flex;gap:8px;align-items:center;margin-top:12px;color:var(--ink)"><input type="checkbox" id="auto" style="width:auto"> Auto mode: while this window is open, send approved emails and follow-ups automatically within the daily limit</label>
+    </div>
+    <div id="drafts"></div>
+  </section>
+
+  <section id="t-sent" class="hide">
+    <div class="card">
+      <div class="row"><div><h2>Sent</h2><p class="sub">Follow-ups go out automatically on day 4 and day 10 if there is no reply.</p></div>
+      <button class="btn ghost" id="replies">Check replies now</button>
+      <button class="btn ghost" id="followups">Write follow-ups now</button></div>
+      <table id="sentTable"></table>
+    </div>
+    <div class="card">
+      <h2>Emergency stop</h2>
+      <p class="sub">Pause blocks all sending until you resume.</p>
+      <button class="btn bad" id="pause"></button>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s)
+let S = null, tab = localStorage.getItem('tab') || 'setup'
+const api = async (path, body) => {
+  const r = await fetch(path, body === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+  const j = await r.json()
+  if (!r.ok) throw new Error(j.error || 'Something went wrong')
+  return j
+}
+const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); kids.flat().forEach((k) => e.append(k)); return e }
+
+function setTab(t) {
+  tab = t; localStorage.setItem('tab', t)
+  document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.dataset.t === t))
+  ;['setup', 'find', 'review', 'sent'].forEach((x) => $('#t-' + x).classList.toggle('hide', x !== t))
+}
+document.querySelectorAll('nav button').forEach((b) => (b.onclick = () => setTab(b.dataset.t)))
+
+function show(msg, ok, target) { const n = $(target); n.textContent = msg; n.style.color = ok ? 'var(--ok)' : 'var(--bad)' }
+
+async function refresh() {
+  try { S = await api('/api/state') } catch { return }
+  const c = S.configured
+  $('#stats').textContent = ''
+  $('#stats').append(
+    el('span', { textContent: `Sent today: ${S.sentToday}/${S.settings.dailyCap}` }),
+    el('span', { textContent: S.windowOpen ? 'Send window: open' : `Send window closed (${S.sendWindow}, Mon-Fri)` }),
+    el('span', { textContent: S.paused ? 'PAUSED' : 'Running' }),
+  )
+  const missing = [!c.gmail && 'Gmail', !c.anthropic && 'Claude key', !c.places && 'Google Maps key'].filter(Boolean)
+  const b = $('#setupBanner')
+  b.className = 'banner ' + (missing.length ? 'warn' : 'ok')
+  b.textContent = missing.length ? `Still to set up: ${missing.join(', ')}. Fill in each box below once.` : 'Everything is connected. Go to "2. Find customers".'
+  for (const id of ['gmailUser', 'fromName', 'signOffName', 'replyTo', 'dailyCap']) { const i = $('#' + id); if (document.activeElement !== i && !i.value) i.value = S.settings[id] ?? '' }
+  for (const [id, ok] of [['gmailAppPassword', c.gmail], ['anthropicKey', c.anthropic], ['placesKey', c.places]]) $('#' + id).placeholder = ok ? 'Saved. Leave blank to keep it.' : $('#' + id).placeholder
+
+  // job
+  const j = S.job
+  $('#job').classList.toggle('hide', !j.running && !j.log.length)
+  $('#jobname').textContent = j.running ? `Working: ${j.name}...` : (j.error ? `Stopped: ${j.name}` : `Finished: ${j.name}`)
+  $('#joblog').textContent = j.log.join('\n'); $('#joblog').scrollTop = 1e9
+  $('#go').disabled = j.running; $('#sendNow').disabled = j.running
+
+  // counts
+  const names = { found: 'Found, not checked', no_email: 'No public email (skipped)', ready: 'Email found, no draft', drafted: 'Draft waiting', approved: 'Approved', sent: 'Sent', replied: 'Replied', unsubscribed: 'Opted out', bounced: 'Bounced', skipped: 'Rejected' }
+  const t = $('#counts'); t.textContent = ''
+  Object.entries(S.counts).forEach(([k, n]) => t.append(el('tr', {}, el('td', { textContent: names[k] || k }), el('td', { textContent: n }))))
+  if (!Object.keys(S.counts).length) t.append(el('tr', {}, el('td', { textContent: 'Nothing yet.' })))
+
+  // drafts (don't re-render while editing)
+  if (!document.activeElement || !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) || document.activeElement.id === 'auto') {
+    const box = $('#drafts'); box.textContent = ''
+    const first = S.drafts.filter((d) => d.step === 0)
+    $('#reviewSub').textContent = `${S.drafts.filter((d) => d.status === 'draft').length} to review, ${S.drafts.filter((d) => d.status === 'approved').length} approved and ready to send`
+    first.forEach((d) => {
+      const subj = el('input', { value: d.subject }), body = el('textarea', { value: d.body })
+      const save = () => api('/api/edit', { id: d.id, subject: subj.value, body: body.value }).catch(() => {})
+      subj.onchange = save; body.onchange = save
+      const btns = d.status === 'draft'
+        ? [el('button', { className: 'btn', textContent: 'Approve', onclick: async () => { await save(); await api('/api/approve', { ids: [d.id] }); refresh() } }),
+           el('button', { className: 'btn ghost', textContent: 'Reject', onclick: async () => { await api('/api/reject', { ids: [d.id] }); refresh() } })]
+        : [el('span', { className: 'pill ok', textContent: 'Approved: will send' })]
+      box.append(el('div', { className: 'draft' },
+        el('div', { className: 'meta', textContent: `${d.name}  •  ${d.email}  •  ${d.category || ''}` }),
+        subj, body, el('div', { className: 'row', style: 'margin-top:8px' }, ...btns)))
+    })
+    if (!first.length) box.append(el('p', { className: 'sub', textContent: 'No drafts yet. Go to "2. Find customers".' }))
+  }
+  $('#auto').checked = S.auto
+
+  const st = $('#sentTable'); st.textContent = ''
+  st.append(el('tr', {}, ...['Business', 'Email', 'Step', 'Status', 'Sent'].map((h) => el('th', { textContent: h }))))
+  S.sent.forEach((m) => st.append(el('tr', {}, el('td', { textContent: m.name }), el('td', { textContent: m.email }), el('td', { textContent: m.step === 0 ? 'First email' : 'Follow-up ' + m.step }), el('td', { textContent: m.lead_status }), el('td', { textContent: m.sent_at }))))
+  $('#pause').textContent = S.paused ? 'Resume sending' : 'Pause all sending'
+}
+
+document.querySelectorAll('[data-save]').forEach((b) => (b.onclick = async () => {
+  const w = b.dataset.save
+  const fields = { gmail: ['gmailUser', 'gmailAppPassword', 'fromName', 'signOffName', 'replyTo'], anthropic: ['anthropicKey'], places: ['placesKey'] }[w]
+  const payload = Object.fromEntries(fields.map((f) => [f, $('#' + f).value]))
+  b.disabled = true; show('Working...', true, '#r-' + w)
+  try {
+    await api('/api/settings', payload)
+    fields.forEach((f) => { if (f.includes('Key') || f.includes('Password')) $('#' + f).value = '' })
+    const r = await api('/api/test', { which: w })
+    show(r.message, true, '#r-' + w)
+  } catch (e) { show(e.message, false, '#r-' + w) }
+  b.disabled = false; refresh()
+}))
+$('#saveCap').onclick = async () => { await api('/api/settings', { dailyCap: $('#dailyCap').value }); refresh() }
+$('#go').onclick = async () => {
+  try { await api('/api/find', { query: $('#q').value, area: $('#area').value, max: $('#max').value }); setTab('find'); refresh() } catch (e) { alert(e.message) }
+}
+$('#approveAll').onclick = async () => { await api('/api/approve', { ids: 'all' }); refresh() }
+$('#sendNow').onclick = async () => {
+  const n = S.drafts.filter((d) => d.status === 'approved').length
+  if (!n) return alert('Approve at least one draft first.')
+  if (!confirm(`Send up to ${Math.min(n, S.settings.dailyCap - S.sentToday)} approved email(s) now? They go out with 1-4 minute gaps.`)) return
+  try { await api('/api/send', { limit: 0 }); refresh() } catch (e) { alert(e.message) }
+}
+$('#auto').onchange = async (e) => { await api('/api/auto', { on: e.target.checked }) }
+$('#replies').onclick = async () => { try { await api('/api/check-replies', {}); refresh() } catch (e) { alert(e.message) } }
+$('#followups').onclick = async () => { try { await api('/api/followups', {}); refresh() } catch (e) { alert(e.message) } }
+$('#pause').onclick = async () => { await api(S.paused ? '/api/resume' : '/api/pause', {}); refresh() }
+
+setTab(tab); refresh(); setInterval(refresh, 3000)
+</script>
+</body>
+</html>
