@@ -70,9 +70,15 @@ export function effectiveCap(db, sender = null, now = new Date()) {
   ).get(...args).c
   const held = bounces >= 2 || optouts >= 4
   const start = config.warmupStart
+  // A daily step counts days this mailbox actually SENT (before today), not calendar days. Sending
+  // only Tue-Thu would otherwise grow volume faster than the mailbox's real activity, and today's
+  // limit stays the same all day.
+  const sendingDays = db.prepare(
+    `SELECT COUNT(DISTINCT date(m.sent_at,'localtime')) c FROM messages m WHERE m.status='sent' ${where} AND date(m.sent_at,'localtime') < date('now','localtime')`,
+  ).get(...args).c
   const grown = config.warmupStepPerDay === null
     ? start + week * 4 // default: +4 a week
-    : start + Math.floor(days * config.warmupStepPerDay) // your own daily step
+    : start + Math.floor(sendingDays * config.warmupStepPerDay) // your own daily step
   const ramp = held ? Math.min(start, 5) : grown
   return { cap: Math.max(1, Math.min(ceiling, ramp)), ceiling, week: week + 1, day: days + 1, held }
 }

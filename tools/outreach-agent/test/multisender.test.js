@@ -185,9 +185,12 @@ test('daily ramp: start 8, add 1 a day, stops at your per-mailbox limit; brakes 
   assert.equal(effectiveCap(db, rai).cap, 8, 'day 1')
   const ago = (d) => new Date(Date.now() - d * 86_400_000).toISOString().replace('T', ' ').slice(0, 19)
   const first = (box_, d) => mkMsg(db, mkLead(db, Math.floor(Math.random() * 1e6), { status: 'sent' }), { status: 'sent', sentAt: ago(d), sender: box_.email })
-  first(rai, 5)
-  assert.equal(effectiveCap(db, rai).cap, 13, 'day 6 = 8 + 5')
-  first(sara, 30)
+  // five separate sending days before today -> 8 + 5; idle days in between do not count
+  for (const d of [9, 7, 6, 3, 1]) first(rai, d)
+  assert.equal(effectiveCap(db, rai).cap, 13, '6th sending day = 8 + 5')
+  first(rai, 0)
+  assert.equal(effectiveCap(db, rai).cap, 13, 'sending today does not raise today\x27s limit')
+  for (let d = 40; d > 10; d--) first(sara, d)
   assert.equal(effectiveCap(db, sara).cap, 25, 'never above the per-mailbox limit')
   // 4 opt-outs in the last 25 sends hold a mailbox, just like bounces
   for (let i = 0; i < 4; i++) first(rai, 0), db.prepare("UPDATE leads SET status='unsubscribed' WHERE id=(SELECT MAX(id) FROM leads)").run()

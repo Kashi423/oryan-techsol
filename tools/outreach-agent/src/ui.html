@@ -393,8 +393,8 @@ function renderExtras() {
   wf('#wStart', S.warmup.start); wf('#wStep', S.warmup.stepPerDay ?? ''); wf('#wCeil', S.warmup.ceiling)
   $('#wStep').placeholder = 'blank = +4 a week'
   const pt = $('#planTable'); pt.textContent = ''
-  pt.append(el('tr', {}, ...['Day', 'Per mailbox', `All ${Math.max(1, S.senders.filter((x) => x.hasPassword).length)} mailbox(es)`, ''].map((h) => el('th', { textContent: h }))))
-  S.plan.forEach((p) => pt.append(el('tr', {}, el('td', { textContent: `Day ${p.day}` }), el('td', { textContent: p.perMailbox }), el('td', { textContent: p.total }),
+  pt.append(el('tr', {}, ...['Sending day', 'Per mailbox', `All ${Math.max(1, S.senders.filter((x) => x.hasPassword).length)} mailbox(es)`, ''].map((h) => el('th', { textContent: h }))))
+  S.plan.forEach((p) => pt.append(el('tr', {}, el('td', { textContent: `Sending day ${p.day}` }), el('td', { textContent: p.perMailbox }), el('td', { textContent: p.total }),
     el('td', { className: 'sub', textContent: p.cappedByTotal ? `held down by the total limit of ${S.totalCap}` : '' }))))
   $('#rampNote').textContent = 'Follow-ups count towards these numbers, so roughly one in four sends is a new business.'
   if (!document.activeElement || !document.activeElement.closest?.('#boxTable')) {
