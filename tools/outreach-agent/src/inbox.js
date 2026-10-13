@@ -2,6 +2,7 @@ import { ImapFlow } from 'imapflow'
 import { simpleParser } from 'mailparser'
 import { config, requireKeys } from './config.js'
 import { optOut } from './sender.js'
+import { recordReply } from './replies.js'
 
 const STOP = /\b(unsubscribe|remove me|stop (emailing|sending|contacting)|no thanks|no thank you|not interested|take me off|do not (contact|email)|don'?t (contact|email)|opt.?out)\b/i
 
@@ -39,6 +40,7 @@ export function applyInbound(db, parsed) {
   }
   const lead = find.get(c.from)
   if (!lead) return { ...c, matched: 0 }
+  recordReply(db, lead.id, parsed, c.kind)
   if (c.kind === 'optout') optOut(db, c.from, 'replied with opt-out')
   else {
     db.prepare("UPDATE leads SET status='replied' WHERE id=?").run(lead.id)

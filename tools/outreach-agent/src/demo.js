@@ -1,6 +1,7 @@
 // Demo mode: fake businesses, fake websites, fake drafts and a fake mail server,
 // so the whole app can be clicked through with no keys and without sending anything.
 import { optOut } from './sender.js'
+import { recordReply } from './replies.js'
 
 const NAMES = ['Bright', 'Lakeside', 'Downtown', 'Premier', 'Sunrise', 'Heritage', 'Summit', 'Maple']
 const cap = (s) => s.replace(/\b\w/g, (c) => c.toUpperCase())
@@ -72,9 +73,11 @@ export function demoKit() {
     if (sent[0]) {
       db.prepare("UPDATE leads SET status='replied' WHERE id=?").run(sent[0].id)
       db.prepare("UPDATE messages SET status='rejected' WHERE status IN ('draft','approved') AND lead_id=?").run(sent[0].id)
+      recordReply(db, sent[0].id, { from: { value: [{ address: sent[0].email }] }, subject: 'Re: A quick idea', text: 'Hi, this sounds interesting. How much would a booking page cost and could we talk on Tuesday?', messageId: '<demo-reply-1@oryan.demo>' }, 'reply')
       counts.reply++; log(`(demo) reply received from ${sent[0].email}: "Sounds interesting, call me Tuesday"`)
     }
     if (sent[1]) {
+      recordReply(db, sent[1].id, { from: { value: [{ address: sent[1].email }] }, subject: 'Re: A quick idea', text: 'No thanks, please remove me from your list.', messageId: '<demo-reply-2@oryan.demo>' }, 'optout')
       optOut(db, sent[1].email, 'demo opt-out')
       counts.optout++; log(`(demo) ${sent[1].email} replied "no thanks": added to the do-not-contact list`)
     }

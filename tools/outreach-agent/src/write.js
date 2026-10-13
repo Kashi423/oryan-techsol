@@ -8,12 +8,12 @@ Rules:
 - Plain text only. First email: 70-110 words. Follow-ups: 35-60 words.
 - Write as one human, sign off as "${config.signOffName || config.fromName}" with no title lines (a footer is appended automatically).
 - Use ONLY the facts supplied about the business. Never invent numbers, awards, competitors, traffic, revenue or things you "noticed" that are not in the facts.
-- At most one specific observation, phrased kindly and as something that could be improved, not as an insult.
+- You may mention up to two of the supplied findings, phrased kindly and as something that could be improved, not as an insult. Never add findings that are not supplied.
 - Describe observations only as what you could see ("I couldn't spot an online booking option on your homepage"), never as a certainty about their business ("patients cannot book online").
 - One clear, low-pressure call to action (e.g. "Worth a quick 15-minute chat?").
 - No hype, no emojis, no ALL CAPS, no "I hope this email finds you well", no fake urgency, no "Re:" or "Fwd:" subjects.
 - Do not claim a prior relationship or that they contacted us.
-- Subject: under 8 words, specific, no clickbait.
+- Subject: under 8 words, specific, no clickbait. If a subject style is given, follow it.
 Respond with ONLY a JSON object: {"subject": "...", "body": "..."}`
 
 export function parseDraft(text) {
@@ -26,8 +26,18 @@ export function parseDraft(text) {
   return { subject: j.subject.trim().replace(/\s+/g, ' '), body: j.body.trim() }
 }
 
+export function auditBullets(lead) {
+  try { return (JSON.parse(lead.audit || 'null')?.bullets ?? []).slice(0, 3) } catch { return [] }
+}
+
+const STYLE = {
+  A: 'Subject style A: plain and specific, e.g. "Online booking for <Business>".',
+  B: 'Subject style B: a short, friendly question, e.g. "Quick question about <Business>\'s website?".',
+}
+
 function facts(lead) {
   const obs = JSON.parse(lead.observations || '[]')
+  const audit = auditBullets(lead)
   return [
     `Business: ${lead.name}`,
     lead.category && `Type: ${lead.category}`,
@@ -36,6 +46,7 @@ function facts(lead) {
     lead.website ? `Website: ${lead.website}` : 'Website: none listed',
     lead.site_summary && `Homepage text: ${lead.site_summary}`,
     obs.length && `Observations about their site:\n- ${obs.join('\n- ')}`,
+    audit.length && `Audit findings (what could be seen on the homepage):\n- ${audit.join('\n- ')}`,
   ].filter(Boolean).join('\n')
 }
 
@@ -91,9 +102,9 @@ export function getClient() {
 }
 
 /** `client` is injectable for tests; defaults to whichever provider has a key. */
-export async function draftEmail(lead, { step = 0, previous = null, client } = {}) {
+export async function draftEmail(lead, { step = 0, previous = null, client, variant = 'A' } = {}) {
   // No AI key configured: use the built-in templates so the app works with zero setup.
-  if (!client && !aiProvider()) return templateDraft(lead, { step, previous })
+  if (!client && !aiProvider()) return templateDraft(lead, { step, previous, variant })
   const c = client ?? getClient()
   const task =
     step === 0
@@ -103,7 +114,7 @@ export async function draftEmail(lead, { step = 0, previous = null, client } = {
     model: aiProvider() === 'openai' && !client ? config.openaiModel : config.model,
     max_tokens: 600,
     system: systemPrompt(),
-    messages: [{ role: 'user', content: `${task}\n\nFacts:\n${facts(lead)}` }],
+    messages: [{ role: 'user', content: `${task}${step === 0 ? '\n' + (STYLE[variant] ?? STYLE.A) : ''}\n\nFacts:\n${facts(lead)}` }],
   })
   const text = res.content.filter((b) => b.type === 'text').map((b) => b.text).join('')
   return parseDraft(text)

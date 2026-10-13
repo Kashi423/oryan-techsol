@@ -27,6 +27,24 @@ export function sentToday(db) {
   return db.prepare("SELECT COUNT(*) c FROM messages WHERE status='sent' AND date(sent_at,'localtime') = date('now','localtime')").get().c
 }
 
+/**
+ * Today's real sending limit. Your configured limit is the ceiling; with warm-up on, a new sender
+ * starts at 5 a day and gains 4 a day each week. Two or more recent bounces hold it at 5.
+ */
+export function effectiveCap(db, now = new Date()) {
+  const ceiling = config.dailyCap
+  if (!config.warmup) return { cap: ceiling, ceiling, week: null, held: false }
+  const first = db.prepare("SELECT MIN(sent_at) t FROM messages WHERE status='sent'").get().t
+  const days = first ? Math.max(0, Math.floor((now - new Date(first.replace(' ', 'T') + 'Z')) / 86_400_000)) : 0
+  const week = Math.floor(days / 7)
+  const bounces = db.prepare(
+    "SELECT COUNT(*) c FROM (SELECT l.status FROM messages m JOIN leads l ON l.id = m.lead_id WHERE m.status='sent' ORDER BY m.sent_at DESC, m.id DESC LIMIT 25) WHERE status='bounced'",
+  ).get().c
+  const held = bounces >= 2
+  const ramp = held ? 5 : 5 + week * 4
+  return { cap: Math.max(1, Math.min(ceiling, ramp)), ceiling, week: week + 1, held }
+}
+
 /** True when the last 25 sends include `bounceLimit` or more bounces: stop and let a human look. */
 export function bounceBreaker(db) {
   const recent = db.prepare(
@@ -40,7 +58,8 @@ export function blockers(db, msg, lead, { force = false } = {}) {
   const why = []
   if (existsSync(config.pauseFile)) why.push('PAUSE file present')
   if (!force && !inSendWindow()) why.push(`outside send window ${config.sendWindow} Mon-Fri`)
-  if (sentToday(db) >= config.dailyCap) why.push(`daily cap ${config.dailyCap} reached`)
+  const { cap } = effectiveCap(db)
+  if (sentToday(db) >= cap) why.push(`daily cap ${cap} reached`)
   if (bounceBreaker(db)) why.push('bounce breaker tripped')
   if (!lead.email) why.push('no email')
   else {
@@ -71,6 +90,9 @@ export async function sendApproved(db, { live = false, limit = Infinity, force =
       continue
     }
     if (!live) { log(`[dry-run] would send #${m.id} (step ${m.step}) to ${lead.email}: ${m.subject}`); sent++; continue }
+
+    // Claim the message first, so the app and the background runner can never both send it.
+    if (Number(db.prepare("UPDATE messages SET status='sending' WHERE id=? AND status='approved'").run(m.id).changes) !== 1) continue
 
     const headers = {
       'List-Unsubscribe': `<mailto:${config.replyTo || config.gmailUser}?subject=unsubscribe>`,

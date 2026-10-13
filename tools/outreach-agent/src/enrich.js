@@ -52,6 +52,8 @@ function textOf(html) {
     .trim()
 }
 
+import { buildAudit } from './audit.js'
+
 async function get(url, fetchImpl) {
   const res = await fetchImpl(url, {
     headers: { 'User-Agent': UA, Accept: 'text/html' },
@@ -64,13 +66,15 @@ async function get(url, fetchImpl) {
 }
 
 export async function enrichSite(website, fetchImpl = fetch) {
-  if (!website) return { email: null, observations: [], summary: '' }
+  if (!website) return { email: null, observations: [], summary: '', audit: null }
   let home
+  const started = Date.now()
   try {
     home = await get(website, fetchImpl)
   } catch (e) {
-    return { email: null, observations: [], summary: '', error: e.message }
+    return { email: null, observations: [], summary: '', audit: null, error: e.message }
   }
+  const elapsed = Date.now() - started
   const host = new URL(home.url).hostname
   let emails = extractEmails(home.html)
   const links = [...home.html.matchAll(/href=["']([^"'#]+)["']/gi)]
@@ -95,6 +99,7 @@ export async function enrichSite(website, fetchImpl = fetch) {
   return {
     email: pickBestEmail(emails, host),
     observations: observe(home.html, home.url),
+    audit: buildAudit(home.html, home.url, elapsed),
     summary: [title, desc, textOf(home.html).slice(0, 400)].filter(Boolean).join(' | ').slice(0, 700),
   }
 }

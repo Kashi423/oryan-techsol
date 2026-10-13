@@ -41,6 +41,20 @@
   a { color:var(--brand); }
   .steps li { margin-bottom:6px; }
   .hide { display:none; }
+  .todo { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .todo button { border:1px solid var(--line); background:var(--card); color:var(--ink); padding:6px 12px; border-radius:99px; font:inherit; font-size:13px; cursor:pointer; }
+  .todo button b { color:var(--brand); }
+  .pill.blue { background:#0891b222; color:var(--brand); } .pill.red { background:#dc262622; color:var(--bad); } .pill.gray { background:var(--line); color:var(--muted); }
+  .findings { margin:0 0 8px; padding-left:18px; color:var(--muted); font-size:13px; }
+  .board { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; align-items:start; }
+  .col { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px; min-height:120px; }
+  .col h3 { margin:0 0 8px; font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .lead { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:8px; margin-bottom:8px; font-size:13px; }
+  .lead select, .lead input { padding:4px 6px; font-size:12px; margin-top:6px; }
+  .reply { border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:12px; background:var(--card); }
+  .reply blockquote { margin:8px 0; padding:8px 12px; border-left:3px solid var(--line); color:var(--muted); white-space:pre-wrap; }
+  .bar { height:8px; background:var(--line); border-radius:99px; overflow:hidden; } .bar i { display:block; height:100%; background:var(--brand); }
+  nav .badge { background:var(--bad); color:#fff; border-radius:99px; font-size:11px; padding:1px 7px; margin-left:6px; }
 </style>
 </head>
 <body>
@@ -52,10 +66,14 @@
   <button data-t="setup">1. Setup</button>
   <button data-t="find">2. Find customers</button>
   <button data-t="review">3. Review &amp; send</button>
-  <button data-t="sent">4. Sent &amp; replies</button>
+  <button data-t="sent">4. Sent</button>
+  <button data-t="replies">5. Replies<span class="badge hide" id="replyBadge"></span></button>
+  <button data-t="pipeline">6. Pipeline</button>
+  <button data-t="stats">7. Stats</button>
 </nav>
 <main>
   <div id="demoBanner" class="banner warn hide"><b>DEMO MODE.</b> Fake businesses, fake websites and a fake mail server. Nothing real is searched, written or sent, and your settings are untouched. Try: Find customers &rarr; Review &amp; send &rarr; Approve &rarr; Send.</div>
+  <div class="todo" id="todo"></div>
   <div id="job" class="card hide"><strong id="jobname"></strong><div class="log" id="joblog" style="margin-top:8px"></div></div>
 
   <section id="t-setup">
@@ -160,6 +178,29 @@
       <button class="btn bad" id="pause"></button>
     </div>
   </section>
+
+  <section id="t-replies" class="hide">
+    <div class="card"><h2>Replies</h2>
+      <p class="sub">Every reply is read and labelled, with a suggested response ready for you to edit. Nothing is sent until you click Send.</p>
+      <button class="btn ghost" id="replies2">Check replies now</button></div>
+    <div id="replyList"></div>
+  </section>
+
+  <section id="t-pipeline" class="hide">
+    <div class="card">
+      <div class="row"><div><h2>Pipeline</h2><p class="sub">Contacted and replied move by themselves. Mark meetings, wins and losses yourself, and keep notes.</p></div>
+      <a class="btn ghost" style="text-decoration:none;text-align:center" href="/api/export.csv">Export CSV</a></div>
+    </div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section id="t-stats" class="hide">
+    <div class="card"><h2>Subject line test (A vs B)</h2>
+      <p class="sub">A = plain and specific. B = a short question. Compared by reply rate, since opens can't be measured reliably. Wait for 20+ emails per variant before trusting a winner.</p>
+      <table id="variantTable"></table></div>
+    <div class="card"><h2>Reply mix</h2><table id="labelTable"></table></div>
+    <div class="card"><h2>Sending health</h2><div id="health" class="sub"></div></div>
+  </section>
 </main>
 
 <script>
@@ -176,7 +217,7 @@ const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.crea
 function setTab(t) {
   tab = t; localStorage.setItem('tab', t)
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.dataset.t === t))
-  ;['setup', 'find', 'review', 'sent'].forEach((x) => $('#t-' + x).classList.toggle('hide', x !== t))
+  ;['setup', 'find', 'review', 'sent', 'replies', 'pipeline', 'stats'].forEach((x) => $('#t-' + x).classList.toggle('hide', x !== t))
 }
 document.querySelectorAll('nav button').forEach((b) => (b.onclick = () => setTab(b.dataset.t)))
 
@@ -190,7 +231,7 @@ async function refresh() {
   document.title = S.demo ? 'Oryan Outreach (DEMO)' : 'Oryan Outreach'
   $('#stats').textContent = ''
   $('#stats').append(
-    el('span', { textContent: `Sent today: ${S.sentToday}/${S.settings.dailyCap}` }),
+    el('span', { textContent: `Sent today: ${S.sentToday}/${S.cap.cap}${S.cap.week ? ` (warm-up week ${S.cap.week}${S.cap.held ? ', held: bounces' : ''}, max ${S.cap.ceiling})` : ''}` }),
     el('span', { textContent: S.windowOpen ? 'Send window: open' : `Send window closed (${S.sendWindow}, Mon-Fri)` }),
     el('span', { textContent: S.paused ? 'PAUSED' : 'Running' }),
   )
@@ -233,7 +274,11 @@ async function refresh() {
            el('button', { className: 'btn ghost', textContent: 'Reject', onclick: async () => { await api('/api/reject', { ids: [d.id] }); refresh() } })]
         : [el('span', { className: 'pill ok', textContent: 'Approved: will send' })]
       box.append(el('div', { className: 'draft' },
-        el('div', { className: 'meta', textContent: `${d.name}  •  ${d.email}  •  ${d.category || ''}` }),
+        el('div', { className: 'meta' },
+          `${d.name}  •  ${d.email}  •  ${d.category || ''}  `,
+          el('span', { className: 'pill blue', textContent: `score ${d.score}` }), ' ',
+          el('span', { className: 'pill gray', textContent: `subject ${d.variant || '-'}` })),
+        d.findings.length ? el('ul', { className: 'findings' }, d.findings.slice(0, 3).map((f) => el('li', { textContent: f }))) : '',
         subj, body, el('div', { className: 'row', style: 'margin-top:8px' }, ...btns)))
     })
     if (!first.length) box.append(el('p', { className: 'sub', textContent: 'No drafts yet. Go to "2. Find customers".' }))
@@ -244,6 +289,71 @@ async function refresh() {
   st.append(el('tr', {}, ...['Business', 'Email', 'Step', 'Status', 'Sent'].map((h) => el('th', { textContent: h }))))
   S.sent.forEach((m) => st.append(el('tr', {}, el('td', { textContent: m.name }), el('td', { textContent: m.email }), el('td', { textContent: m.step === 0 ? 'First email' : 'Follow-up ' + m.step }), el('td', { textContent: m.lead_status }), el('td', { textContent: m.sent_at }))))
   $('#pause').textContent = S.paused ? 'Resume sending' : 'Pause all sending'
+  renderExtras()
+}
+
+const LABEL = { interested: ['Interested', 'ok'], question: ['Question', 'blue'], not_interested: ['Not interested', 'gray'], out_of_office: ['Out of office', 'gray'], other: ['Other', 'gray'], '': ['Reading...', 'gray'] }
+function renderExtras() {
+  const T = S.todo
+  const td = $('#todo'); td.textContent = ''
+  const chip = (n, label, to) => td.append(el('button', { onclick: () => setTab(to) }, el('b', { textContent: n }), ' ' + label))
+  chip(T.newReplies, 'replies to answer', 'replies'); chip(T.draftsWaiting, 'drafts to review', 'review')
+  chip(T.approvedWaiting, 'approved, waiting to send', 'review'); chip(T.followUpsDue, 'follow-ups due', 'sent')
+  const rb = $('#replyBadge'); rb.textContent = T.newReplies; rb.classList.toggle('hide', !T.newReplies)
+
+  // replies (not re-rendered while you type)
+  if (!document.activeElement || document.activeElement.tagName !== 'TEXTAREA') {
+    const box = $('#replyList'); box.textContent = ''
+    S.replies.forEach((r) => {
+      const [lt, lc] = LABEL[r.label] ?? LABEL.other
+      const sug = el('textarea', { value: r.suggested || '', placeholder: 'Write a response...' })
+      const actions = r.status === 'new'
+        ? [el('button', { className: 'btn', textContent: 'Send response', onclick: async () => { try { await api('/api/reply/send', { id: r.id, body: sug.value }); refresh() } catch (e) { alert(e.message) } } }),
+           el('button', { className: 'btn ghost', textContent: 'Mark handled', onclick: async () => { await api('/api/reply/handled', { id: r.id }); refresh() } })]
+        : [el('span', { className: 'pill gray', textContent: r.status === 'answered' ? 'You answered' : 'Handled' })]
+      box.append(el('div', { className: 'reply' },
+        el('div', { className: 'meta' }, el('b', { textContent: r.name }), '  ' + r.from_email + '  ', el('span', { className: 'pill ' + lc, textContent: lt })),
+        r.summary ? el('div', { className: 'sub', textContent: r.summary }) : '',
+        el('blockquote', { textContent: r.body }),
+        r.status === 'new' ? sug : '',
+        el('div', { className: 'row', style: 'margin-top:8px' }, ...actions)))
+    })
+    if (!S.replies.length) box.append(el('p', { className: 'sub', textContent: 'No replies yet. Click "Check replies now" after you have sent emails.' }))
+  }
+
+  // pipeline board (not re-rendered while you type a note)
+  if (!document.activeElement || document.activeElement.tagName !== 'INPUT' || !document.activeElement.closest('.lead')) {
+    const board = $('#board'); board.textContent = ''
+    const cols = [['new', 'New'], ['contacted', 'Contacted'], ['replied', 'Replied'], ['meeting', 'Meeting'], ['won', 'Won'], ['lost', 'Lost'], ['closed', 'Opted out / bounced']]
+    cols.forEach(([key, title]) => {
+      const items = S.pipeline.filter((l) => l.column === key)
+      const col = el('div', { className: 'col' }, el('h3', { textContent: `${title} (${items.length})` }))
+      items.forEach((l) => {
+        const sel = el('select', {}, ...[['', 'Auto'], ['meeting', 'Meeting booked'], ['won', 'Won'], ['lost', 'Lost']].map(([v, t]) => el('option', { value: v, textContent: t, selected: l.stage === v })))
+        sel.onchange = async () => { await api('/api/stage', { leadId: l.id, stage: sel.value }); refresh() }
+        const note = el('input', { value: l.notes || '', placeholder: 'Note...' })
+        note.onchange = () => api('/api/note', { leadId: l.id, note: note.value })
+        col.append(el('div', { className: 'lead' }, el('b', { textContent: l.name }), el('div', { className: 'sub', textContent: `${l.email || ''} • score ${l.score}` }), sel, note))
+      })
+      board.append(col)
+    })
+  }
+
+  // stats
+  const vt = $('#variantTable'); vt.textContent = ''
+  vt.append(el('tr', {}, ...['Subject', 'Sent', 'Replies', 'Reply rate', 'Opt-outs', 'Bounces'].map((h) => el('th', { textContent: h }))))
+  S.stats.variants.forEach((v) => vt.append(el('tr', {}, el('td', { textContent: v.variant }), el('td', { textContent: v.sent }), el('td', { textContent: v.replied }),
+    el('td', {}, el('div', { className: 'bar' }, el('i', { style: `width:${v.sent ? Math.min(100, (v.replied / v.sent) * 400) : 0}%` })), (v.sent ? ((v.replied / v.sent) * 100).toFixed(1) : '0.0') + '%'),
+    el('td', { textContent: v.optouts }), el('td', { textContent: v.bounced }))))
+  if (!S.stats.variants.length) vt.append(el('tr', {}, el('td', { textContent: 'Nothing sent yet.' })))
+  const lt = $('#labelTable'); lt.textContent = ''
+  Object.entries(S.stats.labels).forEach(([k, n]) => lt.append(el('tr', {}, el('td', { textContent: (LABEL[k] ?? [k])[0] }), el('td', { textContent: n }))))
+  if (!Object.keys(S.stats.labels).length) lt.append(el('tr', {}, el('td', { textContent: 'No replies yet.' })))
+  const tot = (key) => S.stats.variants.reduce((a, v) => a + v[key], 0)
+  const sent = tot('sent'), bad = tot('bounced'), opt = tot('optouts')
+  $('#health').textContent = sent
+    ? `Bounce rate ${((bad / sent) * 100).toFixed(1)}% (keep under 2%) • Opt-out rate ${((opt / sent) * 100).toFixed(1)}% (keep under 3%). Today's limit: ${S.cap.cap}${S.cap.held ? ' (held low because of recent bounces)' : ''}.`
+    : 'No emails sent yet. Warm-up starts at 5 a day and adds 4 a day each week, up to your limit.'
 }
 
 document.querySelectorAll('[data-save]').forEach((b) => (b.onclick = async () => {
@@ -280,7 +390,7 @@ $('#sendNow').onclick = async () => {
   try { await api('/api/send', { limit: 0 }); refresh() } catch (e) { alert(e.message) }
 }
 $('#auto').onchange = async (e) => { await api('/api/auto', { on: e.target.checked }) }
-$('#replies').onclick = async () => { try { await api('/api/check-replies', {}); refresh() } catch (e) { alert(e.message) } }
+$('#replies').onclick = $('#replies2').onclick = async () => { try { await api('/api/check-replies', {}); refresh() } catch (e) { alert(e.message) } }
 $('#followups').onclick = async () => { try { await api('/api/followups', {}); refresh() } catch (e) { alert(e.message) } }
 $('#advance').onclick = async () => { await api('/api/demo/advance', {}); alert('Skipped ahead 5 days. Click "Write follow-ups now" to see the follow-ups appear.'); refresh() }
 $('#pause').onclick = async () => { await api(S.paused ? '/api/resume' : '/api/pause', {}); refresh() }

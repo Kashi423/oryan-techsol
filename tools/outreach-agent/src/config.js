@@ -39,6 +39,7 @@ export const config = {
   maxDelaySec: num(process.env.MAX_DELAY_SEC, 240),
   sendWindow: process.env.SEND_WINDOW ?? '9-17', // local machine hours, Mon-Fri
   followUpDays: (process.env.FOLLOWUP_DAYS ?? '4,10').split(',').map(Number), // max 2 follow-ups
+  warmup: process.env.WARMUP !== '0', // ramp the daily limit up gradually on a new sender
   bounceLimit: num(process.env.BOUNCE_LIMIT, 3), // auto-pause after N bounces in the last 25 sends
 
   dbPath: path.join(ROOT, 'data', 'outreach.db'),

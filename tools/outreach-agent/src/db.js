@@ -7,6 +7,7 @@ import { config } from './config.js'
 export function openDb(file = config.dbPath) {
   if (file !== ':memory:') mkdirSync(path.dirname(file), { recursive: true })
   const db = new DatabaseSync(file)
+  db.exec('PRAGMA busy_timeout = 5000') // the app and the daily runner may touch the file at the same time
   db.exec(`
     CREATE TABLE IF NOT EXISTS leads (
       id INTEGER PRIMARY KEY,
@@ -34,7 +35,28 @@ export function openDb(file = config.dbPath) {
       reason TEXT, added_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
     CREATE TABLE IF NOT EXISTS seen (uid TEXT PRIMARY KEY);
+    CREATE TABLE IF NOT EXISTS replies (
+      id INTEGER PRIMARY KEY,
+      lead_id INTEGER NOT NULL REFERENCES leads(id),
+      from_email TEXT, subject TEXT, body TEXT, message_id TEXT,
+      label TEXT DEFAULT '',        -- interested | question | not_interested | out_of_office | other
+      summary TEXT DEFAULT '',
+      suggested TEXT DEFAULT '',    -- suggested reply, for you to approve
+      status TEXT DEFAULT 'new',    -- new | handled | answered
+      notified INTEGER DEFAULT 0,
+      received_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      answered_at TEXT
+    );
   `)
+  // Columns added after the first release: add them to existing databases too.
+  const ensure = (table, col, ddl) => {
+    if (!db.prepare(`PRAGMA table_info(${table})`).all().some((c) => c.name === col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${ddl}`)
+  }
+  ensure('leads', 'score', 'INTEGER DEFAULT 0')
+  ensure('leads', 'audit', 'TEXT')        // JSON: checks + bullets
+  ensure('leads', 'stage', "TEXT DEFAULT ''") // manual pipeline stage: meeting | won | lost
+  ensure('leads', 'notes', "TEXT DEFAULT ''")
+  ensure('messages', 'variant', "TEXT DEFAULT ''")
   return db
 }
 

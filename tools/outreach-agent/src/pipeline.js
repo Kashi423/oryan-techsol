@@ -4,6 +4,7 @@ import { enrichSite } from './enrich.js'
 import { draftEmail } from './write.js'
 import { domainOf } from './db.js'
 import { dueFollowUps } from './sender.js'
+import { scoreLead } from './score.js'
 
 /** `search` is ({query, area, max, fetchImpl}) => places[]. Defaults to Google Places (needs a key). */
 export async function findLeads(db, { query, area, max = 40, fetchImpl, search }) {
@@ -24,25 +25,34 @@ export async function enrichLeads(db, { limit = Infinity, log = () => {}, fetchI
   let ready = 0
   for (const l of rows) {
     // A listing may already carry its own public email (e.g. from the map data).
-    const r = l.website ? await enrichSite(l.website, fetchImpl) : { email: null, observations: [], summary: '' }
+    const r = l.website ? await enrichSite(l.website, fetchImpl) : { email: null, observations: [], summary: '', audit: null }
     const email = r.email || l.email || null
     const dup = email && db.prepare('SELECT 1 FROM leads WHERE domain=? AND id<>? AND status<>\'found\'').get(domainOf(email), l.id)
     const status = email && !dup ? 'ready' : 'no_email'
-    db.prepare('UPDATE leads SET email=?, domain=?, observations=?, site_summary=?, status=? WHERE id=?')
-      .run(email, email ? domainOf(email) : null, JSON.stringify(r.observations), r.summary, status, l.id)
+    const { score } = scoreLead({ ...l, email }, r.audit)
+    db.prepare('UPDATE leads SET email=?, domain=?, observations=?, site_summary=?, audit=?, score=?, status=? WHERE id=?')
+      .run(email, email ? domainOf(email) : null, JSON.stringify(r.observations), r.summary, r.audit ? JSON.stringify(r.audit) : null, score, status, l.id)
     if (status === 'ready') ready++
     log(`${status === 'ready' ? 'Found email' : 'No email'}: ${l.name}${email ? ' (' + email + ')' : ''}`)
   }
   return { checked: rows.length, ready }
 }
 
+/** Alternates subject styles A/B so each gets about half of the first emails. */
+export function nextVariant(db) {
+  const c = Object.fromEntries(db.prepare("SELECT variant, COUNT(*) n FROM messages WHERE step=0 GROUP BY variant").all().map((r) => [r.variant, r.n]))
+  return (c.A ?? 0) <= (c.B ?? 0) ? 'A' : 'B'
+}
+
 export async function draftLeads(db, { limit = Infinity, log = () => {}, client } = {}) {
-  const rows = db.prepare("SELECT * FROM leads WHERE status='ready'").all().slice(0, limit)
+  // Best prospects first, so a limit picks the leads that need us most.
+  const rows = db.prepare("SELECT * FROM leads WHERE status='ready' ORDER BY score DESC, id").all().slice(0, limit)
   let drafted = 0
   for (const l of rows) {
     try {
-      const d = await draftEmail(l, { client })
-      db.prepare('INSERT INTO messages (lead_id, step, subject, body) VALUES (?,0,?,?)').run(l.id, d.subject, d.body)
+      const variant = nextVariant(db)
+      const d = await draftEmail(l, { client, variant })
+      db.prepare('INSERT INTO messages (lead_id, step, subject, body, variant) VALUES (?,0,?,?,?)').run(l.id, d.subject, d.body, variant)
       db.prepare("UPDATE leads SET status='drafted' WHERE id=?").run(l.id)
       drafted++
       log(`Drafted email for ${l.name}`)

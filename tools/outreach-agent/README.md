@@ -77,3 +77,17 @@ Paste either a **Claude API key** (console.anthropic.com) or an **OpenAI API key
 - **AI writer:** Google Gemini (aistudio.google.com/apikey) or Groq (console.groq.com/keys) both have free plans. Pick the service on the Setup tab and paste its key.
 - **Business search:** Google Places has a free monthly allowance, but needs a billing account on file. At 20-60 searches a day you stay inside it.
 - **Sending:** your existing Google Workspace mailbox.
+
+## Advanced features
+
+| Feature | What it does |
+|---|---|
+| **Lead scoring** | Each business gets a 0-100 score (no website, old or slow site, no booking, good reviews, public email). Best prospects are drafted and shown first. |
+| **Website audit** | Honest findings from the homepage ("I couldn't spot an online booking option...") are placed in the email, up to two. |
+| **Subject A/B test** | Subject A is plain and specific, B is a short question. They alternate automatically; the Stats tab shows reply rate per variant. |
+| **Reply handling** | Replies are read, labelled (interested / question / not interested / out of office), a suggested response is drafted for you to edit, and you get an email alert for hot leads. Nothing is sent until you click Send. |
+| **Pipeline** | New, Contacted, Replied, Meeting, Won, Lost, with notes and CSV export. A to-do strip shows what needs you today. |
+| **Warm-up ramp** | A new sender starts at 5 emails a day and gains 4 a day each week, never above your limit, and holds at 5 if 2+ recent sends bounced. Turn off with `WARMUP=0`. |
+| **Runs by itself** | Double-click `install-daily-task.bat` once. Windows then runs `src/daily.js` hourly on weekdays 9-17: reads replies, writes follow-ups, sends emails you already approved. It never approves or finds anything new on its own. Remove with `remove-daily-task.bat`. Log: `data/daily.log`. |
+
+Safety that always applies: first emails need your approval, opted-out addresses are never contacted, a message can only be sent once even if the app and the daily runner run together, and the Pause button stops everything.

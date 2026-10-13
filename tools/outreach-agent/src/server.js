@@ -4,7 +4,8 @@ import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'node:fs'
 import path from 'node:path'
 import { config, ROOT } from './config.js'
 import { findLeads, enrichLeads, draftLeads, queueFollowUps, setDraftStatus } from './pipeline.js'
-import { sendApproved, sentToday, makeTransport, inSendWindow, optOut } from './sender.js'
+import { sendApproved, sentToday, makeTransport, inSendWindow, optOut, effectiveCap, dueFollowUps } from './sender.js'
+import { labelPending, notifyHot, sendReply } from './replies.js'
 import { checkReplies } from './inbox.js'
 import { searchPlaces } from './places.js'
 import { searchOsm } from './osm.js'
@@ -50,6 +51,7 @@ export function createApp(db, { demo = false } = {}) {
   if (demo) {
     // Demo must never touch real keys, the real .env or the real pause file.
     config.placesKey = 'demo'
+    config.warmup = false // demo should show the whole flow at once
     config.pauseFile = path.join(os.tmpdir(), 'oryan-demo-PAUSE')
     if (existsSync(config.pauseFile)) unlinkSync(config.pauseFile)
   }
@@ -71,7 +73,14 @@ export function createApp(db, { demo = false } = {}) {
   const liveSend = (limit) => sendApproved(db, demo
     ? { live: true, limit, log, transport: kit.transport, force: true, wait: async () => {} }
     : { live: true, limit, log })
-  const readInbox = () => (demo ? kit.checkReplies(db, { log }) : checkReplies(db, { log }))
+  const transportForAlerts = () => (demo ? kit.transport : config.gmailAppPassword ? makeTransport() : null)
+  // Reads the inbox, labels each reply (AI or rules), and emails you about hot leads.
+  const readInbox = async () => {
+    const counts = demo ? await kit.checkReplies(db, { log }) : await checkReplies(db, { log })
+    await labelPending(db, { client: kit.client, log })
+    try { await notifyHot(db, { transport: transportForAlerts(), log }) } catch (e) { log(`Alert email failed: ${e.message}`) }
+    return counts
+  }
 
   async function autoCycle() {
     if (!auto || job.running) return
@@ -100,7 +109,22 @@ export function createApp(db, { demo = false } = {}) {
     windowOpen: demo || inSendWindow(),
     sendWindow: config.sendWindow,
     counts: Object.fromEntries(db.prepare('SELECT status, COUNT(*) n FROM leads GROUP BY status').all().map((r) => [r.status, r.n])),
-    drafts: db.prepare("SELECT m.id, m.step, m.subject, m.body, m.status, l.name, l.email, l.website, l.category FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.status IN ('draft','approved') ORDER BY m.status, m.id").all(),
+    cap: effectiveCap(db),
+    todo: {
+      newReplies: db.prepare("SELECT COUNT(*) c FROM replies WHERE status='new' AND label<>'not_interested'").get().c,
+      draftsWaiting: db.prepare("SELECT COUNT(*) c FROM messages WHERE status='draft'").get().c,
+      approvedWaiting: db.prepare("SELECT COUNT(*) c FROM messages WHERE status='approved'").get().c,
+      followUpsDue: dueFollowUps(db).length,
+    },
+    drafts: db.prepare("SELECT m.id, m.step, m.subject, m.body, m.status, m.variant, l.name, l.email, l.website, l.category, l.score, l.audit FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.status IN ('draft','approved') ORDER BY m.status, l.score DESC, m.id").all()
+      .map((d) => ({ ...d, audit: undefined, findings: (() => { try { return JSON.parse(d.audit || 'null')?.bullets ?? [] } catch { return [] } })() })),
+    replies: db.prepare("SELECT r.id, r.lead_id, r.from_email, r.subject, r.body, r.label, r.summary, r.suggested, r.status, r.received_at, l.name FROM replies r JOIN leads l ON l.id=r.lead_id ORDER BY (r.status='new') DESC, r.id DESC LIMIT 60").all(),
+    pipeline: db.prepare("SELECT id, name, email, status, stage, notes, score, category, area FROM leads WHERE status NOT IN ('found','no_email') ORDER BY score DESC, id LIMIT 400").all()
+      .map((l) => ({ ...l, column: l.stage || ({ sent: 'contacted', replied: 'replied', unsubscribed: 'closed', bounced: 'closed' }[l.status] ?? 'new') })),
+    stats: {
+      variants: db.prepare("SELECT COALESCE(NULLIF(m.variant,''),'-') variant, COUNT(*) sent, SUM(l.status='replied' OR l.stage IN ('meeting','won')) replied, SUM(l.status='unsubscribed') optouts, SUM(l.status='bounced') bounced FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.step=0 AND m.status='sent' GROUP BY 1 ORDER BY 1").all(),
+      labels: Object.fromEntries(db.prepare('SELECT label, COUNT(*) n FROM replies GROUP BY label').all().map((r) => [r.label || 'unlabelled', r.n])),
+    },
     sent: db.prepare("SELECT m.id, m.step, m.subject, m.sent_at, l.name, l.email, l.status AS lead_status FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.status='sent' ORDER BY m.sent_at DESC LIMIT 100").all(),
     job: { running: job.running, name: job.name, error: job.error, finished: job.finished, log: job.log.slice(-60) },
   })
@@ -182,6 +206,24 @@ export function createApp(db, { demo = false } = {}) {
         if (!demo) { try { writeFileSync(autoFile, JSON.stringify({ auto })) } catch { /* data dir may not exist yet */ } }
         return { auto }
       }
+      case '/api/reply/send': {
+        if (!demo && !config.gmailAppPassword) throw new Error('Finish Gmail setup first')
+        return sendReply(db, Number(body.id), { body: body.body, transport: demo ? kit.transport : makeTransport() })
+      }
+      case '/api/reply/handled': {
+        db.prepare("UPDATE replies SET status='handled' WHERE id=? AND status='new'").run(Number(body.id))
+        return { ok: true }
+      }
+      case '/api/stage': {
+        const stage = String(body.stage ?? '')
+        if (!['', 'meeting', 'won', 'lost'].includes(stage)) throw new Error('Unknown stage')
+        db.prepare('UPDATE leads SET stage=? WHERE id=?').run(stage, Number(body.leadId))
+        return { ok: true }
+      }
+      case '/api/note': {
+        db.prepare('UPDATE leads SET notes=? WHERE id=?').run(String(body.note ?? '').slice(0, 2000), Number(body.leadId))
+        return { ok: true }
+      }
       case '/api/pause': writeFileSync(config.pauseFile, 'paused'); return { paused: true }
       case '/api/resume': if (existsSync(config.pauseFile)) unlinkSync(config.pauseFile); return { paused: false }
       case '/api/unsub': optOut(db, String(body.email), 'manual'); return { ok: true }
@@ -195,6 +237,13 @@ export function createApp(db, { demo = false } = {}) {
     const host = (req.headers.host ?? '').split(':')[0]
     if (host !== 'localhost' && host !== '127.0.0.1') return send(403, { error: 'Forbidden' })
     if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) return send(200, readFileSync(uiFile, 'utf8'), 'text/html; charset=utf-8')
+    if (req.method === 'GET' && req.url.split('?')[0] === '/api/export.csv') {
+      const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"'
+      const rows = db.prepare("SELECT name, email, phone, website, category, area, score, stage, status, notes FROM leads WHERE status NOT IN ('found') ORDER BY score DESC").all()
+      const head = 'name,email,phone,website,category,area,score,stage,status,notes'
+      res.writeHead(200, { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="oryan-leads.csv"', 'Cache-Control': 'no-store' })
+      return res.end([head, ...rows.map((r) => Object.values(r).map(q).join(','))].join('\r\n'))
+    }
     if (req.method === 'POST' && req.headers.origin && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(req.headers.origin)) return send(403, { error: 'Forbidden' })
     try {
       let body = {}
