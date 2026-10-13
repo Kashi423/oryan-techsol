@@ -91,3 +91,17 @@ Paste either a **Claude API key** (console.anthropic.com) or an **OpenAI API key
 | **Runs by itself** | Double-click `install-daily-task.bat` once. Windows then runs `src/daily.js` hourly on weekdays 9-17: reads replies, writes follow-ups, sends emails you already approved. It never approves or finds anything new on its own. Remove with `remove-daily-task.bat`. Log: `data/daily.log`. |
 
 Safety that always applies: first emails need your approval, opted-out addresses are never contacted, a message can only be sent once even if the app and the daily runner run together, and the Pause button stops everything.
+
+## AI features and branded email
+
+| Feature | What it does |
+|---|---|
+| **Quality gate** | Every draft is scored 0-100 on the Review tab: spam wording, length, no call to action, invented numbers, "I'm local" style claims. Drafts under 60 are marked for review. |
+| **AI fact-check** | One click re-checks a draft against the facts collected about the business and lists any unsupported claim. |
+| **Recommended offer** | Each business gets one thing to lead with (booking system, mobile refresh, new site...). The writer leads with only that, so emails stay focused. |
+| **Rewrite in a tone** | Friendly, direct, short or formal, one click per draft. |
+| **Target ideas** | "Suggest business types" proposes who to search next, using your own reply results once you have them. |
+| **Smarter follow-ups** | Follow-up 1 adds one useful tip; follow-up 2 is a graceful last note. Not just a bump. |
+| **Branded HTML email** | Navy and cyan layout with wordmark, signature, reply button and an unsubscribe line. Always sent with a plain-text version. Preview any draft before approving. Set `EMAIL_STYLE=plain` or use the Setup page to turn it off. |
+
+Deliverability notes: the HTML is deliberately light (one column, no tracking pixel, no images unless you set `EMAIL_LOGO_URL`). Cold email with heavy images or many links lands in spam. If replies drop after switching to HTML, set the style back to plain text and compare on the Stats tab.

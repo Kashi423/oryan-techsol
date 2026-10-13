@@ -108,25 +108,40 @@ export function getClient() {
 }
 
 /** `client` is injectable for tests; defaults to whichever provider has a key. */
-export async function draftEmail(lead, { step = 0, previous = null, client, variant = 'A' } = {}) {
+const TONES = {
+  friendly: 'Tone: warm and conversational, like a helpful neighbour in the industry.',
+  direct: 'Tone: direct and confident. Two or three short sentences, no filler.',
+  short: 'Tone: very brief. Under 60 words in total.',
+  formal: 'Tone: professional and polished, suited to a law firm or clinic.',
+}
+export const TONE_NAMES = Object.keys(TONES)
+
+export async function draftEmail(lead, { step = 0, previous = null, client, variant = 'A', tone = '' } = {}) {
   // No AI key configured: use the built-in templates so the app works with zero setup.
-  if (!client && !aiProvider()) return templateDraft(lead, { step, previous, variant })
+  if (!client && !aiProvider()) return templateDraft(lead, { step, previous, variant, tone })
   try {
-    return await draftWithAi(lead, { step, previous, client, variant })
+    return await draftWithAi(lead, { step, previous, client, variant, tone })
   } catch (e) {
     // The AI is unavailable (no credit, outage...): keep going with the built-in template.
     if (client) throw e
-    return { ...templateDraft(lead, { step, previous, variant }), fallbackReason: e.message }
+    return { ...templateDraft(lead, { step, previous, variant, tone }), fallbackReason: e.message }
   }
 }
 
-async function draftWithAi(lead, { step, previous, client, variant }) {
+// Each follow-up has a different job, so the sequence does not feel like nagging.
+const FOLLOW_UP = {
+  1: 'Write follow-up #1 (40-70 words). Add ONE genuinely useful, specific tip related to the supplied findings so it gives value even if they never reply. No new claims, no pricing.',
+  2: 'Write follow-up #2, the last one (25-45 words). A graceful close: say this is the last note, no pressure, they can reply any time. One sentence offering a short call.',
+}
+
+async function draftWithAi(lead, { step, previous, client, variant, tone }) {
   const c = client ?? getClient()
   const task =
     step === 0
       ? 'Write the first outreach email.'
-      : `Write follow-up #${step}. It is a brief, friendly bump on this earlier email (do not repeat it, add no new claims):\n\nSubject: ${previous?.subject}\n\n${previous?.body}`
-  const base = `${task}${step === 0 ? '\n' + (STYLE[variant] ?? STYLE.A) : ''}\n\nFacts:\n${facts(lead)}`
+      : `${FOLLOW_UP[step] ?? FOLLOW_UP[2]} It follows this earlier email (do not repeat it):\n\nSubject: ${previous?.subject}\n\n${previous?.body}`
+  const offer = lead.offer ? `\nLead with this one thing: ${lead.offer}. Do not list other services.` : ''
+  const base = `${task}${step === 0 ? '\n' + (STYLE[variant] ?? STYLE.A) : ''}${TONES[tone] ? '\n' + TONES[tone] : ''}${offer}\n\nFacts:\n${facts(lead)}`
   let problem = null
   // One retry if the draft makes a claim we cannot back up; otherwise the caller falls back to the template.
   for (let attempt = 0; attempt < 2; attempt++) {

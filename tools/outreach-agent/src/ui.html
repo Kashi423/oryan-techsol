@@ -130,6 +130,18 @@
       <div class="row"><div><label>Emails per day</label><input id="dailyCap" type="number" min="1" max="100"></div>
       <button class="btn ghost" id="saveCap">Save</button></div>
     </div>
+
+    <div class="card">
+      <h2>Email look</h2>
+      <p class="sub">Branded HTML is a light, clean layout in your colours with a signature and an unsubscribe line. Plain text sends no formatting. Both go out with a text version, and there are no tracking pixels.</p>
+      <div class="row">
+        <div><label>Style</label>
+          <select id="emailStyle"><option value="html">Branded HTML (recommended)</option><option value="plain">Plain text only</option></select></div>
+        <div><label>Logo image address (optional, https://...)</label><input id="logoUrl" placeholder="Blank = text wordmark, no images"></div>
+        <button class="btn ghost" id="saveStyle">Save</button>
+      </div>
+      <p class="sub" id="styleMsg" style="margin-top:8px"></p>
+    </div>
   </section>
 
   <section id="t-find" class="hide">
@@ -142,6 +154,11 @@
         <div><label>Area</label><input id="area" placeholder="Austin, TX"></div>
         <div style="flex:0 0 100px"><label>How many</label><input id="max" type="number" value="20" min="5" max="60"></div>
         <button class="btn" id="go">Find &amp; write drafts</button>
+      </div>
+      <div style="margin-top:14px">
+        <button class="btn ghost" id="ideasBtn">Suggest business types to target</button>
+        <span class="sub" id="ideasNote" style="margin-left:8px"></span>
+        <div id="ideas" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
       </div>
     </div>
     <div class="card"><h2>Status</h2><table id="counts"></table></div>
@@ -203,6 +220,13 @@
   </section>
 </main>
 
+<div id="previewModal" style="position:fixed;inset:0;background:#000a;z-index:50;display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--card);border-radius:12px;max-width:680px;width:100%;max-height:92vh;display:flex;flex-direction:column;overflow:hidden">
+    <div class="row" style="padding:10px 14px;border-bottom:1px solid var(--line);align-items:center"><b style="flex:1">How this email will look</b><button class="btn ghost" id="closePreview">Close</button></div>
+    <iframe id="previewFrame" style="border:0;width:100%;height:70vh;background:#fff"></iframe>
+  </div>
+</div>
+
 <script>
 const $ = (s) => document.querySelector(s)
 let S = null, tab = localStorage.getItem('tab') || 'setup'
@@ -245,6 +269,7 @@ async function refresh() {
   $('#modeLine').textContent = `Search: ${src[S.search]}   •   Email writer: ${modes[S.ai]}`
   for (const id of ['gmailUser', 'fromName', 'signOffName', 'replyTo', 'dailyCap']) { const i = $('#' + id); if (document.activeElement !== i && !i.value) i.value = S.settings[id] ?? '' }
   if (document.activeElement !== $('#capReview') && !$('#capReview').value) $('#capReview').value = S.settings.dailyCap
+  if (document.activeElement !== $('#emailStyle')) $('#emailStyle').value = S.emailStyle
   for (const [id, ok] of [['gmailAppPassword', c.gmail], ['aiKey', c.anthropic], ['placesKey', c.places]]) $('#' + id).placeholder = ok ? 'Saved. Leave blank to keep it.' : $('#' + id).placeholder
 
   // job
@@ -278,8 +303,20 @@ async function refresh() {
           `${d.name}  •  ${d.email}  •  ${d.category || ''}  `,
           el('span', { className: 'pill blue', textContent: `score ${d.score}` }), ' ',
           el('span', { className: 'pill gray', textContent: `subject ${d.variant || '-'}` })),
+        d.offer ? el('div', { className: 'sub', textContent: `Leads with: ${d.offer}` }) : '',
         d.findings.length ? el('ul', { className: 'findings' }, d.findings.slice(0, 3).map((f) => el('li', { textContent: f }))) : '',
-        subj, body, el('div', { className: 'row', style: 'margin-top:8px' }, ...btns)))
+        d.quality ? el('div', { className: 'meta' },
+          el('span', { className: 'pill ' + ({ good: 'ok', ok: 'no', review: 'red' }[d.quality.level] || 'gray'), textContent: `Quality ${d.quality.score}/100${d.quality.ai ? ' (AI checked)' : ''}` }),
+          d.quality.issues.length ? el('ul', { className: 'findings' }, d.quality.issues.slice(0, 4).map((i) => el('li', { textContent: i }))) : '') : '',
+        subj, body,
+        el('div', { className: 'row', style: 'margin:8px 0;align-items:center' },
+          el('button', { className: 'btn ghost', textContent: 'Preview', onclick: async () => { const r = await api('/api/preview', { id: d.id, subject: subj.value, body: body.value }); $('#previewFrame').srcdoc = r.html; $('#previewModal').style.display = 'flex' } }),
+          (() => {
+            const t = el('select', { style: 'max-width:150px' }, ...[['', 'Rewrite as...'], ...S.tones.map((x) => [x, x[0].toUpperCase() + x.slice(1)])].map(([v, n]) => el('option', { value: v, textContent: n })))
+            t.onchange = async () => { if (!t.value) return; t.disabled = true; try { await api('/api/regenerate', { id: d.id, tone: t.value }); refresh() } catch (e) { alert(e.message); t.disabled = false } }
+            return t
+          })(),
+          el('button', { className: 'btn ghost', textContent: 'AI fact-check', onclick: async (ev) => { ev.target.disabled = true; try { await api('/api/review', { id: d.id, subject: subj.value, body: body.value }); refresh() } catch (e) { alert(e.message); ev.target.disabled = false } } })), el('div', { className: 'row', style: 'margin-top:8px' }, ...btns)))
     })
     if (!first.length) box.append(el('p', { className: 'sub', textContent: 'No drafts yet. Go to "2. Find customers".' }))
   }
@@ -393,6 +430,25 @@ $('#auto').onchange = async (e) => { await api('/api/auto', { on: e.target.check
 $('#replies').onclick = $('#replies2').onclick = async () => { try { await api('/api/check-replies', {}); refresh() } catch (e) { alert(e.message) } }
 $('#followups').onclick = async () => { try { await api('/api/followups', {}); refresh() } catch (e) { alert(e.message) } }
 $('#advance').onclick = async () => { await api('/api/demo/advance', {}); alert('Skipped ahead 5 days. Click "Write follow-ups now" to see the follow-ups appear.'); refresh() }
+$('#closePreview').onclick = () => { $('#previewModal').style.display = 'none' }
+$('#previewModal').onclick = (e) => { if (e.target.id === 'previewModal') $('#previewModal').style.display = 'none' }
+$('#saveStyle').onclick = async () => {
+  try {
+    await api('/api/settings', { emailStyle: $('#emailStyle').value, logoUrl: $('#logoUrl').value })
+    show('Saved.', true, '#styleMsg')
+  } catch (e) { show(e.message, false, '#styleMsg') }
+  refresh()
+}
+$('#ideasBtn').onclick = async () => {
+  $('#ideasBtn').disabled = true; $('#ideasNote').textContent = 'Thinking...'
+  try {
+    const r = await api('/api/ideas', { area: $('#area').value })
+    $('#ideasNote').textContent = r.ai ? 'Suggested by AI, using your results so far. Click one to use it.' : 'Built-in list (add an AI key for tailored suggestions). Click one to use it.'
+    const box = $('#ideas'); box.textContent = ''
+    r.ideas.forEach((i) => box.append(el('button', { className: 'btn ghost', title: i.why, textContent: i.type, onclick: () => { $('#q').value = i.type } })))
+  } catch (e) { $('#ideasNote').textContent = e.message }
+  $('#ideasBtn').disabled = false
+}
 $('#pause').onclick = async () => { await api(S.paused ? '/api/resume' : '/api/pause', {}); refresh() }
 
 const PRESETS = {

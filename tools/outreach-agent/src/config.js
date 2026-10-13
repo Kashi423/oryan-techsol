@@ -32,6 +32,10 @@ export const config = {
   // Legal footer (CAN-SPAM needs a real postal address + a working opt-out)
   postalAddress: process.env.POSTAL_ADDRESS ?? '1938 West 7th Street, Brooklyn, NY',
   website: 'https://oryantechsol.com',
+  phone: process.env.PHONE ?? '+1 (917) 217-0535',
+  // html = light branded layout (plus a plain-text part); plain = text only
+  emailStyle: (process.env.EMAIL_STYLE ?? 'html').toLowerCase(),
+  logoUrl: process.env.EMAIL_LOGO_URL ?? '', // optional; blank = text wordmark, no images
 
   // Guardrails
   dailyCap: num(process.env.DAILY_CAP, 15), // brand-new Gmail: start low, raise slowly

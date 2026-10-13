@@ -9,7 +9,10 @@ import { labelPending, notifyHot, sendReply } from './replies.js'
 import { checkReplies } from './inbox.js'
 import { searchPlaces } from './places.js'
 import { searchOsm } from './osm.js'
-import { withFooter, getClient, aiProvider } from './write.js'
+import { withFooter, getClient, aiProvider, draftEmail, TONE_NAMES } from './write.js'
+import { renderEmailHtml } from './html.js'
+import { localReview, aiReview } from './quality.js'
+import { suggestTargets } from './ideas.js'
 import { demoKit } from './demo.js'
 import os from 'node:os'
 
@@ -26,6 +29,8 @@ const KEY_MAP = {
   signOffName: ['SIGN_OFF_NAME', 'signOffName'],
   replyTo: ['REPLY_TO', 'replyTo'],
   dailyCap: ['DAILY_CAP', 'dailyCap'],
+  emailStyle: ['EMAIL_STYLE', 'emailStyle'],
+  logoUrl: ['EMAIL_LOGO_URL', 'logoUrl'],
 }
 
 export function saveSettings(updates) {
@@ -102,6 +107,8 @@ export function createApp(db, { demo = false } = {}) {
     search: demo ? 'demo' : config.placesKey ? 'google' : 'openstreetmap',
     hasAiKey: !!aiProvider(),
     hasPlacesKey: !!config.placesKey,
+    emailStyle: config.emailStyle,
+    tones: TONE_NAMES,
     settings: { gmailUser: config.gmailUser, fromName: config.fromName, signOffName: config.signOffName, replyTo: config.replyTo, dailyCap: config.dailyCap },
     paused: existsSync(config.pauseFile),
     auto,
@@ -116,8 +123,8 @@ export function createApp(db, { demo = false } = {}) {
       approvedWaiting: db.prepare("SELECT COUNT(*) c FROM messages WHERE status='approved'").get().c,
       followUpsDue: dueFollowUps(db).length,
     },
-    drafts: db.prepare("SELECT m.id, m.step, m.subject, m.body, m.status, m.variant, l.name, l.email, l.website, l.category, l.score, l.audit FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.status IN ('draft','approved') ORDER BY m.status, l.score DESC, m.id").all()
-      .map((d) => ({ ...d, audit: undefined, findings: (() => { try { return JSON.parse(d.audit || 'null')?.bullets ?? [] } catch { return [] } })() })),
+    drafts: db.prepare("SELECT m.id, m.step, m.subject, m.body, m.status, m.variant, m.quality, l.name, l.email, l.website, l.category, l.score, l.audit, l.offer FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.status IN ('draft','approved') ORDER BY m.status, l.score DESC, m.id").all()
+      .map((d) => ({ ...d, audit: undefined, quality: (() => { try { return JSON.parse(d.quality || 'null') } catch { return null } })(), findings: (() => { try { return JSON.parse(d.audit || 'null')?.bullets ?? [] } catch { return [] } })() })),
     replies: db.prepare("SELECT r.id, r.lead_id, r.from_email, r.subject, r.body, r.label, r.summary, r.suggested, r.status, r.received_at, l.name FROM replies r JOIN leads l ON l.id=r.lead_id ORDER BY (r.status='new') DESC, r.id DESC LIMIT 60").all(),
     pipeline: db.prepare("SELECT id, name, email, status, stage, notes, score, category, area FROM leads WHERE status NOT IN ('found','no_email') ORDER BY score DESC, id LIMIT 400").all()
       .map((l) => ({ ...l, column: l.stage || ({ sent: 'contacted', replied: 'replied', unsubscribed: 'closed', bounced: 'closed' }[l.status] ?? 'new') })),
@@ -138,7 +145,13 @@ export function createApp(db, { demo = false } = {}) {
           const n = Number(body.dailyCap)
           if (!Number.isInteger(n) || n < 1 || n > 200) throw new Error('Daily limit must be a whole number from 1 to 200')
         }
-        if (demo) { if (body.dailyCap) config.dailyCap = Number(body.dailyCap); return { ok: true } }
+        if (body.emailStyle !== undefined && !['html', 'plain'].includes(String(body.emailStyle))) throw new Error('Email style must be html or plain')
+        if (body.logoUrl && !/^https:\/\/\S+$/.test(String(body.logoUrl).trim())) throw new Error('Logo address must start with https://')
+        if (demo) {
+          if (body.dailyCap) config.dailyCap = Number(body.dailyCap)
+          if (body.emailStyle) config.emailStyle = String(body.emailStyle)
+          return { ok: true }
+        }
         saveSettings(body)
         return { ok: true }
       }
@@ -223,6 +236,31 @@ export function createApp(db, { demo = false } = {}) {
       case '/api/note': {
         db.prepare('UPDATE leads SET notes=? WHERE id=?').run(String(body.note ?? '').slice(0, 2000), Number(body.leadId))
         return { ok: true }
+      }
+      case '/api/preview': {
+        const m = db.prepare('SELECT subject, body FROM messages WHERE id=?').get(Number(body.id))
+        if (!m) throw new Error('Draft not found')
+        return { html: renderEmailHtml({ subject: body.subject ?? m.subject, body: body.body ?? m.body }), style: config.emailStyle }
+      }
+      case '/api/regenerate': {
+        const row = db.prepare("SELECT m.*, l.* , m.id AS mid, m.variant AS mvariant FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.id=? AND m.step=0 AND m.status IN ('draft','approved')").get(Number(body.id))
+        if (!row) throw new Error('Draft not found')
+        const tone = TONE_NAMES.includes(body.tone) ? body.tone : ''
+        const d = await draftEmail(row, { variant: row.mvariant || 'A', tone, client: kit.client })
+        const q = localReview(d, row)
+        db.prepare('UPDATE messages SET subject=?, body=?, quality=? WHERE id=?').run(d.subject, d.body, JSON.stringify(q), row.mid)
+        return { ok: true, fallback: d.fallbackReason ?? null }
+      }
+      case '/api/review': {
+        const row = db.prepare('SELECT m.subject, m.body, m.id AS mid, l.* FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.id=?').get(Number(body.id))
+        if (!row) throw new Error('Draft not found')
+        const q = await aiReview({ subject: body.subject ?? row.subject, body: body.body ?? row.body }, row, { client: kit.client })
+        db.prepare('UPDATE messages SET quality=? WHERE id=?').run(JSON.stringify(q), row.mid)
+        return q
+      }
+      case '/api/ideas': {
+        const past = db.prepare("SELECT l.category, COUNT(*) sent, SUM(l.status='replied' OR l.stage IN ('meeting','won')) replied FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.step=0 AND m.status='sent' AND l.category<>'' GROUP BY l.category ORDER BY sent DESC LIMIT 12").all()
+        return suggestTargets({ area: String(body.area ?? ''), past, client: kit.client })
       }
       case '/api/pause': writeFileSync(config.pauseFile, 'paused'); return { paused: true }
       case '/api/resume': if (existsSync(config.pauseFile)) unlinkSync(config.pauseFile); return { paused: false }

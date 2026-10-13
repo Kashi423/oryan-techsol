@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer'
 import { config, requireKeys } from './config.js'
 import { isSuppressed, suppress } from './db.js'
 import { withFooter } from './write.js'
+import { renderEmailHtml } from './html.js'
 
 export function makeTransport() {
   requireKeys('gmail')
@@ -108,6 +109,7 @@ export async function sendApproved(db, { live = false, limit = Infinity, force =
         replyTo: config.replyTo || undefined,
         subject: m.subject,
         text: withFooter(m.body),
+        ...(config.emailStyle === 'plain' ? {} : { html: renderEmailHtml({ subject: m.subject, body: m.body }) }),
         headers,
       })
       db.prepare("UPDATE messages SET status='sent', message_id=?, sent_at=CURRENT_TIMESTAMP WHERE id=?").run(info.messageId, m.id)

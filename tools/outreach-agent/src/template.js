@@ -29,7 +29,7 @@ function auditBullets(lead) {
   try { return (JSON.parse(lead.audit || 'null')?.bullets ?? []).slice(0, 3) } catch { return [] }
 }
 
-export function templateDraft(lead, { step = 0, previous = null, variant = 'A' } = {}) {
+export function templateDraft(lead, { step = 0, previous = null, variant = 'A', tone = '' } = {}) {
   const name = lead.name
   const sign = config.signOffName || config.fromName
   const h = hash(lead.id ?? lead.place_id ?? name)
@@ -54,6 +54,12 @@ export function templateDraft(lead, { step = 0, previous = null, variant = 'A' }
     middle = `I couldn't find a website for ${name} online, and many customers now check for one before they call.`
   }
   const set = SUBJECTS[variant] ?? SUBJECTS.A
-  const body = `Hi,\n\n${OPENERS[h % OPENERS.length](name)} ${middle}\n\nWe build simple, fast websites, booking tools and small apps for local businesses. Would a short 15-minute call this week be worth your time?\n\n${sign}`
+  const pitch = lead.offer
+    ? `We build ${lead.offer} for local businesses, and that looks like the most useful place to start for ${name}.`
+    : 'We build simple, fast websites, booking tools and small apps for local businesses.'
+  const ask = 'Would a short 15-minute call this week be worth your time?'
+  const body = tone === 'short'
+    ? `Hi,\n\n${middle} ${ask}\n\n${sign}`
+    : `Hi,\n\n${OPENERS[h % OPENERS.length](name)} ${middle}\n\n${pitch} ${ask}\n\n${sign}`
   return { subject: set[h % set.length](name), body }
 }

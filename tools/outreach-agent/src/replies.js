@@ -2,6 +2,7 @@
 import { config } from './config.js'
 import { aiProvider, getClient, withFooter } from './write.js'
 import { isSuppressed } from './db.js'
+import { renderEmailHtml } from './html.js'
 
 export const LABELS = ['interested', 'question', 'not_interested', 'out_of_office', 'other']
 
@@ -103,7 +104,9 @@ export async function sendReply(db, id, { body, transport }) {
     from: `"${config.fromName}" <${config.gmailUser}>`, to,
     replyTo: config.replyTo || undefined,
     subject: /^re:/i.test(r.subject || '') ? r.subject : `Re: ${r.subject || ''}`.trim(),
-    text: withFooter(text), headers,
+    text: withFooter(text),
+    ...(config.emailStyle === 'plain' ? {} : { html: renderEmailHtml({ subject: r.subject || '', body: text }) }),
+    headers,
   })
   db.prepare("UPDATE replies SET status='answered', answered_at=CURRENT_TIMESTAMP WHERE id=?").run(id)
   return { ok: true }

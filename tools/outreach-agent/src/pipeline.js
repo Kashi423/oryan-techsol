@@ -5,6 +5,8 @@ import { draftEmail } from './write.js'
 import { domainOf } from './db.js'
 import { dueFollowUps } from './sender.js'
 import { scoreLead } from './score.js'
+import { recommendOffer } from './offer.js'
+import { localReview } from './quality.js'
 
 /** `search` is ({query, area, max, fetchImpl}) => places[]. Defaults to Google Places (needs a key). */
 export async function findLeads(db, { query, area, max = 40, fetchImpl, search }) {
@@ -30,8 +32,9 @@ export async function enrichLeads(db, { limit = Infinity, log = () => {}, fetchI
     const dup = email && db.prepare('SELECT 1 FROM leads WHERE domain=? AND id<>? AND status<>\'found\'').get(domainOf(email), l.id)
     const status = email && !dup ? 'ready' : 'no_email'
     const { score } = scoreLead({ ...l, email }, r.audit)
-    db.prepare('UPDATE leads SET email=?, domain=?, observations=?, site_summary=?, audit=?, score=?, status=? WHERE id=?')
-      .run(email, email ? domainOf(email) : null, JSON.stringify(r.observations), r.summary, r.audit ? JSON.stringify(r.audit) : null, score, status, l.id)
+    const offer = recommendOffer(l, r.audit).service
+    db.prepare('UPDATE leads SET email=?, domain=?, observations=?, site_summary=?, audit=?, score=?, offer=?, status=? WHERE id=?')
+      .run(email, email ? domainOf(email) : null, JSON.stringify(r.observations), r.summary, r.audit ? JSON.stringify(r.audit) : null, score, offer, status, l.id)
     if (status === 'ready') ready++
     log(`${status === 'ready' ? 'Found email' : 'No email'}: ${l.name}${email ? ' (' + email + ')' : ''}`)
   }
@@ -54,7 +57,8 @@ export async function draftLeads(db, { limit = Infinity, log = () => {}, client 
       const variant = nextVariant(db)
       const d = await draftEmail(l, { client, variant })
       if (d.fallbackReason && !warned) { warned = true; log(`AI writer unavailable, using built-in templates instead. ${d.fallbackReason}`) }
-      db.prepare('INSERT INTO messages (lead_id, step, subject, body, variant) VALUES (?,0,?,?,?)').run(l.id, d.subject, d.body, variant)
+      db.prepare('INSERT INTO messages (lead_id, step, subject, body, variant, quality) VALUES (?,0,?,?,?,?)')
+        .run(l.id, d.subject, d.body, variant, JSON.stringify(localReview(d, l)))
       db.prepare("UPDATE leads SET status='drafted' WHERE id=?").run(l.id)
       drafted++
       log(`Drafted email for ${l.name}`)

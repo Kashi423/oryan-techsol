@@ -57,6 +57,8 @@ export function openDb(file = config.dbPath) {
   ensure('leads', 'stage', "TEXT DEFAULT ''") // manual pipeline stage: meeting | won | lost
   ensure('leads', 'notes', "TEXT DEFAULT ''")
   ensure('messages', 'variant', "TEXT DEFAULT ''")
+  ensure('messages', 'quality', 'TEXT') // JSON {score, issues}
+  ensure('leads', 'offer', "TEXT DEFAULT ''") // recommended service to lead with
   return db
 }
 
