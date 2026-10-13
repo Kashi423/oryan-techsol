@@ -13,6 +13,7 @@ Rules:
 - One clear, low-pressure call to action (e.g. "Worth a quick 15-minute chat?").
 - No hype, no emojis, no ALL CAPS, no "I hope this email finds you well", no fake urgency, no "Re:" or "Fwd:" subjects.
 - Do not claim a prior relationship or that they contacted us.
+- Never say or imply you are local to them, based near them, or "here in <their city>". Do not state where Oryan Techsol is located. Do not call yourself a "local developer".
 - Subject: under 8 words, specific, no clickbait. If a subject style is given, follow it.
 Respond with ONLY a JSON object: {"subject": "...", "body": "..."}`
 
@@ -125,14 +126,30 @@ async function draftWithAi(lead, { step, previous, client, variant }) {
     step === 0
       ? 'Write the first outreach email.'
       : `Write follow-up #${step}. It is a brief, friendly bump on this earlier email (do not repeat it, add no new claims):\n\nSubject: ${previous?.subject}\n\n${previous?.body}`
-  const res = await c.messages.create({
-    model: aiProvider() === 'openai' && !client ? config.openaiModel : config.model,
-    max_tokens: 600,
-    system: systemPrompt(),
-    messages: [{ role: 'user', content: `${task}${step === 0 ? '\n' + (STYLE[variant] ?? STYLE.A) : ''}\n\nFacts:\n${facts(lead)}` }],
-  })
-  const text = res.content.filter((b) => b.type === 'text').map((b) => b.text).join('')
-  return parseDraft(text)
+  const base = `${task}${step === 0 ? '\n' + (STYLE[variant] ?? STYLE.A) : ''}\n\nFacts:\n${facts(lead)}`
+  let problem = null
+  // One retry if the draft makes a claim we cannot back up; otherwise the caller falls back to the template.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await c.messages.create({
+      model: aiProvider() === 'openai' && !client ? config.openaiModel : config.model,
+      max_tokens: 600,
+      system: systemPrompt(),
+      messages: [{ role: 'user', content: attempt ? `${base}\n\nIMPORTANT: your last draft ${problem}. Rewrite it without that.` : base }],
+    })
+    const draft = parseDraft(res.content.filter((b) => b.type === 'text').map((b) => b.text).join(''))
+    problem = unsupportedClaim(`${draft.subject}\n${draft.body}`)
+    if (!problem) return draft
+  }
+  throw new Error(`Draft kept making an unsupported claim (${problem})`)
+}
+
+/** Claims the model must never make: being local to them, or inventing where we are. Returns a reason or null. */
+export function unsupportedClaim(text) {
+  if (/\b(i am|i'm|we are|we're|as) (a |an )?(local|neighbo(u)?r|nearby)\b/i.test(text)) return 'claimed to be local'
+  if (/\bhere in\b/i.test(text)) return 'said "here in <city>"'
+  if (/\b(based|located|headquartered) in\b/i.test(text)) return 'stated a location'
+  if (/\bmy (team|company|clients)\b.*\bwho (have )?(worked|used)\b/i.test(text)) return 'invented a client reference'
+  return null
 }
 
 /** Footer is appended in code, never by the model, so the opt-out + address can't be dropped. */

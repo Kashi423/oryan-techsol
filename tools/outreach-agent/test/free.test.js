@@ -118,3 +118,23 @@ test('AI out of credit: no retry storm, falls back to the template and says why'
     Object.assign(config, { anthropicKey: saved.a, openaiKey: saved.o, openaiBaseUrl: saved.u, openaiFallbackModels: saved.f })
   }
 })
+
+test('writer guard: drafts claiming to be local are retried once, then fall back to the template', async () => {
+  const { draftEmail, unsupportedClaim } = await import('../src/write.js')
+  assert.equal(unsupportedClaim("Hi, I'm a local developer here in Austin."), 'claimed to be local')
+  assert.equal(unsupportedClaim('We are based in Brooklyn.'), 'stated a location')
+  assert.equal(unsupportedClaim("I couldn't spot an online booking option on your homepage."), null)
+
+  const reply = (subject, body) => ({ content: [{ type: 'text', text: JSON.stringify({ subject, body }) }] })
+  let n = 0
+  const retrying = { messages: { create: async ({ messages }) => {
+    n++
+    return n === 1 ? reply('Hi', "I'm a local developer here in Austin.") : reply('Hi', 'I could not spot an online booking option on the homepage.')
+  } } }
+  const ok = await draftEmail({ id: 1, name: 'Acme', observations: '[]' }, { client: retrying })
+  assert.equal(n, 2)
+  assert.match(ok.body, /could not spot/)
+
+  const stubborn = { messages: { create: async () => reply('Hi', "We're based in Austin and love local shops.") } }
+  await assert.rejects(() => draftEmail({ id: 1, name: 'Acme', observations: '[]' }, { client: stubborn }), /unsupported claim/)
+})
