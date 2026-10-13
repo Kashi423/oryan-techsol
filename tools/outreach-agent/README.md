@@ -125,3 +125,17 @@ Sources are mostly cold-email vendors (Belkins, Gong Labs via summaries, Instant
 | Specific, true detail beats generic flattery | Each email opens with one finding from the business's own site, nothing invented |
 
 Proof: the case studies and testimonials currently on the website are samples, so they are never used. Add real, true proof points in Setup and the agent uses at most one, word for word.
+
+## Using up to 10 mailboxes (e.g. a Workspace trial)
+
+Setup > **A2. Sending mailboxes**: add each mailbox with its own App Password, the name it signs emails with, and an optional daily limit. Then:
+
+- **Load is shared out evenly.** Each new draft goes to the mailbox with the most room today, and is signed with that mailbox's name.
+- **One mailbox per lead.** The whole sequence (first email and follow-ups) comes from the same mailbox, in the same thread.
+- **Each mailbox warms up on its own.** A new mailbox starts at 5 a day and gains 4 a day each week from its own first send. Two or more bounces hold only that mailbox.
+- **A total limit across all mailboxes** (default 40 a day), because they share one domain and inbox providers judge the domain as a whole. Raise it slowly.
+- **A failing mailbox is skipped**, its message is kept for retry, and the others carry on.
+- **Replies come back to the mailbox that sent the email** and every mailbox's inbox is read, so a reply to any of them stops that lead's follow-ups. (Earlier versions set a Reply-To header that sent replies elsewhere; that is removed.)
+- **Hot-lead alerts and the alert address:** the "Replies also go to" setting is now only where hot-lead alerts are emailed.
+
+Honest limits: ten mailboxes on one domain share one domain reputation, so this spreads volume, it does not multiply what is safe. A good first month is 4-5 mailboxes at 5-10 emails each. If the trial ends, mailboxes beyond your paid licences stop working, so remove them from Setup and keep any replies you need first.

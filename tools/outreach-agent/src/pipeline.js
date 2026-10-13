@@ -3,7 +3,8 @@ import { searchPlaces } from './places.js'
 import { enrichSite } from './enrich.js'
 import { draftEmail } from './write.js'
 import { domainOf } from './db.js'
-import { dueFollowUps } from './sender.js'
+import { dueFollowUps, pickSender } from './sender.js'
+import { findSender } from './senders.js'
 import { scoreLead } from './score.js'
 import { recommendOffer } from './offer.js'
 import { localReview } from './quality.js'
@@ -55,11 +56,13 @@ export async function draftLeads(db, { limit = Infinity, log = () => {}, client 
   for (const l of rows) {
     try {
       const variant = nextVariant(db)
-      const d = await draftEmail(l, { client, variant })
+      // Each lead is given one mailbox for its whole sequence; the email is signed by that mailbox's persona.
+      const sender = pickSender(db)
+      const d = await draftEmail(l, { client, variant, signOff: sender?.signOff })
       if (d.fallbackReason && !warned) { warned = true; log(`AI writer unavailable, using built-in templates instead. ${d.fallbackReason}`) }
       db.prepare('INSERT INTO messages (lead_id, step, subject, body, variant, quality) VALUES (?,0,?,?,?,?)')
         .run(l.id, d.subject, d.body, variant, JSON.stringify(localReview(d, l)))
-      db.prepare("UPDATE leads SET status='drafted' WHERE id=?").run(l.id)
+      db.prepare("UPDATE leads SET status='drafted', sender=COALESCE(?, sender) WHERE id=?").run(sender?.email ?? null, l.id)
       drafted++
       log(`Drafted email for ${l.name}`)
     } catch (e) {
@@ -74,7 +77,7 @@ export async function queueFollowUps(db, { log = () => {}, client } = {}) {
   let queued = 0
   for (const { lead, previous, step } of dueFollowUps(db)) {
     try {
-      const d = await draftEmail(lead, { step, previous, client })
+      const d = await draftEmail(lead, { step, previous, client, signOff: findSender(lead.sender)?.signOff })
       db.prepare("INSERT INTO messages (lead_id, step, subject, body, status) VALUES (?,?,?,?, 'approved')").run(lead.id, step, d.subject, d.body)
       queued++
       log(`Follow-up ${step} queued for ${lead.name}`)

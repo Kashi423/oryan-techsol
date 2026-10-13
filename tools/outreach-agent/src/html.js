@@ -32,10 +32,10 @@ function blocks(body, signOff) {
   }).join('\n')
 }
 
-export function renderEmailHtml({ subject = '', body = '' } = {}) {
+export function renderEmailHtml({ subject = '', body = '', replyTo = '', signOff = '' } = {}) {
   const site = config.website
-  const name = config.signOffName || config.fromName
-  const reply = config.replyTo || config.gmailUser
+  const name = signOff || config.signOffName || config.fromName
+  const reply = replyTo || config.gmailUser || config.replyTo
   const preheader = String(body).replace(/\s+/g, ' ').trim().slice(0, 110)
   const unsub = `mailto:${reply}?subject=${encodeURIComponent('Unsubscribe')}`
   const cta = `mailto:${reply}?subject=${encodeURIComponent('Re: ' + subject)}`

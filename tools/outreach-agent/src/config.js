@@ -49,6 +49,8 @@ export const config = {
   defaultTz: process.env.SEND_TZ ?? 'America/New_York', // used when the address has no US state
   // 3 follow-ups (4 touches total) spaced 3, 7 and 14 days after the first email.
   followUpDays: (process.env.FOLLOWUP_DAYS ?? '3,7,14').split(',').map(Number),
+  // Across ALL mailboxes: they share one domain, so the domain-wide total is what mailbox providers see.
+  totalDailyCap: num(process.env.TOTAL_DAILY_CAP, 40),
   warmup: process.env.WARMUP !== '0', // ramp the daily limit up gradually on a new sender
   bounceLimit: num(process.env.BOUNCE_LIMIT, 3), // auto-pause after N bounces in the last 25 sends
 

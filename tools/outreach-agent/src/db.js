@@ -58,6 +58,8 @@ export function openDb(file = config.dbPath) {
   ensure('leads', 'notes', "TEXT DEFAULT ''")
   ensure('messages', 'variant', "TEXT DEFAULT ''")
   ensure('messages', 'quality', 'TEXT') // JSON {score, issues}
+  ensure('leads', 'sender', 'TEXT')   // mailbox this lead is emailed from, for the whole sequence
+  ensure('messages', 'sender', 'TEXT') // mailbox that actually sent this message
   ensure('leads', 'offer', "TEXT DEFAULT ''") // recommended service to lead with
   return db
 }

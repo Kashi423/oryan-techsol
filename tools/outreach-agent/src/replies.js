@@ -3,6 +3,8 @@ import { config } from './config.js'
 import { aiProvider, getClient, withFooter } from './write.js'
 import { isSuppressed } from './db.js'
 import { renderEmailHtml } from './html.js'
+import { allSenders, findSender } from './senders.js'
+import { makeTransport } from './sender.js'
 
 export const LABELS = ['interested', 'question', 'not_interested', 'out_of_office', 'other']
 
@@ -72,15 +74,16 @@ export async function labelPending(db, { client, log = () => {} } = {}) {
 }
 
 /** Emails the owner about newly arrived "interested" replies, once each. */
-export async function notifyHot(db, { transport, log = () => {} } = {}) {
-  const to = config.replyTo || config.gmailUser
+export async function notifyHot(db, { transport, from, log = () => {} } = {}) {
+  const fromAddr = from || allSenders()[0]?.email || config.gmailUser
+  const to = config.replyTo || fromAddr
   if (!transport || !to) return 0
   const rows = db.prepare(
     "SELECT r.*, l.name FROM replies r JOIN leads l ON l.id=r.lead_id WHERE r.label='interested' AND r.notified=0",
   ).all()
   for (const r of rows) {
     await transport.sendMail({
-      from: `"${config.fromName}" <${config.gmailUser}>`, to,
+      from: `"${config.fromName}" <${fromAddr}>`, to,
       subject: `Hot lead: ${r.name} replied`,
       text: `${r.name} (${r.from_email}) replied:\n\n${r.body}\n\n---\nSuggested response (open the app > Replies to send it):\n${r.suggested}`,
     })
@@ -92,7 +95,7 @@ export async function notifyHot(db, { transport, log = () => {} } = {}) {
 
 /** Sends your (edited) response to a reply, threaded. Only after you click send. */
 export async function sendReply(db, id, { body, transport }) {
-  const r = db.prepare('SELECT r.*, l.email AS lead_email FROM replies r JOIN leads l ON l.id=r.lead_id WHERE r.id=?').get(id)
+  const r = db.prepare('SELECT r.*, l.email AS lead_email, l.sender AS lead_sender FROM replies r JOIN leads l ON l.id=r.lead_id WHERE r.id=?').get(id)
   if (!r) throw new Error('Reply not found')
   const to = r.from_email || r.lead_email
   if (isSuppressed(db, to)) throw new Error('This address opted out. Not sending.')
@@ -100,12 +103,13 @@ export async function sendReply(db, id, { body, transport }) {
   if (!text) throw new Error('Write a response first')
   const headers = {}
   if (r.message_id) { headers['In-Reply-To'] = r.message_id; headers.References = r.message_id }
-  await transport.sendMail({
-    from: `"${config.fromName}" <${config.gmailUser}>`, to,
-    replyTo: config.replyTo || undefined,
+  // Answer from the same mailbox the conversation is in, so the thread and the persona stay consistent.
+  const sender = findSender(r.lead_sender) ?? allSenders()[0] ?? { email: config.gmailUser, name: config.fromName, signOff: config.signOffName }
+  await (transport ?? makeTransport(sender)).sendMail({
+    from: `"${sender.name || config.fromName}" <${sender.email}>`, to,
     subject: /^re:/i.test(r.subject || '') ? r.subject : `Re: ${r.subject || ''}`.trim(),
     text: withFooter(text),
-    ...(config.emailStyle === 'plain' ? {} : { html: renderEmailHtml({ subject: r.subject || '', body: text }) }),
+    ...(config.emailStyle === 'plain' ? {} : { html: renderEmailHtml({ subject: r.subject || '', body: text, replyTo: sender.email, signOff: sender.signOff }) }),
     headers,
   })
   db.prepare("UPDATE replies SET status='answered', answered_at=CURRENT_TIMESTAMP WHERE id=?").run(id)

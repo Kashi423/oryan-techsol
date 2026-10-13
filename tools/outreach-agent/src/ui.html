@@ -96,6 +96,27 @@
     </div>
 
     <div class="card">
+      <h2>A2. Sending mailboxes <span class="pill blue" id="boxCount"></span></h2>
+      <p class="sub">Add up to 10 mailboxes (for example all the licences in your Workspace trial). Emails are shared out between them, each one warms up on its own, and every lead keeps the same mailbox for its whole sequence. Mailboxes added here are used <b>instead of</b> the single mailbox in A. Each needs 2-Step Verification on and its own
+        <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">App Password</a>.</p>
+      <table id="boxTable"></table>
+      <div class="row" style="margin-top:14px">
+        <div><label>Mailbox address</label><input id="boxEmail" placeholder="sara@oryantechsol.com"></div>
+        <div><label>App Password</label><input id="boxPass" type="password" placeholder="xxxx xxxx xxxx xxxx" autocomplete="off"></div>
+        <div style="flex:0 0 150px"><label>Signs emails as</label><input id="boxSign" placeholder="Sara"></div>
+        <div style="flex:0 0 110px"><label>Daily limit</label><input id="boxCap" type="number" min="1" max="100" placeholder="auto"></div>
+        <button class="btn" id="boxAdd">Add mailbox</button>
+      </div>
+      <p class="sub" id="boxMsg" style="margin-top:8px"></p>
+      <div class="row" style="margin-top:6px;align-items:end">
+        <div style="flex:0 0 220px"><label>Total per day, all mailboxes together</label><input id="totalCap" type="number" min="1" max="500"></div>
+        <button class="btn ghost" id="saveTotal">Save</button>
+        <span class="sub" style="flex:1 1 280px">All your mailboxes share one domain, so inbox providers judge the total. Keep this modest, especially in the first weeks.</span>
+      </div>
+      <p class="sub" style="margin-top:10px"><b>Before your trial ends:</b> mailboxes created in the trial stop working if you downgrade below that many licences, and anything in them goes with them. Move any replies you want to keep, and remove the mailboxes here before you lose them.</p>
+    </div>
+
+    <div class="card">
       <h2>B. AI writer <span class="pill no">optional</span></h2>
       <p class="sub"><b>Not needed.</b> With no key the app writes emails from built-in templates. Add a key for fully personalised emails.
         Pick a service and paste its API key. <b>Google Gemini and Groq have free plans</b>, which is plenty for 10 emails a day.
@@ -356,6 +377,26 @@ function renderExtras() {
   chip(T.approvedWaiting, 'approved, waiting to send', 'review'); chip(T.followUpsDue, 'follow-ups due', 'sent')
   const rb = $('#replyBadge'); rb.textContent = T.newReplies; rb.classList.toggle('hide', !T.newReplies)
 
+  // sending mailboxes
+  $('#boxCount').textContent = S.senders.length && !S.senders[0].legacy ? `${S.senders.length} of ${S.maxSenders}` : 'single mailbox'
+  if (document.activeElement !== $('#totalCap')) $('#totalCap').value = $('#totalCap').value || S.totalCap
+  if (!document.activeElement || !document.activeElement.closest?.('#boxTable')) {
+    const bt = $('#boxTable'); bt.textContent = ''
+    bt.append(el('tr', {}, ...['Mailbox', 'Signs as', 'Today', 'Week', 'Status', ''].map((h) => el('th', { textContent: h }))))
+    S.senders.forEach((x) => {
+      const state = x.paused ? ['Paused', 'gray'] : x.tripped ? ['Bounces: stopped', 'red'] : x.held ? ['Held: bounces', 'no'] : !x.hasPassword ? ['Needs App Password', 'red'] : ['Active', 'ok']
+      const acts = x.legacy ? [el('span', { className: 'sub', textContent: 'from .env' })] : [
+        el('button', { className: 'btn ghost', textContent: 'Test', onclick: async (e) => { e.target.disabled = true; try { const r = await api('/api/sender/test', { id: x.id }); show(r.message, true, '#boxMsg') } catch (er) { show(er.message, false, '#boxMsg') } e.target.disabled = false } }),
+        el('button', { className: 'btn ghost', textContent: x.paused ? 'Resume' : 'Pause', onclick: async () => { await api('/api/sender/pause', { id: x.id, paused: !x.paused }); refresh() } }),
+        el('button', { className: 'btn ghost', textContent: 'Remove', onclick: async () => { if (confirm(`Remove ${x.email}? Emails already sent stay in your history.`)) { await api('/api/sender/remove', { id: x.id }); refresh() } } }),
+      ]
+      bt.append(el('tr', {}, el('td', { textContent: x.email }), el('td', { textContent: x.signOff || '' }),
+        el('td', { textContent: `${x.sentToday}/${x.cap}` }), el('td', { textContent: x.week ? `week ${x.week}` : '-' }),
+        el('td', {}, el('span', { className: 'pill ' + state[1], textContent: state[0] })), el('td', { style: 'white-space:nowrap' }, ...acts)))
+    })
+    if (!S.senders.length || !S.senders[0].email) bt.append(el('tr', {}, el('td', { colSpan: 6, textContent: 'No mailbox yet. Add one below.' })))
+  }
+
   // replies (not re-rendered while you type)
   if (!document.activeElement || document.activeElement.tagName !== 'TEXTAREA') {
     const box = $('#replyList'); box.textContent = ''
@@ -451,6 +492,19 @@ $('#advance').onclick = async () => { await api('/api/demo/advance', {}); alert(
 $('#saveCatalog').onclick = async () => {
   const prices = Object.fromEntries([...document.querySelectorAll('#catalogRows input')].map((i) => [i.dataset.key, i.value]))
   try { await api('/api/catalog', { prices, proof: $('#proofText').value }); show('Saved. New drafts will use these.', true, '#catalogMsg') } catch (e) { show(e.message, false, '#catalogMsg') }
+  refresh()
+}
+$('#boxAdd').onclick = async () => {
+  $('#boxAdd').disabled = true
+  try {
+    await api('/api/sender/add', { email: $('#boxEmail').value, password: $('#boxPass').value, signOff: $('#boxSign').value, name: $('#boxSign').value, cap: $('#boxCap').value })
+    ;['#boxEmail', '#boxPass', '#boxSign', '#boxCap'].forEach((i) => { $(i).value = '' })
+    show('Added. Click Test to send a test email from it.', true, '#boxMsg')
+  } catch (e) { show(e.message, false, '#boxMsg') }
+  $('#boxAdd').disabled = false; refresh()
+}
+$('#saveTotal').onclick = async () => {
+  try { await api('/api/settings', { totalDailyCap: $('#totalCap').value }); show('Saved.', true, '#boxMsg') } catch (e) { show(e.message, false, '#boxMsg') }
   refresh()
 }
 $('#closePreview').onclick = () => { $('#previewModal').style.display = 'none' }

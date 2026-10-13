@@ -3,7 +3,7 @@ import { config } from './config.js'
 import { templateDraft } from './template.js'
 import { startingPrice, money, servicesLine, proofPoints } from './catalog.js'
 
-const systemPrompt = () => `You write cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses. Every email must read like a short note from one person who really looked at THEIR business, not a template.
+const systemPrompt = (signOff) => `You write cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses. Every email must read like a short note from one person who really looked at THEIR business, not a template.
 
 Structure of a FIRST email (50-95 words in total, three short paragraphs at most):
 1. One specific, true observation about them, taken only from the supplied facts (their site, listing or reviews). Start with it. No flattery, no introduction of yourself or the company, no "I'm reaching out", no "my name is".
@@ -12,7 +12,7 @@ Structure of a FIRST email (50-95 words in total, three short paragraphs at most
 
 Rules:
 - Plain text only. Follow-ups: 25-70 words.
-- Write as one human, sign off as "${config.signOffName || config.fromName}" with no title lines (a footer is appended automatically).
+- Write as one human, sign off as "${signOff || config.signOffName || config.fromName}" with no title lines (a footer is appended automatically).
 - Use ONLY the facts supplied about the business. Never invent numbers, awards, competitors, traffic, revenue or things you "noticed" that are not in the facts.
 - Mention at most two of the supplied findings, phrased kindly and as something that could be improved, not as an insult. Never add findings that are not supplied.
 - Describe observations only as what you could see ("I couldn't spot an online booking option on your homepage"), never as a certainty about their business ("patients cannot book online").
@@ -133,15 +133,15 @@ const TONES = {
 }
 export const TONE_NAMES = Object.keys(TONES)
 
-export async function draftEmail(lead, { step = 0, previous = null, client, variant = 'A', tone = '' } = {}) {
+export async function draftEmail(lead, { step = 0, previous = null, client, variant = 'A', tone = '', signOff = '' } = {}) {
   // No AI key configured: use the built-in templates so the app works with zero setup.
-  if (!client && !aiProvider()) return templateDraft(lead, { step, previous, variant, tone })
+  if (!client && !aiProvider()) return templateDraft(lead, { step, previous, variant, tone, signOff })
   try {
-    return await draftWithAi(lead, { step, previous, client, variant, tone })
+    return await draftWithAi(lead, { step, previous, client, variant, tone, signOff })
   } catch (e) {
     // The AI is unavailable (no credit, outage...): keep going with the built-in template.
     if (client) throw e
-    return { ...templateDraft(lead, { step, previous, variant, tone }), fallbackReason: e.message }
+    return { ...templateDraft(lead, { step, previous, variant, tone, signOff }), fallbackReason: e.message }
   }
 }
 
@@ -160,7 +160,7 @@ function angleHint(lead, step) {
   return ''
 }
 
-async function draftWithAi(lead, { step, previous, client, variant, tone }) {
+async function draftWithAi(lead, { step, previous, client, variant, tone, signOff }) {
   const c = client ?? getClient()
   const task =
     step === 0
@@ -182,7 +182,7 @@ async function draftWithAi(lead, { step, previous, client, variant, tone }) {
     const res = await c.messages.create({
       model: aiProvider() === 'openai' && !client ? config.openaiModel : config.model,
       max_tokens: 600,
-      system: systemPrompt(),
+      system: systemPrompt(signOff),
       messages: [{ role: 'user', content: attempt ? `${base}\n\nIMPORTANT: your last draft ${problem}. Rewrite it without that.` : base }],
     })
     const draft = parseDraft(res.content.filter((b) => b.type === 'text').map((b) => b.text).join(''))

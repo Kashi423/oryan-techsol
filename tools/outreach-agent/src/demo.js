@@ -45,15 +45,16 @@ export function demoKit() {
 
   const client = {
     messages: {
-      create: async ({ messages }) => {
+      create: async ({ messages, system }) => {
+        const sign = String(system ?? '').match(/sign off as "([^"]+)"/)?.[1] ?? 'Rai'
         const c = messages[0].content
         const name = c.match(/Business: (.+)/)?.[1] ?? 'your business'
         const obs = c.match(/Observations about their site:\n- (.+)/)?.[1]
         const follow = c.match(/follow-up #(\d)/)?.[1]
         if (follow) {
-          return { content: [{ type: 'text', text: JSON.stringify({ subject: `Re: quick idea for ${name}`, body: `Hi,\n\nJust bumping my note from earlier in case it got buried. Happy to share a quick example for ${name} if useful.\n\nRai` }) }] }
+          return { content: [{ type: 'text', text: JSON.stringify({ subject: `Re: quick idea for ${name}`, body: `Hi,\n\nJust bumping my note from earlier in case it got buried. Happy to share a quick example for ${name} if useful.\n\n${sign}` }) }] }
         }
-        const body = `Hi,\n\nI came across ${name} while looking at local businesses.${obs ? ' ' + obs.replace(/\.$/, '') + ', which is a fairly quick fix.' : ''}\n\nWe build simple websites and booking tools for local businesses. Would a short 15-minute call this week be worth your time?\n\nRai`
+        const body = `Hi,\n\nI came across ${name} while looking at local businesses.${obs ? ' ' + obs.replace(/\.$/, '') + ', which is a fairly quick fix.' : ''}\n\nWe build simple websites and booking tools for local businesses. Would a short 15-minute call this week be worth your time?\n\n${sign}`
         return { content: [{ type: 'text', text: JSON.stringify({ subject: `A quick idea for ${name}`, body }) }] }
       },
     },

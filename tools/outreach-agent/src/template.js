@@ -38,9 +38,9 @@ const stripDot = (s) => String(s).replace(/\.$/, '')
 // "The footer..." -> "the footer...", but keep "I couldn't..." as is.
 const lowerFirst = (s) => (/^I[ '’]/.test(s) ? s : s.replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()))
 
-export function templateDraft(lead, { step = 0, previous = null, variant = 'A', tone = '' } = {}) {
+export function templateDraft(lead, { step = 0, previous = null, variant = 'A', tone = '', signOff = '' } = {}) {
   const name = lead.name
-  const sign = config.signOffName || config.fromName
+  const sign = signOff || config.signOffName || config.fromName
   const h = hash(lead.id ?? lead.place_id ?? name)
   const bullets = auditBullets(lead)
 

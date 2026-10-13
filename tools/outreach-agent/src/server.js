@@ -4,7 +4,8 @@ import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'node:fs'
 import path from 'node:path'
 import { config, ROOT } from './config.js'
 import { findLeads, enrichLeads, draftLeads, queueFollowUps, setDraftStatus } from './pipeline.js'
-import { sendApproved, sentToday, makeTransport, inSendWindow, windowText, optOut, effectiveCap, dueFollowUps } from './sender.js'
+import { sendApproved, sentToday, makeTransport, inSendWindow, windowText, optOut, effectiveCap, dueFollowUps, senderStats } from './sender.js'
+import { allSenders, activeSenders, addSender, removeSender, setPaused, publicSender, useMemorySenders, MAX_SENDERS } from './senders.js'
 import { labelPending, notifyHot, sendReply } from './replies.js'
 import { checkReplies } from './inbox.js'
 import { searchPlaces } from './places.js'
@@ -30,6 +31,7 @@ const KEY_MAP = {
   signOffName: ['SIGN_OFF_NAME', 'signOffName'],
   replyTo: ['REPLY_TO', 'replyTo'],
   dailyCap: ['DAILY_CAP', 'dailyCap'],
+  totalDailyCap: ['TOTAL_DAILY_CAP', 'totalDailyCap'],
   emailStyle: ['EMAIL_STYLE', 'emailStyle'],
   logoUrl: ['EMAIL_LOGO_URL', 'logoUrl'],
 }
@@ -46,7 +48,7 @@ export function saveSettings(updates) {
     const line = `${envName}=${clean}`
     if (idx >= 0) lines[idx] = line
     else lines.push(line)
-    config[cfgName] = k === 'dailyCap' ? Number(clean) : clean
+    config[cfgName] = k === 'dailyCap' || k === 'totalDailyCap' ? Number(clean) : clean
     process.env[envName] = clean
   }
   writeFileSync(ENV_FILE, lines.join('\n').replace(/\n*$/, '\n'))
@@ -59,6 +61,12 @@ export function createApp(db, { demo = false } = {}) {
     config.placesKey = 'demo'
     config.warmup = false // demo should show the whole flow at once
     useMemoryCatalog({}) // demo never reads or writes your real price list
+    // Three pretend mailboxes so you can see the rotation. No real account is involved.
+    useMemorySenders([
+      { id: 'd1', email: 'rai@demo.test', password: 'demo', name: 'Rai at Oryan Techsol', signOff: 'Rai', cap: null, paused: false },
+      { id: 'd2', email: 'sara@demo.test', password: 'demo', name: 'Sara at Oryan Techsol', signOff: 'Sara', cap: null, paused: false },
+      { id: 'd3', email: 'omar@demo.test', password: 'demo', name: 'Omar at Oryan Techsol', signOff: 'Omar', cap: null, paused: false },
+    ])
     config.pauseFile = path.join(os.tmpdir(), 'oryan-demo-PAUSE')
     if (existsSync(config.pauseFile)) unlinkSync(config.pauseFile)
   }
@@ -80,7 +88,7 @@ export function createApp(db, { demo = false } = {}) {
   const liveSend = (limit) => sendApproved(db, demo
     ? { live: true, limit, log, transport: kit.transport, force: true, wait: async () => {} }
     : { live: true, limit, log })
-  const transportForAlerts = () => (demo ? kit.transport : config.gmailAppPassword ? makeTransport() : null)
+  const transportForAlerts = () => (demo ? kit.transport : activeSenders()[0] ? makeTransport(activeSenders()[0]) : null)
   // Reads the inbox, labels each reply (AI or rules), and emails you about hot leads.
   const readInbox = async () => {
     const counts = demo ? await kit.checkReplies(db, { log }) : await checkReplies(db, { log })
@@ -92,7 +100,7 @@ export function createApp(db, { demo = false } = {}) {
   async function autoCycle() {
     if (!auto || job.running) return
     runJob('Auto mode', async () => {
-      if (demo || config.gmailAppPassword) { try { await readInbox() } catch (e) { log(`Inbox check failed: ${e.message}`) } }
+      if (demo || activeSenders().length) { try { await readInbox() } catch (e) { log(`Inbox check failed: ${e.message}`) } }
       await queueFollowUps(db, { log, client: kit.client })
       return `sent ${await liveSend(Infinity)}`
     }).catch(() => {})
@@ -104,7 +112,7 @@ export function createApp(db, { demo = false } = {}) {
     demo,
     configured: demo
       ? { gmail: true, anthropic: true, places: true }
-      : { gmail: !!(config.gmailUser && config.gmailAppPassword), anthropic: true, places: true },
+      : { gmail: activeSenders().length > 0, anthropic: true, places: true },
     ai: demo ? 'demo' : aiProvider() ?? 'template',
     search: demo ? 'demo' : config.placesKey ? 'google' : 'openstreetmap',
     hasAiKey: !!aiProvider(),
@@ -113,7 +121,10 @@ export function createApp(db, { demo = false } = {}) {
     tones: TONE_NAMES,
     catalog: getCatalog(),
     proof: proofPoints(),
-    settings: { gmailUser: config.gmailUser, fromName: config.fromName, signOffName: config.signOffName, replyTo: config.replyTo, dailyCap: config.dailyCap },
+    senders: allSenders().map((x) => ({ ...publicSender(x), ...senderStats(db, x) })),
+    maxSenders: MAX_SENDERS,
+    totalCap: config.totalDailyCap,
+    settings: { totalDailyCap: config.totalDailyCap, gmailUser: config.gmailUser, fromName: config.fromName, signOffName: config.signOffName, replyTo: config.replyTo, dailyCap: config.dailyCap },
     paused: existsSync(config.pauseFile),
     auto,
     sentToday: sentToday(db),
@@ -150,10 +161,15 @@ export function createApp(db, { demo = false } = {}) {
           const n = Number(body.dailyCap)
           if (!Number.isInteger(n) || n < 1 || n > 200) throw new Error('Daily limit must be a whole number from 1 to 200')
         }
+        if (body.totalDailyCap !== undefined && String(body.totalDailyCap).trim() !== '') {
+          const n = Number(body.totalDailyCap)
+          if (!Number.isInteger(n) || n < 1 || n > 500) throw new Error('Total daily limit must be a whole number from 1 to 500')
+        }
         if (body.emailStyle !== undefined && !['auto', 'html', 'plain'].includes(String(body.emailStyle))) throw new Error('Email style must be auto, html or plain')
         if (body.logoUrl && !/^https:\/\/\S+$/.test(String(body.logoUrl).trim())) throw new Error('Logo address must start with https://')
         if (demo) {
           if (body.dailyCap) config.dailyCap = Number(body.dailyCap)
+          if (body.totalDailyCap) config.totalDailyCap = Number(body.totalDailyCap)
           if (body.emailStyle) config.emailStyle = String(body.emailStyle)
           return { ok: true }
         }
@@ -168,8 +184,9 @@ export function createApp(db, { demo = false } = {}) {
       case '/api/test': {
         if (demo) return { ok: true, message: 'Demo mode: this would send / test the real connection.' }
         if (body.which === 'gmail') {
-          const info = await makeTransport().sendMail({ from: `"${config.fromName}" <${config.gmailUser}>`, to: config.gmailUser, subject: 'Oryan outreach agent: test', text: withFooter('This is a test from the outreach agent.') })
-          return { ok: true, message: `Test email sent to ${config.gmailUser}. Check that inbox.`, id: info.messageId }
+          const s0 = activeSenders()[0] ?? allSenders()[0]
+          const info = await makeTransport(s0).sendMail({ from: `"${config.fromName}" <${s0.email}>`, to: s0.email, subject: 'Oryan outreach agent: test', text: withFooter('This is a test from the outreach agent.') })
+          return { ok: true, message: `Test email sent to ${s0.email}. Check that inbox.`, id: info.messageId }
         }
         if (body.which === 'anthropic') {
           const p = aiProvider()
@@ -207,7 +224,7 @@ export function createApp(db, { demo = false } = {}) {
       case '/api/approve': return { changed: setDraftStatus(db, body.ids === 'all' ? 'all' : body.ids, 'approved') }
       case '/api/reject': return { changed: setDraftStatus(db, body.ids === 'all' ? 'all' : body.ids, 'rejected') }
       case '/api/send': {
-        if (!demo && !config.gmailAppPassword) throw new Error('Finish Gmail setup first')
+        if (!demo && !activeSenders().length) throw new Error('Add a sending mailbox in Setup first')
         await runJob('Sending approved emails', async () => `sent ${await liveSend(Number(body.limit) || Infinity)}`)
         return { ok: true }
       }
@@ -225,8 +242,8 @@ export function createApp(db, { demo = false } = {}) {
         return { auto }
       }
       case '/api/reply/send': {
-        if (!demo && !config.gmailAppPassword) throw new Error('Finish Gmail setup first')
-        return sendReply(db, Number(body.id), { body: body.body, transport: demo ? kit.transport : makeTransport() })
+        if (!demo && !activeSenders().length) throw new Error('Add a sending mailbox in Setup first')
+        return sendReply(db, Number(body.id), { body: body.body, transport: demo ? kit.transport : undefined })
       }
       case '/api/reply/handled': {
         db.prepare("UPDATE replies SET status='handled' WHERE id=? AND status='new'").run(Number(body.id))
@@ -271,6 +288,25 @@ export function createApp(db, { demo = false } = {}) {
       case '/api/ideas': {
         const past = db.prepare("SELECT l.category, COUNT(*) sent, SUM(l.status='replied' OR l.stage IN ('meeting','won')) replied FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.step=0 AND m.status='sent' AND l.category<>'' GROUP BY l.category ORDER BY sent DESC LIMIT 12").all()
         return suggestTargets({ area: String(body.area ?? ''), past, client: kit.client })
+      }
+      case '/api/sender/add': {
+        if (demo) throw new Error('Not available in demo mode')
+        return { ok: true, sender: addSender(body) }
+      }
+      case '/api/sender/remove': {
+        if (demo) throw new Error('Not available in demo mode')
+        removeSender(String(body.id)); return { ok: true }
+      }
+      case '/api/sender/pause': {
+        if (demo) throw new Error('Not available in demo mode')
+        setPaused(String(body.id), !!body.paused); return { ok: true }
+      }
+      case '/api/sender/test': {
+        const sx = allSenders().find((x) => x.id === String(body.id))
+        if (!sx) throw new Error('Mailbox not found')
+        if (demo) return { ok: true, message: 'Demo mode: would send a test from ' + sx.email }
+        await makeTransport(sx).sendMail({ from: `"${sx.name}" <${sx.email}>`, to: sx.email, subject: 'Oryan outreach agent: mailbox test', text: withFooter('This mailbox is connected and can send.') })
+        return { ok: true, message: `Test email sent to ${sx.email}. Check that inbox.` }
       }
       case '/api/pause': writeFileSync(config.pauseFile, 'paused'); return { paused: true }
       case '/api/resume': if (existsSync(config.pauseFile)) unlinkSync(config.pauseFile); return { paused: false }
