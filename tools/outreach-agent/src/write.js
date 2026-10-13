@@ -1,11 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { config, requireKeys } from './config.js'
 
-const SYSTEM = `You write short, honest cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses.
+const systemPrompt = () => `You write short, honest cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses.
 
 Rules:
 - Plain text only. First email: 70-110 words. Follow-ups: 35-60 words.
-- Write as one human, sign off as "Slaman" with no title lines (a footer is appended automatically).
+- Write as one human, sign off as "${config.signOffName || config.fromName}" with no title lines (a footer is appended automatically).
 - Use ONLY the facts supplied about the business. Never invent numbers, awards, competitors, traffic, revenue or things you "noticed" that are not in the facts.
 - At most one specific observation, phrased kindly and as something that could be improved, not as an insult.
 - One clear, low-pressure call to action (e.g. "Worth a quick 15-minute chat?").
@@ -51,7 +51,7 @@ export async function draftEmail(lead, { step = 0, previous = null, client } = {
   const res = await c.messages.create({
     model: config.model,
     max_tokens: 600,
-    system: SYSTEM,
+    system: systemPrompt(),
     messages: [{ role: 'user', content: `${task}\n\nFacts:\n${facts(lead)}` }],
   })
   const text = res.content.filter((b) => b.type === 'text').map((b) => b.text).join('')

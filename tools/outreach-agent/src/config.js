@@ -13,6 +13,8 @@ export const config = {
   gmailUser: process.env.GMAIL_USER ?? '',
   gmailAppPassword: (process.env.GMAIL_APP_PASSWORD ?? '').replace(/\s+/g, ''),
   fromName: process.env.FROM_NAME ?? 'Oryan Techsol',
+  // First name the emails are signed with; keep it the same person who owns the sending mailbox.
+  signOffName: process.env.SIGN_OFF_NAME ?? '',
   replyTo: process.env.REPLY_TO ?? '',
 
   // Keys
