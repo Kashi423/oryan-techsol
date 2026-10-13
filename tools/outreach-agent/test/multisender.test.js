@@ -176,3 +176,49 @@ test('web: add, test, pause and remove mailboxes; state never contains a passwor
     assert.equal((await (await fetch(base + '/api/state')).json()).senders.filter((s) => s.id === id).length, 0)
   } finally { server.close() }
 })
+
+test('daily ramp: start 8, add 1 a day, stops at your per-mailbox limit; brakes hold it low', () => {
+  Object.assign(config, { warmup: true, warmupStart: 8, warmupStepPerDay: 1, dailyCap: 25 })
+  useMemorySenders([box('rai'), box('sara')])
+  const db = openDb(':memory:')
+  const [rai, sara] = allSenders()
+  assert.equal(effectiveCap(db, rai).cap, 8, 'day 1')
+  const ago = (d) => new Date(Date.now() - d * 86_400_000).toISOString().replace('T', ' ').slice(0, 19)
+  const first = (box_, d) => mkMsg(db, mkLead(db, Math.floor(Math.random() * 1e6), { status: 'sent' }), { status: 'sent', sentAt: ago(d), sender: box_.email })
+  first(rai, 5)
+  assert.equal(effectiveCap(db, rai).cap, 13, 'day 6 = 8 + 5')
+  first(sara, 30)
+  assert.equal(effectiveCap(db, sara).cap, 25, 'never above the per-mailbox limit')
+  // 4 opt-outs in the last 25 sends hold a mailbox, just like bounces
+  for (let i = 0; i < 4; i++) first(rai, 0), db.prepare("UPDATE leads SET status='unsubscribed' WHERE id=(SELECT MAX(id) FROM leads)").run()
+  const held = effectiveCap(db, rai)
+  assert.equal(held.held, true); assert.equal(held.cap, 5)
+  Object.assign(config, { warmupStepPerDay: null, warmupStart: 5 })
+})
+
+test('ramp plan: arithmetic matches your settings, with the per-mailbox and total limits applied', async () => {
+  const { rampPlan } = await import('../src/sender.js')
+  const plan = rampPlan({ mailboxes: 5, start: 8, stepPerDay: 1, ceiling: 25, totalCap: 100, days: [1, 7, 14, 21, 30] })
+  assert.deepEqual(plan.map((p) => [p.day, p.perMailbox, p.total]), [[1, 8, 40], [7, 14, 70], [14, 21, 100], [21, 25, 100], [30, 25, 100]])
+  assert.equal(plan[2].cappedByTotal, true)   // 21 x 5 = 105 held to 100
+  assert.equal(plan[1].cappedByTotal, false)
+  const weekly = rampPlan({ mailboxes: 1, start: 5, stepPerDay: null, ceiling: 30, totalCap: 500, days: [1, 8, 15] })
+  assert.deepEqual(weekly.map((p) => p.perMailbox), [5, 9, 13])
+})
+
+test('web: ramp settings are validated and appear in state with a plan', async () => {
+  useMemorySenders([box('rai')])
+  const server = createApp(openDb(':memory:'))
+  await new Promise((r) => server.listen(0, '127.0.0.1', r))
+  const base = `http://127.0.0.1:${server.address().port}`
+  const post = async (b) => (await fetch(base + '/api/settings', { method: 'POST', body: JSON.stringify(b) })).status
+  try {
+    assert.equal(await post({ warmupStart: '0' }), 400)
+    assert.equal(await post({ warmupStart: '51' }), 400)
+    assert.equal(await post({ warmupStepPerDay: '9' }), 400)
+    assert.equal(await post({ warmupStepPerDay: '1.5' }), 400)
+    const st = await (await fetch(base + '/api/state')).json()
+    assert.ok(Array.isArray(st.plan) && st.plan.length === 5)
+    assert.ok('start' in st.warmup && 'stepPerDay' in st.warmup)
+  } finally { server.close() }
+})

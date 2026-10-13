@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'node:fs'
 import path from 'node:path'
 import { config, ROOT } from './config.js'
 import { findLeads, enrichLeads, draftLeads, queueFollowUps, setDraftStatus } from './pipeline.js'
-import { sendApproved, sentToday, makeTransport, inSendWindow, windowText, optOut, effectiveCap, dueFollowUps, senderStats } from './sender.js'
+import { sendApproved, sentToday, makeTransport, inSendWindow, windowText, optOut, effectiveCap, dueFollowUps, senderStats, rampPlan } from './sender.js'
 import { allSenders, activeSenders, addSender, removeSender, setPaused, publicSender, useMemorySenders, MAX_SENDERS } from './senders.js'
 import { labelPending, notifyHot, sendReply } from './replies.js'
 import { checkReplies } from './inbox.js'
@@ -32,6 +32,8 @@ const KEY_MAP = {
   replyTo: ['REPLY_TO', 'replyTo'],
   dailyCap: ['DAILY_CAP', 'dailyCap'],
   totalDailyCap: ['TOTAL_DAILY_CAP', 'totalDailyCap'],
+  warmupStart: ['WARMUP_START', 'warmupStart'],
+  warmupStepPerDay: ['WARMUP_STEP_PER_DAY', 'warmupStepPerDay'],
   emailStyle: ['EMAIL_STYLE', 'emailStyle'],
   logoUrl: ['EMAIL_LOGO_URL', 'logoUrl'],
 }
@@ -48,7 +50,7 @@ export function saveSettings(updates) {
     const line = `${envName}=${clean}`
     if (idx >= 0) lines[idx] = line
     else lines.push(line)
-    config[cfgName] = k === 'dailyCap' || k === 'totalDailyCap' ? Number(clean) : clean
+    config[cfgName] = ['dailyCap', 'totalDailyCap', 'warmupStart', 'warmupStepPerDay'].includes(k) ? Number(clean) : clean
     process.env[envName] = clean
   }
   writeFileSync(ENV_FILE, lines.join('\n').replace(/\n*$/, '\n'))
@@ -123,6 +125,8 @@ export function createApp(db, { demo = false } = {}) {
     proof: proofPoints(),
     senders: allSenders().map((x) => ({ ...publicSender(x), ...senderStats(db, x) })),
     maxSenders: MAX_SENDERS,
+    warmup: { on: config.warmup, start: config.warmupStart, stepPerDay: config.warmupStepPerDay, ceiling: config.dailyCap },
+    plan: rampPlan({ mailboxes: Math.max(1, activeSenders().length) }),
     totalCap: config.totalDailyCap,
     settings: { totalDailyCap: config.totalDailyCap, gmailUser: config.gmailUser, fromName: config.fromName, signOffName: config.signOffName, replyTo: config.replyTo, dailyCap: config.dailyCap },
     paused: existsSync(config.pauseFile),
@@ -165,11 +169,21 @@ export function createApp(db, { demo = false } = {}) {
           const n = Number(body.totalDailyCap)
           if (!Number.isInteger(n) || n < 1 || n > 500) throw new Error('Total daily limit must be a whole number from 1 to 500')
         }
+        if (body.warmupStart !== undefined && String(body.warmupStart).trim() !== '') {
+          const n = Number(body.warmupStart)
+          if (!Number.isInteger(n) || n < 1 || n > 50) throw new Error('Start must be a whole number from 1 to 50 emails a day')
+        }
+        if (body.warmupStepPerDay !== undefined && String(body.warmupStepPerDay).trim() !== '') {
+          const n = Number(body.warmupStepPerDay)
+          if (!Number.isInteger(n) || n < 0 || n > 5) throw new Error('Daily increase must be a whole number from 0 to 5')
+        }
         if (body.emailStyle !== undefined && !['auto', 'html', 'plain'].includes(String(body.emailStyle))) throw new Error('Email style must be auto, html or plain')
         if (body.logoUrl && !/^https:\/\/\S+$/.test(String(body.logoUrl).trim())) throw new Error('Logo address must start with https://')
         if (demo) {
           if (body.dailyCap) config.dailyCap = Number(body.dailyCap)
           if (body.totalDailyCap) config.totalDailyCap = Number(body.totalDailyCap)
+          if (body.warmupStart) config.warmupStart = Number(body.warmupStart)
+          if (body.warmupStepPerDay !== undefined && body.warmupStepPerDay !== '') config.warmupStepPerDay = Number(body.warmupStepPerDay)
           if (body.emailStyle) config.emailStyle = String(body.emailStyle)
           return { ok: true }
         }

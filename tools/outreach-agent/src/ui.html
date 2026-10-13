@@ -113,6 +113,15 @@
         <button class="btn ghost" id="saveTotal">Save</button>
         <span class="sub" style="flex:1 1 280px">All your mailboxes share one domain, so inbox providers judge the total. Keep this modest, especially in the first weeks.</span>
       </div>
+      <h3 style="margin:16px 0 4px;font-size:14px">Warm-up ramp</h3>
+      <div class="row" style="align-items:end">
+        <div style="flex:0 0 190px"><label>Start at (per mailbox, per day)</label><input id="wStart" type="number" min="1" max="50"></div>
+        <div style="flex:0 0 170px"><label>Add per day</label><input id="wStep" type="number" min="0" max="5"></div>
+        <div style="flex:0 0 190px"><label>Highest per mailbox</label><input id="wCeil" type="number" min="1" max="100"></div>
+        <button class="btn ghost" id="saveRamp">Save ramp</button>
+      </div>
+      <table id="planTable" style="margin-top:10px"></table>
+      <p class="sub" id="rampNote" style="margin-top:6px"></p>
       <p class="sub" style="margin-top:10px"><b>Before your trial ends:</b> mailboxes created in the trial stop working if you downgrade below that many licences, and anything in them goes with them. Move any replies you want to keep, and remove the mailboxes here before you lose them.</p>
     </div>
 
@@ -380,6 +389,14 @@ function renderExtras() {
   // sending mailboxes
   $('#boxCount').textContent = S.senders.length && !S.senders[0].legacy ? `${S.senders.length} of ${S.maxSenders}` : 'single mailbox'
   if (document.activeElement !== $('#totalCap')) $('#totalCap').value = $('#totalCap').value || S.totalCap
+  const wf = (id, v) => { const i = $(id); if (document.activeElement !== i && !i.dataset.set) { i.value = v; i.dataset.set = '1' } }
+  wf('#wStart', S.warmup.start); wf('#wStep', S.warmup.stepPerDay ?? ''); wf('#wCeil', S.warmup.ceiling)
+  $('#wStep').placeholder = 'blank = +4 a week'
+  const pt = $('#planTable'); pt.textContent = ''
+  pt.append(el('tr', {}, ...['Day', 'Per mailbox', `All ${Math.max(1, S.senders.filter((x) => x.hasPassword).length)} mailbox(es)`, ''].map((h) => el('th', { textContent: h }))))
+  S.plan.forEach((p) => pt.append(el('tr', {}, el('td', { textContent: `Day ${p.day}` }), el('td', { textContent: p.perMailbox }), el('td', { textContent: p.total }),
+    el('td', { className: 'sub', textContent: p.cappedByTotal ? `held down by the total limit of ${S.totalCap}` : '' }))))
+  $('#rampNote').textContent = 'Follow-ups count towards these numbers, so roughly one in four sends is a new business.'
   if (!document.activeElement || !document.activeElement.closest?.('#boxTable')) {
     const bt = $('#boxTable'); bt.textContent = ''
     bt.append(el('tr', {}, ...['Mailbox', 'Signs as', 'Today', 'Week', 'Status', ''].map((h) => el('th', { textContent: h }))))
@@ -502,6 +519,14 @@ $('#boxAdd').onclick = async () => {
     show('Added. Click Test to send a test email from it.', true, '#boxMsg')
   } catch (e) { show(e.message, false, '#boxMsg') }
   $('#boxAdd').disabled = false; refresh()
+}
+$('#saveRamp').onclick = async () => {
+  try {
+    await api('/api/settings', { warmupStart: $('#wStart').value, warmupStepPerDay: $('#wStep').value, dailyCap: $('#wCeil').value })
+    ;['#wStart', '#wStep', '#wCeil'].forEach((i) => { delete $(i).dataset.set })
+    show('Ramp saved.', true, '#boxMsg')
+  } catch (e) { show(e.message, false, '#boxMsg') }
+  refresh()
 }
 $('#saveTotal').onclick = async () => {
   try { await api('/api/settings', { totalDailyCap: $('#totalCap').value }); show('Saved.', true, '#boxMsg') } catch (e) { show(e.message, false, '#boxMsg') }

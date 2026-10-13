@@ -4,7 +4,8 @@ import path from 'node:path'
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const envFile = path.join(ROOT, '.env')
-if (existsSync(envFile)) process.loadEnvFile(envFile)
+// Tests must never pick up your private keys and settings, so the test runner skips .env.
+if (existsSync(envFile) && !process.env.NODE_TEST_CONTEXT) process.loadEnvFile(envFile)
 
 const num = (v, d) => (v === undefined || v === '' || Number.isNaN(Number(v)) ? d : Number(v))
 
@@ -52,6 +53,9 @@ export const config = {
   // Across ALL mailboxes: they share one domain, so the domain-wide total is what mailbox providers see.
   totalDailyCap: num(process.env.TOTAL_DAILY_CAP, 40),
   warmup: process.env.WARMUP !== '0', // ramp the daily limit up gradually on a new sender
+  warmupStart: num(process.env.WARMUP_START, 5), // emails per mailbox on its first day
+  // Emails added per mailbox per day. Unset = the gentler default of +4 a week.
+  warmupStepPerDay: process.env.WARMUP_STEP_PER_DAY === undefined || process.env.WARMUP_STEP_PER_DAY === '' ? null : num(process.env.WARMUP_STEP_PER_DAY, 0),
   bounceLimit: num(process.env.BOUNCE_LIMIT, 3), // auto-pause after N bounces in the last 25 sends
 
   dbPath: path.join(ROOT, 'data', 'outreach.db'),

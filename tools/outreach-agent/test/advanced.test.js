@@ -13,6 +13,7 @@ import { dailyCycle } from '../src/daily.js'
 import { createApp } from '../src/server.js'
 
 config.warmup = true
+config.replyTo = 'sales@o.test'; config.gmailUser = 'me@o.test' // do not depend on a real .env
 config.sendWindow = '0-24'
 config.minDelaySec = config.maxDelaySec = 0
 config.anthropicKey = ''; config.openaiKey = ''

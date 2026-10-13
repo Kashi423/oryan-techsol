@@ -64,9 +64,29 @@ export function effectiveCap(db, sender = null, now = new Date()) {
   const bounces = db.prepare(
     `SELECT COUNT(*) c FROM (SELECT l.status FROM messages m JOIN leads l ON l.id = m.lead_id WHERE m.status='sent' ${where} ORDER BY m.sent_at DESC, m.id DESC LIMIT 25) WHERE status='bounced'`,
   ).get(...args).c
-  const held = bounces >= 2
-  const ramp = held ? 5 : 5 + week * 4
-  return { cap: Math.max(1, Math.min(ceiling, ramp)), ceiling, week: week + 1, held }
+  // Brakes: 2+ bounces, or 4+ opt-outs in the last 25 sends, hold this mailbox at a low number.
+  const optouts = db.prepare(
+    `SELECT COUNT(*) c FROM (SELECT l.status FROM messages m JOIN leads l ON l.id = m.lead_id WHERE m.status='sent' ${where} ORDER BY m.sent_at DESC, m.id DESC LIMIT 25) WHERE status='unsubscribed'`,
+  ).get(...args).c
+  const held = bounces >= 2 || optouts >= 4
+  const start = config.warmupStart
+  const grown = config.warmupStepPerDay === null
+    ? start + week * 4 // default: +4 a week
+    : start + Math.floor(days * config.warmupStepPerDay) // your own daily step
+  const ramp = held ? Math.min(start, 5) : grown
+  return { cap: Math.max(1, Math.min(ceiling, ramp)), ceiling, week: week + 1, day: days + 1, held }
+}
+
+/**
+ * What the ramp will look like with your settings, for the screen: per mailbox and in total,
+ * with the per-mailbox ceiling and the all-mailboxes total limit applied. Pure arithmetic.
+ */
+export function rampPlan({ mailboxes = 1, start = config.warmupStart, stepPerDay = config.warmupStepPerDay, ceiling = config.dailyCap, totalCap = config.totalDailyCap, days = [1, 7, 14, 21, 30] } = {}) {
+  return days.map((day) => {
+    const perBox = Math.min(ceiling, stepPerDay === null ? start + Math.floor((day - 1) / 7) * 4 : start + Math.floor((day - 1) * stepPerDay))
+    const raw = perBox * mailboxes
+    return { day, perMailbox: perBox, total: Math.min(raw, totalCap), cappedByTotal: raw > totalCap }
+  })
 }
 
 /** True when the last 25 sends (of one mailbox, or all) include `bounceLimit` or more bounces. */

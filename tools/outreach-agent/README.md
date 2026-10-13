@@ -139,3 +139,16 @@ Setup > **A2. Sending mailboxes**: add each mailbox with its own App Password, t
 - **Hot-lead alerts and the alert address:** the "Replies also go to" setting is now only where hot-lead alerts are emailed.
 
 Honest limits: ten mailboxes on one domain share one domain reputation, so this spreads volume, it does not multiply what is safe. A good first month is 4-5 mailboxes at 5-10 emails each. If the trial ends, mailboxes beyond your paid licences stop working, so remove them from Setup and keep any replies you need first.
+
+### Your ramp, in numbers
+
+With 5 mailboxes, start 8, +1 a day, 25 per mailbox and a total limit of 100 a day:
+
+| Day | Per mailbox | All 5 |
+|---|---|---|
+| 1 | 8 | 40 |
+| 7 | 14 | 70 |
+| 14 | 21 | 100 (held by the total limit) |
+| 21 | 25 | 100 |
+
+Follow-ups count towards these numbers (each business gets up to four emails), so roughly one send in four is to a new business. Two or more bounces, or four or more opt-outs among a mailbox's last 25 sends, hold that mailbox at 5 a day automatically.
