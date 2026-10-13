@@ -135,15 +135,18 @@
       <h2>Services &amp; starting prices</h2>
       <p class="sub">Emails lead with the one service that fits each business, and every email lists all of your services in the signature. If you enter a starting price, the email quotes it as &ldquo;from $X&rdquo; for that service. Leave a price blank and no price is mentioned. The agent never says it is &ldquo;cheaper than the market&rdquo;, because that cannot be proven.</p>
       <div id="catalogRows" class="row" style="align-items:end"></div>
-      <p style="margin-top:12px"><button class="btn" id="saveCatalog">Save prices</button> <span id="catalogMsg"></span></p>
+      <h3 style="margin:18px 0 4px;font-size:14px">Real proof points <span class="pill gray">optional</span></h3>
+      <p class="sub">One per line, only TRUE statements about work you have really done, for example &ldquo;We built an online booking site for a dental clinic in Lahore&rdquo;. Emails use at most one, word for word. Leave empty and the agent claims no past work. (The case studies and testimonials on your website are samples, so they are never used.)</p>
+      <textarea id="proofText" style="min-height:90px" placeholder="We built ..."></textarea>
+      <p style="margin-top:12px"><button class="btn" id="saveCatalog">Save prices and proof</button> <span id="catalogMsg"></span></p>
     </div>
 
     <div class="card">
       <h2>Email look</h2>
-      <p class="sub">Branded HTML is a light, clean layout in your colours with a signature and an unsubscribe line. Plain text sends no formatting. Both go out with a text version, and there are no tracking pixels.</p>
+      <p class="sub">Research on cold email favours plain text for the first message: it reads as personal and reaches the inbox more often. &ldquo;Auto&rdquo; sends plain text for first emails and follow-ups, and your branded layout once someone has replied. Branded HTML is a light layout with your colours, signature and an unsubscribe line. There are no tracking pixels either way.</p>
       <div class="row">
         <div><label>Style</label>
-          <select id="emailStyle"><option value="html">Branded HTML (recommended)</option><option value="plain">Plain text only</option></select></div>
+          <select id="emailStyle"><option value="auto">Auto: plain text first, branded when they reply (recommended)</option><option value="plain">Plain text only</option><option value="html">Branded HTML for everything</option></select></div>
         <div><label>Logo image address (optional, https://...)</label><input id="logoUrl" placeholder="Blank = text wordmark, no images"></div>
         <button class="btn ghost" id="saveStyle">Save</button>
       </div>
@@ -263,7 +266,7 @@ async function refresh() {
   $('#stats').textContent = ''
   $('#stats').append(
     el('span', { textContent: `Sent today: ${S.sentToday}/${S.cap.cap}${S.cap.week ? ` (warm-up week ${S.cap.week}${S.cap.held ? ', held: bounces' : ''}, max ${S.cap.ceiling})` : ''}` }),
-    el('span', { textContent: S.windowOpen ? 'Send window: open' : `Send window closed (${S.sendWindow}, Mon-Fri)` }),
+    el('span', { textContent: 'Sends ' + S.windowText, title: 'Each email waits for the right morning in the recipient time zone' }),
     el('span', { textContent: S.paused ? 'PAUSED' : 'Running' }),
   )
   const b = $('#setupBanner')
@@ -277,6 +280,7 @@ async function refresh() {
   for (const id of ['gmailUser', 'fromName', 'signOffName', 'replyTo', 'dailyCap']) { const i = $('#' + id); if (document.activeElement !== i && !i.value) i.value = S.settings[id] ?? '' }
   if (document.activeElement !== $('#capReview') && !$('#capReview').value) $('#capReview').value = S.settings.dailyCap
   if (document.activeElement !== $('#emailStyle')) $('#emailStyle').value = S.emailStyle
+  if (document.activeElement !== $('#proofText') && !$('#proofText').dataset.loaded) { $('#proofText').value = (S.proof || []).join('\n'); $('#proofText').dataset.loaded = '1' }
   const cr = $('#catalogRows')
   if (!cr.children.length || document.activeElement?.closest?.('#catalogRows') == null) {
     const typed = Object.fromEntries([...cr.querySelectorAll('input')].map((i) => [i.dataset.key, i.value]))
@@ -446,7 +450,7 @@ $('#followups').onclick = async () => { try { await api('/api/followups', {}); r
 $('#advance').onclick = async () => { await api('/api/demo/advance', {}); alert('Skipped ahead 5 days. Click "Write follow-ups now" to see the follow-ups appear.'); refresh() }
 $('#saveCatalog').onclick = async () => {
   const prices = Object.fromEntries([...document.querySelectorAll('#catalogRows input')].map((i) => [i.dataset.key, i.value]))
-  try { await api('/api/catalog', { prices }); show('Saved. New drafts will use these prices.', true, '#catalogMsg') } catch (e) { show(e.message, false, '#catalogMsg') }
+  try { await api('/api/catalog', { prices, proof: $('#proofText').value }); show('Saved. New drafts will use these.', true, '#catalogMsg') } catch (e) { show(e.message, false, '#catalogMsg') }
   refresh()
 }
 $('#closePreview').onclick = () => { $('#previewModal').style.display = 'none' }

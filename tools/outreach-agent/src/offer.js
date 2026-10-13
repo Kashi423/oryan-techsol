@@ -12,6 +12,17 @@ export const OFFERS = {
   'small automations and an AI assistant for enquiries': 'automation',
 }
 
+/** How each offer reads after "We build ...". */
+export const PHRASES = {
+  'a simple, mobile-friendly website': 'simple, mobile-friendly websites',
+  'online booking or enquiry system': 'online booking and enquiry systems',
+  'a modern, mobile-friendly website refresh': 'modern, mobile-friendly websites',
+  'a lead-capture form with an AI chatbot': 'AI chatbots that capture enquiries',
+  'a faster, cleaner website': 'fast, clean websites',
+  'a website refresh': 'modern websites',
+  'small automations and an AI assistant for enquiries': 'small automations and AI assistants for enquiries',
+}
+
 export function recommendOffer(lead, audit) {
   const out = (service, why) => ({ service, why, key: OFFERS[service] })
   if (!lead.website) return out('a simple, mobile-friendly website', 'no website was found online')

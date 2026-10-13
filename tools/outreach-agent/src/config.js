@@ -33,16 +33,21 @@ export const config = {
   postalAddress: process.env.POSTAL_ADDRESS ?? '1938 West 7th Street, Brooklyn, NY',
   website: 'https://oryantechsol.com',
   phone: process.env.PHONE ?? '+1 (917) 217-0535',
-  // html = light branded layout (plus a plain-text part); plain = text only
-  emailStyle: (process.env.EMAIL_STYLE ?? 'html').toLowerCase(),
+  // auto = plain text for cold emails and follow-ups, branded HTML for replies to people who answered;
+  // html = branded layout for everything; plain = text only
+  emailStyle: (process.env.EMAIL_STYLE ?? 'auto').toLowerCase(),
   logoUrl: process.env.EMAIL_LOGO_URL ?? '', // optional; blank = text wordmark, no images
 
   // Guardrails
   dailyCap: num(process.env.DAILY_CAP, 15), // brand-new Gmail: start low, raise slowly
   minDelaySec: num(process.env.MIN_DELAY_SEC, 90),
   maxDelaySec: num(process.env.MAX_DELAY_SEC, 240),
-  sendWindow: process.env.SEND_WINDOW ?? '9-17', // local machine hours, Mon-Fri
-  followUpDays: (process.env.FOLLOWUP_DAYS ?? '4,10').split(',').map(Number), // max 2 follow-ups
+  // Research-backed defaults: mid-week mornings in the RECIPIENT's local time.
+  sendWindow: process.env.SEND_WINDOW ?? '8-11', // hours, recipient local time ("0-24" = any time)
+  sendDays: (process.env.SEND_DAYS ?? 'tue,wed,thu').split(',').map((d) => d.trim().toLowerCase().slice(0, 3)),
+  defaultTz: process.env.SEND_TZ ?? 'America/New_York', // used when the address has no US state
+  // 3 follow-ups (4 touches total) spaced 3, 7 and 14 days after the first email.
+  followUpDays: (process.env.FOLLOWUP_DAYS ?? '3,7,14').split(',').map(Number),
   warmup: process.env.WARMUP !== '0', // ramp the daily limit up gradually on a new sender
   bounceLimit: num(process.env.BOUNCE_LIMIT, 3), // auto-pause after N bounces in the last 25 sends
 

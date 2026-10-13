@@ -61,7 +61,8 @@ test('templates: variant B is a question; audit bullets appear (max two) and sta
   const a = templateDraft(l, { variant: 'A' }), b = templateDraft(l, { variant: 'B' })
   assert.match(b.subject, /\?|Question|question/)
   assert.notEqual(a.subject, b.subject)
-  assert.match(a.body, /- I couldn't spot an online booking option/)
+  assert.match(a.body, /couldn't spot an online booking option/)
+  assert.ok(!/footer still says/.test(a.body), 'one specific observation, not a list')
   assert.ok(!/Third finding/.test(a.body))
 })
 

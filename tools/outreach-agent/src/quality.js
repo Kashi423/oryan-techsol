@@ -17,8 +17,18 @@ export function localReview(draft, lead = {}) {
   const words = body.trim().split(/\s+/).filter(Boolean).length
   const hit = (penalty, msg) => { score -= penalty; issues.push(msg) }
 
-  if (words > 150) hit(15, `Long (${words} words). Cold emails work best under 120.`)
-  else if (words < 30) hit(10, `Very short (${words} words).`)
+  // Research: cold emails of roughly 50-125 words get the best replies.
+  if (words > 125) hit(15, `Long (${words} words). Aim for 50 to 100.`)
+  else if (words < 25) hit(10, `Very short (${words} words).`)
+  if (/\b(i hope (this|you)|reaching out|i('| a)m writing|my name is|i wanted to|i would like to introduce|just checking in)\b/i.test(body)) {
+    hit(10, 'Generic opener. Start with something specific about them.')
+  }
+  // First emails should ask a low-effort interest question, not for time (step 0 only).
+  if (draft.step === undefined || draft.step === 0) {
+    if (/\b(\d+[- ]minute (call|chat)|schedule a (call|meeting)|book a (call|meeting)|jump on a call|hop on a call|are you free|let'?s (talk|chat|meet)|calendar)\b/i.test(body)) {
+      hit(8, 'Asks for a call or time in the first email. An easy interest question gets more replies.')
+    }
+  }
   for (const [re, label] of SPAM) if (re.test(text)) hit(10, `Spam-trigger wording: ${label}.`)
   const caps = (text.match(/\b[A-Z]{4,}\b/g) ?? []).filter((w) => !['HTTP', 'HTTPS', 'HTML', 'CSS', 'SEO', 'OSM'].includes(w))
   if (caps.length >= 1) hit(8, `ALL-CAPS words: ${caps.slice(0, 3).join(', ')}.`)
@@ -26,7 +36,7 @@ export function localReview(draft, lead = {}) {
   if (!/\?/.test(body)) hit(10, 'No clear question or call to action.')
   const claim = unsupportedClaim(text)
   if (claim) hit(30, `Unsupported claim: ${claim}.`)
-  if (subject.length > 65) hit(5, 'Subject is long (over 65 characters).')
+  if (subject.length > 45) hit(5, 'Subject is long (over 45 characters). 2 to 5 words works best.')
   if (/[A-Z]{4,}|!/.test(subject)) hit(5, 'Subject has caps or exclamation marks.')
   if (lead.name && !text.toLowerCase().includes(String(lead.name).toLowerCase().split(/\s+/)[0])) hit(5, 'Does not mention the business by name.')
 

@@ -4,6 +4,7 @@ import { config, requireKeys } from './config.js'
 import { isSuppressed, suppress } from './db.js'
 import { withFooter } from './write.js'
 import { renderEmailHtml } from './html.js'
+import { timezoneFor, localParts } from './tz.js'
 
 export function makeTransport() {
   requireKeys('gmail')
@@ -18,10 +19,21 @@ export function makeTransport() {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 const roleLike = /^(noreply|no-reply|abuse|postmaster|mailer-daemon)@/i
 
-export function inSendWindow(now = new Date(), window = config.sendWindow) {
+/**
+ * Is it a good time to email this recipient? Evaluated in THEIR time zone (research: mid-week
+ * mornings in the recipient's local time work best). "0-24" means any time, any day.
+ */
+export function inSendWindow(now = new Date(), window = config.sendWindow, tz = config.defaultTz, days = config.sendDays) {
   const [from, to] = window.split('-').map(Number)
-  const day = now.getDay()
-  return day >= 1 && day <= 5 && now.getHours() >= from && now.getHours() < to
+  if (from === 0 && to === 24) return true
+  const { day, hour } = localParts(now, tz)
+  return days.includes(day) && hour >= from && hour < to
+}
+
+/** One-line summary of the schedule for the screen. */
+export function windowText() {
+  const days = config.sendDays.map((d) => d[0].toUpperCase() + d.slice(1)).join('/')
+  return `${days}, ${config.sendWindow.replace('-', ':00 to ')}:00 in each recipient's own time zone`
 }
 
 export function sentToday(db) {
@@ -58,7 +70,8 @@ export function bounceBreaker(db) {
 export function blockers(db, msg, lead, { force = false } = {}) {
   const why = []
   if (existsSync(config.pauseFile)) why.push('PAUSE file present')
-  if (!force && !inSendWindow()) why.push(`outside send window ${config.sendWindow} Mon-Fri`)
+  const tz = timezoneFor(lead, config.defaultTz)
+  if (!force && !inSendWindow(new Date(), config.sendWindow, tz)) why.push(`outside send window for ${tz}`)
   const { cap } = effectiveCap(db)
   if (sentToday(db) >= cap) why.push(`daily cap ${cap} reached`)
   if (bounceBreaker(db)) why.push('bounce breaker tripped')
@@ -87,7 +100,8 @@ export async function sendApproved(db, { live = false, limit = Infinity, force =
     if (why.length) {
       log(`skip #${m.id} ${lead.name}: ${why.join('; ')}`)
       // Hard stops end the run; per-lead blockers just skip that message.
-      if (why.some((w) => /cap|PAUSE|breaker|window/.test(w))) break
+      // Global stops end the run. A closed window only skips this recipient: another time zone may be open.
+      if (why.some((w) => /cap|PAUSE|breaker/.test(w))) break
       continue
     }
     if (!live) { log(`[dry-run] would send #${m.id} (step ${m.step}) to ${lead.email}: ${m.subject}`); sent++; continue }
@@ -109,7 +123,7 @@ export async function sendApproved(db, { live = false, limit = Infinity, force =
         replyTo: config.replyTo || undefined,
         subject: m.subject,
         text: withFooter(m.body),
-        ...(config.emailStyle === 'plain' ? {} : { html: renderEmailHtml({ subject: m.subject, body: m.body }) }),
+        ...(config.emailStyle === 'html' ? { html: renderEmailHtml({ subject: m.subject, body: m.body }) } : {}),
         headers,
       })
       db.prepare("UPDATE messages SET status='sent', message_id=?, sent_at=CURRENT_TIMESTAMP WHERE id=?").run(info.messageId, m.id)

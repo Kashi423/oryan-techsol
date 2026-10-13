@@ -109,3 +109,19 @@ Deliverability notes: the HTML is deliberately light (one column, no tracking pi
 ## Services and prices
 
 The Setup tab has a **Services & starting prices** card with your 8 services. Enter a "from" price for any service and emails for businesses we would offer that service quote it as "from $X". Leave it blank and no price is mentioned. Every email lists all 8 services in the signature. The writer is blocked from claiming to be "cheapest", "below market" or "cheaper than other agencies", because those claims cannot be proven; a drafted email that tries is retried and then replaced by the template. Prices are stored in `data/catalog.json` on your computer.
+
+## What the emails are built on (research summary)
+
+Sources are mostly cold-email vendors (Belkins, Gong Labs via summaries, Instantly, Hunter, and others), so treat the numbers as directional and let your own Stats tab decide.
+
+| Finding | What the agent does |
+|---|---|
+| Personalised, short subject lines (2-5 words) open and reply better | Subjects contain the business name, under 40 characters, A/B tested (plain vs question) |
+| Bodies of roughly 50-125 words reply best | First email is 50-95 words, three short paragraphs |
+| Interest-based questions beat "book a call" in a first email (Gong, ~300k emails) | First email ends with "Want me to send over the quick fixes I noted?". No call ask until they reply |
+| Plain text is the safer first touch for deliverability (sources conflict) | Default "Auto": plain text for cold emails and follow-ups, branded HTML once someone has replied |
+| Follow-ups drive a large share of replies; 4-6 touches over 2-3 weeks | First email plus 3 follow-ups on days 3, 7 and 14: a useful tip, a different angle or proof, then a break-up note |
+| Mid-week mornings in the recipient's time zone | Emails wait for Tue-Thu 8-11am in the business's own time zone (from its address) |
+| Specific, true detail beats generic flattery | Each email opens with one finding from the business's own site, nothing invented |
+
+Proof: the case studies and testimonials currently on the website are samples, so they are never used. Add real, true proof points in Setup and the agent uses at most one, word for word.

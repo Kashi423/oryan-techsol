@@ -59,7 +59,7 @@ test('offer: leads with the single most relevant thing', () => {
 
 test('quality gate: flags spam wording, invented numbers and claims; passes a clean email', () => {
   const lead = { name: 'Smile Dental', observations: '[]', audit: JSON.stringify({ bullets: ['no booking'] }) }
-  const clean = localReview({ subject: 'Online booking for Smile Dental', body: "Hi,\n\nI couldn't spot an online booking option on the Smile Dental homepage. We build simple booking pages for clinics. Would a 15-minute call this week be worth your time?\n\nRai" }, lead)
+  const clean = localReview({ subject: 'Online booking for Smile Dental', body: "Hi,\n\nI couldn't spot an online booking option on the Smile Dental homepage. We build simple booking pages for clinics. Want me to send over the quick fix I noted?\n\nRai" }, lead)
   assert.equal(clean.level, 'good'); assert.deepEqual(clean.issues, [])
   const bad = localReview({ subject: 'FREE GUARANTEED RESULTS!!!', body: "I'm a local developer here in Austin. We will increase your bookings by 300% in 30 days, guaranteed, act now. Visit https://a.test and https://b.test" }, lead)
   assert.equal(bad.level, 'review')
@@ -94,12 +94,14 @@ test('follow-ups get different jobs; tone changes the template; offer shapes the
   const lead = { id: 1, name: 'Acme', website: 'https://a.test', observations: '[]', offer: 'online booking or enquiry system' }
   await draftEmail(lead, { step: 1, previous: { subject: 'S', body: 'B' }, client })
   await draftEmail(lead, { step: 2, previous: { subject: 'S', body: 'B' }, client })
+  await draftEmail(lead, { step: 3, previous: { subject: 'S', body: 'B' }, client })
   assert.match(seen[0], /ONE genuinely useful, specific tip/)
-  assert.match(seen[1], /last one/)
+  assert.match(seen[1], /DIFFERENT angle/)
+  assert.match(seen[2], /break-up/)
   assert.match(seen[0], /Lead with this one thing: online booking/)
   const short = templateDraft(lead, { tone: 'short' }), full = templateDraft(lead)
   assert.ok(short.body.length < full.body.length)
-  assert.match(full.body, /online booking or enquiry system/)
+  assert.match(full.body, /online booking and enquiry systems/)
 })
 
 test('web: preview, regenerate by tone, AI check and ideas endpoints work', async () => {

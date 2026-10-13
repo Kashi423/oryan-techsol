@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'node:fs'
 import path from 'node:path'
 import { config, ROOT } from './config.js'
 import { findLeads, enrichLeads, draftLeads, queueFollowUps, setDraftStatus } from './pipeline.js'
-import { sendApproved, sentToday, makeTransport, inSendWindow, optOut, effectiveCap, dueFollowUps } from './sender.js'
+import { sendApproved, sentToday, makeTransport, inSendWindow, windowText, optOut, effectiveCap, dueFollowUps } from './sender.js'
 import { labelPending, notifyHot, sendReply } from './replies.js'
 import { checkReplies } from './inbox.js'
 import { searchPlaces } from './places.js'
@@ -13,7 +13,7 @@ import { withFooter, getClient, aiProvider, draftEmail, TONE_NAMES } from './wri
 import { renderEmailHtml } from './html.js'
 import { localReview, aiReview } from './quality.js'
 import { suggestTargets } from './ideas.js'
-import { getCatalog, saveCatalog, useMemoryCatalog } from './catalog.js'
+import { getCatalog, saveCatalog, useMemoryCatalog, proofPoints, saveProof } from './catalog.js'
 import { demoKit } from './demo.js'
 import os from 'node:os'
 
@@ -112,11 +112,13 @@ export function createApp(db, { demo = false } = {}) {
     emailStyle: config.emailStyle,
     tones: TONE_NAMES,
     catalog: getCatalog(),
+    proof: proofPoints(),
     settings: { gmailUser: config.gmailUser, fromName: config.fromName, signOffName: config.signOffName, replyTo: config.replyTo, dailyCap: config.dailyCap },
     paused: existsSync(config.pauseFile),
     auto,
     sentToday: sentToday(db),
-    windowOpen: demo || inSendWindow(),
+    windowOpen: demo || inSendWindow(new Date(), config.sendWindow, config.defaultTz),
+    windowText: windowText(),
     sendWindow: config.sendWindow,
     counts: Object.fromEntries(db.prepare('SELECT status, COUNT(*) n FROM leads GROUP BY status').all().map((r) => [r.status, r.n])),
     cap: effectiveCap(db),
@@ -148,7 +150,7 @@ export function createApp(db, { demo = false } = {}) {
           const n = Number(body.dailyCap)
           if (!Number.isInteger(n) || n < 1 || n > 200) throw new Error('Daily limit must be a whole number from 1 to 200')
         }
-        if (body.emailStyle !== undefined && !['html', 'plain'].includes(String(body.emailStyle))) throw new Error('Email style must be html or plain')
+        if (body.emailStyle !== undefined && !['auto', 'html', 'plain'].includes(String(body.emailStyle))) throw new Error('Email style must be auto, html or plain')
         if (body.logoUrl && !/^https:\/\/\S+$/.test(String(body.logoUrl).trim())) throw new Error('Logo address must start with https://')
         if (demo) {
           if (body.dailyCap) config.dailyCap = Number(body.dailyCap)
@@ -241,7 +243,8 @@ export function createApp(db, { demo = false } = {}) {
         return { ok: true }
       }
       case '/api/catalog': {
-        saveCatalog(body.prices ?? {})
+        if (body.proof !== undefined) saveProof(body.proof)
+        if (body.prices !== undefined) saveCatalog(body.prices)
         return { ok: true, catalog: getCatalog() }
       }
       case '/api/preview': {

@@ -31,7 +31,28 @@ export function getCatalog() {
   return SERVICES.map((s) => ({ ...s, from: prices[s.key] ? Number(prices[s.key]) : null }))
 }
 
+/** Real, true statements about work you have done. Empty until YOU add some; nothing is invented. */
+export function proofPoints() {
+  const p = readPrices().proof
+  return Array.isArray(p) ? p.filter((x) => typeof x === 'string' && x.trim()).slice(0, 5) : []
+}
+
+export function saveProof(lines) {
+  const proof = String(Array.isArray(lines) ? lines.join('\n') : lines ?? '')
+    .split('\n').map((l) => l.trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 5)
+  for (const l of proof) {
+    if (l.length > 160) throw new Error('Each proof point must be under 160 characters')
+    if (/https?:\/\//i.test(l)) throw new Error('Proof points cannot contain links')
+  }
+  const prices = { ...readPrices(), proof }
+  if (memory) { memory = prices; return proof }
+  mkdirSync(path.dirname(file()), { recursive: true })
+  writeFileSync(file(), JSON.stringify(prices, null, 2))
+  return proof
+}
+
 export function saveCatalog(input) {
+  const keepProof = readPrices().proof
   const prices = {}
   for (const s of SERVICES) {
     const given = String(input?.[s.key] ?? '').trim()
@@ -42,6 +63,7 @@ export function saveCatalog(input) {
     if (!Number.isFinite(n) || n <= 0 || n > 1_000_000) throw new Error(`Price for ${s.name} must be above 0 and at most 1,000,000`)
     prices[s.key] = Math.round(n)
   }
+  if (keepProof) prices.proof = keepProof // saving prices must not wipe your proof points
   if (memory) { memory = prices; return prices }
   mkdirSync(path.dirname(file()), { recursive: true })
   writeFileSync(file(), JSON.stringify(prices, null, 2))

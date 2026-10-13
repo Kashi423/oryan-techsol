@@ -1,22 +1,27 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { config } from './config.js'
 import { templateDraft } from './template.js'
-import { startingPrice, money, servicesLine } from './catalog.js'
+import { startingPrice, money, servicesLine, proofPoints } from './catalog.js'
 
-const systemPrompt = () => `You write short, honest cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses.
+const systemPrompt = () => `You write cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses. Every email must read like a short note from one person who really looked at THEIR business, not a template.
+
+Structure of a FIRST email (50-95 words in total, three short paragraphs at most):
+1. One specific, true observation about them, taken only from the supplied facts (their site, listing or reviews). Start with it. No flattery, no introduction of yourself or the company, no "I'm reaching out", no "my name is".
+2. One sentence on the single thing we would fix and what it does for them. If a starting price is supplied you may add it once as "from $X".
+3. One easy, interest-based question. Do NOT ask for a call, meeting or time in the first email. Offer something free and small instead, for example: "Want me to send over the two or three quick fixes I noted?"
 
 Rules:
-- Plain text only. First email: 70-110 words. Follow-ups: 35-60 words.
+- Plain text only. Follow-ups: 25-70 words.
 - Write as one human, sign off as "${config.signOffName || config.fromName}" with no title lines (a footer is appended automatically).
 - Use ONLY the facts supplied about the business. Never invent numbers, awards, competitors, traffic, revenue or things you "noticed" that are not in the facts.
-- You may mention up to two of the supplied findings, phrased kindly and as something that could be improved, not as an insult. Never add findings that are not supplied.
+- Mention at most two of the supplied findings, phrased kindly and as something that could be improved, not as an insult. Never add findings that are not supplied.
 - Describe observations only as what you could see ("I couldn't spot an online booking option on your homepage"), never as a certainty about their business ("patients cannot book online").
-- One clear, low-pressure call to action (e.g. "Worth a quick 15-minute chat?").
-- No hype, no emojis, no ALL CAPS, no "I hope this email finds you well", no fake urgency, no "Re:" or "Fwd:" subjects.
-- Do not claim a prior relationship or that they contacted us.
+- No hype, no emojis, no ALL CAPS, no "I hope this email finds you well", no fake urgency, no "Re:" or "Fwd:" subjects, no links.
+- Do not claim a prior relationship, past clients, projects, case studies or results unless a proof point is supplied below, used verbatim.
+- Do not claim that they contacted us.
 - Never claim to be cheaper, the cheapest, "below market" or better value than other agencies. Only quote a starting price if one is supplied below, exactly as written.
 - Never say or imply you are local to them, based near them, or "here in <their city>". Do not state where Oryan Techsol is located. Do not call yourself a "local developer".
-- Subject: under 8 words, specific, no clickbait. If a subject style is given, follow it.
+- Subject: 2 to 5 words, under 40 characters, containing the business name or one specific topic, no clickbait, no all caps. If a subject style is given, follow it.
 Respond with ONLY a JSON object: {"subject": "...", "body": "..."}`
 
 export function parseDraft(text) {
@@ -34,8 +39,8 @@ export function auditBullets(lead) {
 }
 
 const STYLE = {
-  A: 'Subject style A: plain and specific, e.g. "Online booking for <Business>".',
-  B: 'Subject style B: a short, friendly question, e.g. "Quick question about <Business>\'s website?".',
+  A: 'Subject style A: plain and specific, 2-4 words, e.g. "<Business> online booking".',
+  B: 'Subject style B: a short question, 3-5 words, e.g. "<Business>: online booking?".',
 }
 
 function facts(lead) {
@@ -132,8 +137,9 @@ export async function draftEmail(lead, { step = 0, previous = null, client, vari
 
 // Each follow-up has a different job, so the sequence does not feel like nagging.
 const FOLLOW_UP = {
-  1: 'Write follow-up #1 (40-70 words). Add ONE genuinely useful, specific tip related to the supplied findings so it gives value even if they never reply. No new claims, no pricing.',
-  2: 'Write follow-up #2, the last one (25-45 words). A graceful close: say this is the last note, no pressure, they can reply any time. One sentence offering a short call.',
+  1: 'Write follow-up #1 (30-60 words, sent 3 days later). Give ONE genuinely useful, specific tip from the supplied findings so it is valuable even if they never reply. No new claims, no pricing. End with a light interest question.',
+  2: 'Write follow-up #2 (30-60 words, sent a week after the first email). Use a DIFFERENT angle from the first two emails: if a proof point is supplied, use it verbatim in one sentence; otherwise raise a second supplied finding. End with a light interest question. Do not just "check in".',
+  3: 'Write follow-up #3, the final one (20-40 words, sent two weeks after the first email). A graceful break-up: say this is the last note so you do not clutter their inbox, and that they can reply any time and you will send the short list of fixes. No guilt, no pressure.',
 }
 
 async function draftWithAi(lead, { step, previous, client, variant, tone }) {
@@ -141,12 +147,16 @@ async function draftWithAi(lead, { step, previous, client, variant, tone }) {
   const task =
     step === 0
       ? 'Write the first outreach email.'
-      : `${FOLLOW_UP[step] ?? FOLLOW_UP[2]} It follows this earlier email (do not repeat it):\n\nSubject: ${previous?.subject}\n\n${previous?.body}`
+      : `${FOLLOW_UP[step] ?? FOLLOW_UP[3]} It follows this earlier email (do not repeat it):\n\nSubject: ${previous?.subject}\n\n${previous?.body}`
   const price = startingPrice(lead)
   const priceLine = price
     ? `\nStarting price you may quote, exactly as written: "from ${money(price)}". Do not round it, discount it, or compare it with others.`
     : '\nNo price is supplied: do not mention any price, cost or how affordable we are.'
-  const offer = (lead.offer ? `\nLead with this one thing: ${lead.offer}. Do not list other services.` : '') + priceLine
+  const proof = proofPoints()
+  const proofLine = proof.length
+    ? `\nReal proof you may use, verbatim, at most one: ${proof.map((p) => `"${p}"`).join(' | ')}`
+    : '\nNo proof points are supplied: do not mention past clients, projects or results.'
+  const offer = (lead.offer ? `\nLead with this one thing: ${lead.offer}. Do not list other services.` : '') + priceLine + proofLine
   const base = `${task}${step === 0 ? '\n' + (STYLE[variant] ?? STYLE.A) : ''}${TONES[tone] ? '\n' + TONES[tone] : ''}${offer}\n\nFacts:\n${facts(lead)}`
   let problem = null
   // One retry if the draft makes a claim we cannot back up; otherwise the caller falls back to the template.

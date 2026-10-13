@@ -29,7 +29,7 @@ test('price shows in template only when set, and only for the service being offe
   useMemoryCatalog({})
   assert.ok(!/\$\d/.test(templateDraft(lead).body), 'no price when none set')
   saveCatalog({ web: 499, ai: 1200 })
-  assert.match(templateDraft(lead).body, /Packages for this start from \$499\./)
+  assert.match(templateDraft(lead).body, /with packages from \$499\./)
   const chatbotLead = { ...lead, offer: 'a lead-capture form with an AI chatbot' }
   assert.match(templateDraft(chatbotLead).body, /from \$1,200\./)
   const autoLead = { ...lead, offer: 'small automations and an AI assistant for enquiries' }
