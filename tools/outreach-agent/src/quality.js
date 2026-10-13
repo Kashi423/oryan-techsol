@@ -1,9 +1,9 @@
 // Quality gate for drafts: cheap local checks always, optional AI fact-check on demand.
 import { config } from './config.js'
-import { aiProvider, getClient, unsupportedClaim } from './write.js'
+import { aiProvider, getClient, unsupportedClaim, strayNumbers } from './write.js'
 
 const SPAM = [
-  [/\bfree\b/i, '"free"'], [/guarantee/i, '"guarantee"'], [/act now|buy now|order now/i, 'pushy call to action'],
+  [/(?<!feel )(?<!are you )\bfree\b/i, '"free"'], [/guarantee/i, '"guarantee"'], [/act now|buy now|order now/i, 'pushy call to action'],
   [/limited time|urgent|last chance|hurry/i, 'fake urgency'], [/click here/i, '"click here"'], [/risk[- ]free|no obligation/i, '"risk free"'],
   [/100%|\$\$+|!{2,}/, 'hype punctuation'], [/\bwinner\b|congratulations/i, 'prize language'],
 ]
@@ -33,16 +33,16 @@ export function localReview(draft, lead = {}) {
   const caps = (text.match(/\b[A-Z]{4,}\b/g) ?? []).filter((w) => !['HTTP', 'HTTPS', 'HTML', 'CSS', 'SEO', 'OSM'].includes(w))
   if (caps.length >= 1) hit(8, `ALL-CAPS words: ${caps.slice(0, 3).join(', ')}.`)
   if ((body.match(/https?:\/\//g) ?? []).length > 1) hit(10, 'More than one link.')
-  if (!/\?/.test(body)) hit(10, 'No clear question or call to action.')
+  // The final break-up note (step 3) legitimately has no question.
+  if (draft.step !== 3 && !/\?/.test(body)) hit(10, 'No clear question or call to action.')
   const claim = unsupportedClaim(text)
   if (claim) hit(30, `Unsupported claim: ${claim}.`)
   if (subject.length > 45) hit(5, 'Subject is long (over 45 characters). 2 to 5 words works best.')
   if (/[A-Z]{4,}|!/.test(subject)) hit(5, 'Subject has caps or exclamation marks.')
   if (lead.name && !text.toLowerCase().includes(String(lead.name).toLowerCase().split(/\s+/)[0])) hit(5, 'Does not mention the business by name.')
 
-  // Numbers in the email should come from the facts we collected (15-minute chat is allowed).
-  const known = JSON.stringify([lead.name, lead.address, lead.rating, lead.observations, lead.audit, lead.site_summary, lead.category])
-  const stray = [...new Set(body.match(/\$?\d[\d,.]*%?/g) ?? [])].filter((n) => n !== '15' && !known.includes(n.replace(/[$%]/g, '')))
+  // Numbers must come from the facts we collected or the price you supplied.
+  const stray = strayNumbers(body, lead).filter((n) => n !== '15') // "15-minute" is tolerated in a reply
   if (stray.length) hit(15, `Mentions numbers that are not in the facts: ${stray.slice(0, 3).join(', ')}.`)
 
   score = Math.max(0, Math.min(100, score))

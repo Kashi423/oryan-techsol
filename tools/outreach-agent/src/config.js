@@ -23,6 +23,7 @@ export const config = {
   // Optional alternative writer: an OpenAI API key (not a ChatGPT subscription login).
   openaiKey: process.env.OPENAI_API_KEY ?? '',
   openaiModel: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+  aiTimeoutMs: num(process.env.AI_TIMEOUT_SEC, 30) * 1000, // per attempt
   // Tried in order if the main model is overloaded.
   openaiFallbackModels: (process.env.OPENAI_FALLBACK_MODELS ?? '').split(',').map((s) => s.trim()).filter(Boolean),
   // Any OpenAI-compatible service works here (Gemini, Groq, OpenRouter, local Ollama...).

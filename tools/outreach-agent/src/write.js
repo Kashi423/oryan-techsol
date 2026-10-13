@@ -19,6 +19,7 @@ Rules:
 - No hype, no emojis, no ALL CAPS, no "I hope this email finds you well", no fake urgency, no "Re:" or "Fwd:" subjects, no links.
 - Do not claim a prior relationship, past clients, projects, case studies or results unless a proof point is supplied below, used verbatim.
 - Do not claim that they contacted us.
+- Never state a number, year, date, percentage or price that is not in the supplied facts. Do not suggest changing anything to a specific year.
 - Never claim to be cheaper, the cheapest, "below market" or better value than other agencies. Only quote a starting price if one is supplied below, exactly as written.
 - Never say or imply you are local to them, based near them, or "here in <their city>". Do not state where Oryan Techsol is located. Do not call yourself a "local developer".
 - Subject: 2 to 5 words, under 40 characters, containing the business name or one specific topic, no clickbait, no all caps. If a subject style is given, follow it.
@@ -71,16 +72,24 @@ function openaiClient() {
         for (const model of [config.openaiModel, ...config.openaiFallbackModels]) {
           for (let attempt = 0; attempt < 2; attempt++) {
             if (attempt) await new Promise((r) => setTimeout(r, 2500))
-            const res = await fetch(`${config.openaiBaseUrl}/chat/completions`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.openaiKey}` },
-              body: JSON.stringify({
-                model,
-                // api.openai.com wants the newer field name; compatible services still use max_tokens.
-                [isOpenAI ? 'max_completion_tokens' : 'max_tokens']: budget,
-                messages: [{ role: 'system', content: system }, ...messages],
-              }),
-            })
+            let res
+            try {
+              res = await fetch(`${config.openaiBaseUrl}/chat/completions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.openaiKey}` },
+                body: JSON.stringify({
+                  model,
+                  // api.openai.com wants the newer field name; compatible services still use max_tokens.
+                  [isOpenAI ? 'max_completion_tokens' : 'max_tokens']: budget,
+                  messages: [{ role: 'system', content: system }, ...messages],
+                }),
+                // A stalled request must never freeze a whole batch: give up and try the next model.
+                signal: AbortSignal.timeout(config.aiTimeoutMs),
+              })
+            } catch (e) {
+              lastErr = new Error(`AI service did not answer in time (${model}): ${e.message}`)
+              continue
+            }
             if (!res.ok) {
               const detail = (await res.text()).slice(0, 300)
               lastErr = new Error(`AI service ${res.status}: ${detail}`)
@@ -89,6 +98,7 @@ function openaiClient() {
                 throw lastErr // retrying cannot help
               }
               if ([429, 500, 502, 503, 504].includes(res.status)) continue // busy: retry, then next model
+              if (res.status === 404 || /model/i.test(detail)) break // this model is gone or not allowed: next model
               throw lastErr
             }
             const text = (await res.json()).choices?.[0]?.message?.content ?? ''
@@ -142,12 +152,20 @@ const FOLLOW_UP = {
   3: 'Write follow-up #3, the final one (20-40 words, sent two weeks after the first email). A graceful break-up: say this is the last note so you do not clutter their inbox, and that they can reply any time and you will send the short list of fixes. No guilt, no pressure.',
 }
 
+/** Pins which finding each follow-up uses, so the sequence really has different angles. */
+function angleHint(lead, step) {
+  const b = auditBullets(lead)
+  if (step === 1 && b[0]) return ` Base the tip on this finding: "${b[0]}"`
+  if (step === 2 && b[1]) return ` Use this DIFFERENT finding and do not repeat the one used earlier: "${b[1]}"`
+  return ''
+}
+
 async function draftWithAi(lead, { step, previous, client, variant, tone }) {
   const c = client ?? getClient()
   const task =
     step === 0
       ? 'Write the first outreach email.'
-      : `${FOLLOW_UP[step] ?? FOLLOW_UP[3]} It follows this earlier email (do not repeat it):\n\nSubject: ${previous?.subject}\n\n${previous?.body}`
+      : `${FOLLOW_UP[step] ?? FOLLOW_UP[3]}${angleHint(lead, step)} It follows this earlier email (do not repeat it):\n\nSubject: ${previous?.subject}\n\n${previous?.body}`
   const price = startingPrice(lead)
   const priceLine = price
     ? `\nStarting price you may quote, exactly as written: "from ${money(price)}". Do not round it, discount it, or compare it with others.`
@@ -168,14 +186,31 @@ async function draftWithAi(lead, { step, previous, client, variant, tone }) {
       messages: [{ role: 'user', content: attempt ? `${base}\n\nIMPORTANT: your last draft ${problem}. Rewrite it without that.` : base }],
     })
     const draft = parseDraft(res.content.filter((b) => b.type === 'text').map((b) => b.text).join(''))
-    problem = unsupportedClaim(`${draft.subject}\n${draft.body}`)
-    if (!problem) return draft
+    const all = `${draft.subject}\n${draft.body}`
+    const stray = strayNumbers(all, lead)
+    problem = unsupportedClaim(all) || (stray.length ? `used a number that is not in the facts (${stray.slice(0, 3).join(', ')})` : null)
+    if (!problem) {
+      // Follow-ups reply in the same thread, so keep the original subject (with "Re:") for clean threading.
+      if (step > 0 && previous?.subject) draft.subject = `Re: ${previous.subject.replace(/^Re:\s*/i, '')}`
+      return draft
+    }
   }
   throw new Error(`Draft kept making an unsupported claim (${problem})`)
 }
 
 /** Claims the model must never make: being local to them, or inventing where we are. Returns a reason or null. */
+/** Numbers in a draft that are not in the facts we collected (or the price you supplied). */
+export function strayNumbers(text, lead = {}) {
+  const price = startingPrice(lead)
+  const known = JSON.stringify([lead.name, lead.address, lead.rating, lead.observations, lead.audit, lead.site_summary, lead.category, lead.phone]) + (price ? ` ${price} ${money(price)}` : '')
+  const found = String(text).match(/\$?\d[\d,]*(?:\.\d+)?%?/g) ?? []
+  return [...new Set(found.map((n) => n.replace(/[$%,]/g, '')))].filter((n) => n && !known.replace(/,/g, '').includes(n))
+}
+
 export function unsupportedClaim(text) {
+  if (/\b(most|many|majority of|studies show|research shows|statistics show|according to|everyone|nobody|people (prefer|expect|want)|customers (prefer|expect|want|now))\b[^.?!]{0,50}\b(patients|visitors|customers|people|clients|users|consumers|businesses|buyers)\b/i.test(text)
+      && /\b(prefer|expect|want|check|choose|search|book|leave|abandon|trust|look for|rather|bounce|visit|use)\b/i.test(text)) return 'made a general claim that is not in the facts'
+  if (/\b(there (is|are) no|there isn'?t|there'?s no|you (lack|don'?t have|do not have|have no|are missing|'?re missing))\b/i.test(text)) return 'stated a certainty instead of what was seen'
   if (/\b(cheapest|lowest (price|cost)|best price|cheaper than|unbeatable (price|value)|below[- ]market|market rate|most affordable|undercut)\b/i.test(text)) return 'made a price comparison'
   if (/\b(i am|i'm|we are|we're|as) (a |an )?(local|neighbo(u)?r|nearby)\b/i.test(text)) return 'claimed to be local'
   if (/\bhere in\b/i.test(text)) return 'said "here in <city>"'

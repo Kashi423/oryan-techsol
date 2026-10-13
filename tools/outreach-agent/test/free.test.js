@@ -138,3 +138,29 @@ test('writer guard: drafts claiming to be local are retried once, then fall back
   const stubborn = { messages: { create: async () => reply('Hi', "We're based in Austin and love local shops.") } }
   await assert.rejects(() => draftEmail({ id: 1, name: 'Acme', observations: '[]' }, { client: stubborn }), /unsupported claim/)
 })
+
+test('AI timeout: a stalled request moves to the next model and finally to the template', async () => {
+  const { draftEmail } = await import('../src/write.js')
+  const saved = { a: config.anthropicKey, o: config.openaiKey, u: config.openaiBaseUrl, f: config.openaiFallbackModels, t: config.aiTimeoutMs }
+  const realFetch = globalThis.fetch
+  const models = []
+  const keepAlive = setInterval(() => {}, 20) // AbortSignal.timeout is unref'd; a real socket would keep the loop alive
+  globalThis.fetch = (url, opts) => {
+    models.push(JSON.parse(opts.body).model)
+    return new Promise((_, reject) => opts.signal.addEventListener('abort', () => reject(new Error('aborted'))))
+  }
+  try {
+    config.anthropicKey = ''; config.openaiKey = 'k'; config.openaiBaseUrl = 'https://api.openai.com/v1'
+    config.openaiModel = 'main'; config.openaiFallbackModels = ['backup']; config.aiTimeoutMs = 40
+    const started = Date.now()
+    const d = await draftEmail({ id: 1, name: 'Acme', website: 'https://a.test', observations: '[]' })
+    assert.match(d.subject, /Acme/)
+    assert.match(d.fallbackReason, /did not answer in time/)
+    assert.deepEqual([...new Set(models)], ['main', 'backup'])
+    assert.ok(Date.now() - started < 10_000, 'gave up quickly instead of hanging')
+  } finally {
+    clearInterval(keepAlive)
+    globalThis.fetch = realFetch
+    Object.assign(config, { anthropicKey: saved.a, openaiKey: saved.o, openaiBaseUrl: saved.u, openaiFallbackModels: saved.f, aiTimeoutMs: saved.t })
+  }
+})

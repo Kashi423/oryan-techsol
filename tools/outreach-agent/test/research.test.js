@@ -127,3 +127,71 @@ test('quality gate: generic openers and call-asks in a first email are flagged',
   assert.match(text, /Generic opener/); assert.match(text, /Asks for a call or time/)
   assert.ok(a.score < 90)
 })
+
+test('guard: invented numbers/years and absolute claims are rejected, supplied price and facts are fine', async () => {
+  const { strayNumbers, unsupportedClaim, draftEmail } = await import('../src/write.js')
+  useMemoryCatalog({ web: 499 })
+  const lead = { id: 1, name: 'Acme Dental', rating: 4.7, offer: 'online booking or enquiry system', address: '12 Main St, Austin, TX 78701', observations: '[]', audit: JSON.stringify({ bullets: ['The footer still says \u00a9 2017.'] }) }
+  assert.deepEqual(strayNumbers('from $499, rated 4.7, still says 2017, Main St 12', lead), [])
+  assert.deepEqual(strayNumbers('Update the footer to 2024 and grow 30%', lead).sort(), ['2024', '30'])
+  assert.equal(unsupportedClaim('You lack an online booking option.'), 'stated a certainty instead of what was seen')
+  assert.equal(unsupportedClaim("There isn't a contact form."), 'stated a certainty instead of what was seen')
+  assert.equal(unsupportedClaim("I couldn't spot an online booking option."), null)
+
+  const reply = (b) => ({ content: [{ type: 'text', text: JSON.stringify({ subject: 'Acme Dental booking', body: b }) }] })
+  let n = 0
+  const bad = { messages: { create: async () => { n++; return reply('Change the footer to 2024 so it looks current. Want the list?') } } }
+  await assert.rejects(() => draftEmail(lead, { client: bad }), /not in the facts \(2024\)/)
+  assert.equal(n, 2, 'retried once before giving up')
+  const fixes = { messages: { create: async () => { n++; return n % 2 ? reply('Change the footer to 2024.') : reply("I couldn't spot an online booking option. Want the quick fix?") } } }
+  n = 0
+  assert.match((await draftEmail(lead, { client: fixes })).body, /couldn't spot/)
+})
+
+test('quality gate: supplied price and "feel free" are not false alarms; break-up note needs no question', async () => {
+  const { localReview } = await import('../src/quality.js')
+  useMemoryCatalog({ web: 499 })
+  const lead = { name: 'Acme Dental', offer: 'online booking or enquiry system', observations: '[]' }
+  const ok = localReview({ subject: 'Acme Dental booking', body: "I couldn't spot an online booking option on the Acme Dental homepage. We build booking systems from $499. Want me to send the quick fix?" }, lead)
+  assert.deepEqual(ok.issues, [])
+  const breakup = localReview({ subject: 'Acme Dental update', body: "I'll stop here so I don't clutter your inbox. Please feel free to reach out anytime if you'd like the short list for Acme Dental.", step: 3 }, lead)
+  assert.ok(!breakup.issues.some((i) => /free|question/i.test(i)), breakup.issues.join(' | '))
+})
+
+test('guard: unsupported general claims are blocked; a gone model is skipped; follow-up subject stays threaded', async () => {
+  const { unsupportedClaim, draftEmail } = await import('../src/write.js')
+  for (const bad of [
+    'Most visitors prefer to book their own timeslot rather than calling.',
+    'Many customers now check for a website before they call.',
+    'Studies show patients expect online booking.',
+  ]) assert.equal(unsupportedClaim(bad), 'made a general claim that is not in the facts', bad)
+  assert.equal(unsupportedClaim("I couldn't spot an online booking option on your homepage."), null)
+  assert.equal(unsupportedClaim('We build booking systems for dental clinics.'), null)
+
+  // follow-up subject is forced to "Re: <original>" whatever the model wrote
+  const client = { messages: { create: async () => ({ content: [{ type: 'text', text: '{"subject":"Something else","body":"One tip for Acme. Want the list?"}' }] }) } }
+  const d = await draftEmail({ id: 1, name: 'Acme', website: 'https://a.test', observations: '[]' }, { step: 1, previous: { subject: 'Re: Acme booking', body: 'x' }, client })
+  assert.equal(d.subject, 'Re: Acme booking')
+
+  // a retired model (404) moves on to the fallback model instead of failing
+  const saved = { a: config.anthropicKey, o: config.openaiKey, u: config.openaiBaseUrl, f: config.openaiFallbackModels, m: config.openaiModel }
+  const realFetch = globalThis.fetch
+  const tried = []
+  globalThis.fetch = async (url, opts) => {
+    const model = JSON.parse(opts.body).model
+    tried.push(model)
+    if (model === 'retired') return { ok: false, status: 404, text: async () => 'This model is no longer available' }
+    return { ok: true, json: async () => ({ choices: [{ message: { content: '{"subject":"Acme booking","body":"I could not spot a booking option for Acme. Want the quick fix?"}' } }] }) }
+  }
+  try {
+    config.anthropicKey = ''; config.openaiKey = 'k'; config.openaiBaseUrl = 'https://api.openai.com/v1'
+    config.openaiModel = 'retired'; config.openaiFallbackModels = ['working']
+    const r = await draftEmail({ id: 1, name: 'Acme', website: 'https://a.test', observations: '[]' })
+    assert.match(r.body, /quick fix/)
+    assert.deepEqual(tried, ['retired', 'working'])
+    assert.equal(r.fallbackReason, undefined, 'no template fallback needed')
+  } finally {
+    globalThis.fetch = realFetch
+    Object.assign(config, { anthropicKey: saved.a, openaiKey: saved.o, openaiBaseUrl: saved.u, openaiFallbackModels: saved.f, openaiModel: saved.m })
+  }
+})
