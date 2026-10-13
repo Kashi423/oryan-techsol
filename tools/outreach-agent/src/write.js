@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { config } from './config.js'
 import { templateDraft } from './template.js'
+import { startingPrice, money, servicesLine } from './catalog.js'
 
 const systemPrompt = () => `You write short, honest cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses.
 
@@ -13,6 +14,7 @@ Rules:
 - One clear, low-pressure call to action (e.g. "Worth a quick 15-minute chat?").
 - No hype, no emojis, no ALL CAPS, no "I hope this email finds you well", no fake urgency, no "Re:" or "Fwd:" subjects.
 - Do not claim a prior relationship or that they contacted us.
+- Never claim to be cheaper, the cheapest, "below market" or better value than other agencies. Only quote a starting price if one is supplied below, exactly as written.
 - Never say or imply you are local to them, based near them, or "here in <their city>". Do not state where Oryan Techsol is located. Do not call yourself a "local developer".
 - Subject: under 8 words, specific, no clickbait. If a subject style is given, follow it.
 Respond with ONLY a JSON object: {"subject": "...", "body": "..."}`
@@ -140,7 +142,11 @@ async function draftWithAi(lead, { step, previous, client, variant, tone }) {
     step === 0
       ? 'Write the first outreach email.'
       : `${FOLLOW_UP[step] ?? FOLLOW_UP[2]} It follows this earlier email (do not repeat it):\n\nSubject: ${previous?.subject}\n\n${previous?.body}`
-  const offer = lead.offer ? `\nLead with this one thing: ${lead.offer}. Do not list other services.` : ''
+  const price = startingPrice(lead)
+  const priceLine = price
+    ? `\nStarting price you may quote, exactly as written: "from ${money(price)}". Do not round it, discount it, or compare it with others.`
+    : '\nNo price is supplied: do not mention any price, cost or how affordable we are.'
+  const offer = (lead.offer ? `\nLead with this one thing: ${lead.offer}. Do not list other services.` : '') + priceLine
   const base = `${task}${step === 0 ? '\n' + (STYLE[variant] ?? STYLE.A) : ''}${TONES[tone] ? '\n' + TONES[tone] : ''}${offer}\n\nFacts:\n${facts(lead)}`
   let problem = null
   // One retry if the draft makes a claim we cannot back up; otherwise the caller falls back to the template.
@@ -160,6 +166,7 @@ async function draftWithAi(lead, { step, previous, client, variant, tone }) {
 
 /** Claims the model must never make: being local to them, or inventing where we are. Returns a reason or null. */
 export function unsupportedClaim(text) {
+  if (/\b(cheapest|lowest (price|cost)|best price|cheaper than|unbeatable (price|value)|below[- ]market|market rate|most affordable|undercut)\b/i.test(text)) return 'made a price comparison'
   if (/\b(i am|i'm|we are|we're|as) (a |an )?(local|neighbo(u)?r|nearby)\b/i.test(text)) return 'claimed to be local'
   if (/\bhere in\b/i.test(text)) return 'said "here in <city>"'
   if (/\b(based|located|headquartered) in\b/i.test(text)) return 'stated a location'
@@ -169,5 +176,5 @@ export function unsupportedClaim(text) {
 
 /** Footer is appended in code, never by the model, so the opt-out + address can't be dropped. */
 export function withFooter(body) {
-  return `${body}\n\n--\n${config.fromName} | ${config.website}\n${config.postalAddress}\nNot relevant? Just reply "no thanks" and I won't email you again.`
+  return `${body}\n\n--\n${config.fromName} | ${config.website}\n${servicesLine()}\n${config.postalAddress}\nNot relevant? Just reply "no thanks" and I won't email you again.`
 }

@@ -1,5 +1,6 @@
 // Writes the email without any AI service. Used automatically when no AI key is configured.
 import { config } from './config.js'
+import { startingPrice, money } from './catalog.js'
 
 const hash = (s) => [...String(s)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7)
 
@@ -57,9 +58,11 @@ export function templateDraft(lead, { step = 0, previous = null, variant = 'A', 
   const pitch = lead.offer
     ? `We build ${lead.offer} for local businesses, and that looks like the most useful place to start for ${name}.`
     : 'We build simple, fast websites, booking tools and small apps for local businesses.'
+  const price = startingPrice(lead)
+  const priceSentence = price ? ` Packages for this start from ${money(price)}.` : ''
   const ask = 'Would a short 15-minute call this week be worth your time?'
   const body = tone === 'short'
     ? `Hi,\n\n${middle} ${ask}\n\n${sign}`
-    : `Hi,\n\n${OPENERS[h % OPENERS.length](name)} ${middle}\n\n${pitch} ${ask}\n\n${sign}`
+    : `Hi,\n\n${OPENERS[h % OPENERS.length](name)} ${middle}\n\n${pitch}${priceSentence} ${ask}\n\n${sign}`
   return { subject: set[h % set.length](name), body }
 }

@@ -13,6 +13,7 @@ import { withFooter, getClient, aiProvider, draftEmail, TONE_NAMES } from './wri
 import { renderEmailHtml } from './html.js'
 import { localReview, aiReview } from './quality.js'
 import { suggestTargets } from './ideas.js'
+import { getCatalog, saveCatalog, useMemoryCatalog } from './catalog.js'
 import { demoKit } from './demo.js'
 import os from 'node:os'
 
@@ -57,6 +58,7 @@ export function createApp(db, { demo = false } = {}) {
     // Demo must never touch real keys, the real .env or the real pause file.
     config.placesKey = 'demo'
     config.warmup = false // demo should show the whole flow at once
+    useMemoryCatalog({}) // demo never reads or writes your real price list
     config.pauseFile = path.join(os.tmpdir(), 'oryan-demo-PAUSE')
     if (existsSync(config.pauseFile)) unlinkSync(config.pauseFile)
   }
@@ -109,6 +111,7 @@ export function createApp(db, { demo = false } = {}) {
     hasPlacesKey: !!config.placesKey,
     emailStyle: config.emailStyle,
     tones: TONE_NAMES,
+    catalog: getCatalog(),
     settings: { gmailUser: config.gmailUser, fromName: config.fromName, signOffName: config.signOffName, replyTo: config.replyTo, dailyCap: config.dailyCap },
     paused: existsSync(config.pauseFile),
     auto,
@@ -236,6 +239,10 @@ export function createApp(db, { demo = false } = {}) {
       case '/api/note': {
         db.prepare('UPDATE leads SET notes=? WHERE id=?').run(String(body.note ?? '').slice(0, 2000), Number(body.leadId))
         return { ok: true }
+      }
+      case '/api/catalog': {
+        saveCatalog(body.prices ?? {})
+        return { ok: true, catalog: getCatalog() }
       }
       case '/api/preview': {
         const m = db.prepare('SELECT subject, body FROM messages WHERE id=?').get(Number(body.id))

@@ -105,3 +105,7 @@ Safety that always applies: first emails need your approval, opted-out addresses
 | **Branded HTML email** | Navy and cyan layout with wordmark, signature, reply button and an unsubscribe line. Always sent with a plain-text version. Preview any draft before approving. Set `EMAIL_STYLE=plain` or use the Setup page to turn it off. |
 
 Deliverability notes: the HTML is deliberately light (one column, no tracking pixel, no images unless you set `EMAIL_LOGO_URL`). Cold email with heavy images or many links lands in spam. If replies drop after switching to HTML, set the style back to plain text and compare on the Stats tab.
+
+## Services and prices
+
+The Setup tab has a **Services & starting prices** card with your 8 services. Enter a "from" price for any service and emails for businesses we would offer that service quote it as "from $X". Leave it blank and no price is mentioned. Every email lists all 8 services in the signature. The writer is blocked from claiming to be "cheapest", "below market" or "cheaper than other agencies", because those claims cannot be proven; a drafted email that tries is retried and then replaced by the template. Prices are stored in `data/catalog.json` on your computer.

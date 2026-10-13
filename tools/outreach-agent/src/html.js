@@ -1,6 +1,7 @@
 // Branded HTML email. Deliberately light: one column, inline styles, no tracking, no images by default
 // (images and heavy markup hurt cold-email deliverability). A plain-text part is always sent alongside.
 import { config } from './config.js'
+import { servicesLine } from './catalog.js'
 
 const NAVY = '#051c4e'
 const CYAN = '#10a1c6'
@@ -60,6 +61,7 @@ ${blocks(body, name)}
       <table role="presentation" cellpadding="0" cellspacing="0" style="border-top:1px solid #e2e8f0;padding-top:14px;width:100%;"><tr><td style="padding-top:14px;">
         <div style="font-weight:700;color:${NAVY};">${esc(name)}</div>
         <div style="color:${MUTED};">Oryan Techsol &middot; Innovate &middot; Integrate &middot; Elevate</div>
+        <div style="margin-top:6px;font-size:12px;color:${MUTED};">${esc(servicesLine())}</div>
         <div style="margin-top:6px;"><a href="${esc(site)}" style="color:${CYAN};text-decoration:none;">${esc(site.replace(/^https?:\/\//, ''))}</a>${config.phone ? ` &middot; <span style="color:${MUTED};">${esc(config.phone)}</span>` : ''}</div>
       </td></tr></table>
     </td></tr>

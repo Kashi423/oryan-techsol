@@ -132,6 +132,13 @@
     </div>
 
     <div class="card">
+      <h2>Services &amp; starting prices</h2>
+      <p class="sub">Emails lead with the one service that fits each business, and every email lists all of your services in the signature. If you enter a starting price, the email quotes it as &ldquo;from $X&rdquo; for that service. Leave a price blank and no price is mentioned. The agent never says it is &ldquo;cheaper than the market&rdquo;, because that cannot be proven.</p>
+      <div id="catalogRows" class="row" style="align-items:end"></div>
+      <p style="margin-top:12px"><button class="btn" id="saveCatalog">Save prices</button> <span id="catalogMsg"></span></p>
+    </div>
+
+    <div class="card">
       <h2>Email look</h2>
       <p class="sub">Branded HTML is a light, clean layout in your colours with a signature and an unsubscribe line. Plain text sends no formatting. Both go out with a text version, and there are no tracking pixels.</p>
       <div class="row">
@@ -270,6 +277,13 @@ async function refresh() {
   for (const id of ['gmailUser', 'fromName', 'signOffName', 'replyTo', 'dailyCap']) { const i = $('#' + id); if (document.activeElement !== i && !i.value) i.value = S.settings[id] ?? '' }
   if (document.activeElement !== $('#capReview') && !$('#capReview').value) $('#capReview').value = S.settings.dailyCap
   if (document.activeElement !== $('#emailStyle')) $('#emailStyle').value = S.emailStyle
+  const cr = $('#catalogRows')
+  if (!cr.children.length || document.activeElement?.closest?.('#catalogRows') == null) {
+    const typed = Object.fromEntries([...cr.querySelectorAll('input')].map((i) => [i.dataset.key, i.value]))
+    cr.textContent = ''
+    S.catalog.forEach((s) => cr.append(el('div', { style: 'flex:1 1 150px' }, el('label', { textContent: s.name + ' from ($)' }),
+      el('input', { type: 'number', min: '1', step: '1', placeholder: 'blank = no price', value: typed[s.key] ?? (s.from ?? ''), 'data-key': s.key }))))
+  }
   for (const [id, ok] of [['gmailAppPassword', c.gmail], ['aiKey', c.anthropic], ['placesKey', c.places]]) $('#' + id).placeholder = ok ? 'Saved. Leave blank to keep it.' : $('#' + id).placeholder
 
   // job
@@ -430,6 +444,11 @@ $('#auto').onchange = async (e) => { await api('/api/auto', { on: e.target.check
 $('#replies').onclick = $('#replies2').onclick = async () => { try { await api('/api/check-replies', {}); refresh() } catch (e) { alert(e.message) } }
 $('#followups').onclick = async () => { try { await api('/api/followups', {}); refresh() } catch (e) { alert(e.message) } }
 $('#advance').onclick = async () => { await api('/api/demo/advance', {}); alert('Skipped ahead 5 days. Click "Write follow-ups now" to see the follow-ups appear.'); refresh() }
+$('#saveCatalog').onclick = async () => {
+  const prices = Object.fromEntries([...document.querySelectorAll('#catalogRows input')].map((i) => [i.dataset.key, i.value]))
+  try { await api('/api/catalog', { prices }); show('Saved. New drafts will use these prices.', true, '#catalogMsg') } catch (e) { show(e.message, false, '#catalogMsg') }
+  refresh()
+}
 $('#closePreview').onclick = () => { $('#previewModal').style.display = 'none' }
 $('#previewModal').onclick = (e) => { if (e.target.id === 'previewModal') $('#previewModal').style.display = 'none' }
 $('#saveStyle').onclick = async () => {
