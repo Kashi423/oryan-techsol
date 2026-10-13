@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { config, requireKeys } from './config.js'
+import { config } from './config.js'
 
 const systemPrompt = () => `You write short, honest cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses.
 
@@ -37,19 +37,49 @@ function facts(lead) {
   ].filter(Boolean).join('\n')
 }
 
-/** `client` is injectable for tests; defaults to the real Anthropic SDK. */
-export async function draftEmail(lead, { step = 0, previous = null, client } = {}) {
-  let c = client
-  if (!c) {
-    requireKeys('anthropic')
-    c = new Anthropic({ apiKey: config.anthropicKey })
+/** Adapter that exposes OpenAI chat completions through the same `messages.create` shape. */
+function openaiClient() {
+  return {
+    messages: {
+      create: async ({ system, messages, max_tokens }) => {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.openaiKey}` },
+          body: JSON.stringify({
+            model: config.openaiModel,
+            max_completion_tokens: max_tokens,
+            messages: [{ role: 'system', content: system }, ...messages],
+          }),
+        })
+        if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 200)}`)
+        const j = await res.json()
+        return { content: [{ type: 'text', text: j.choices?.[0]?.message?.content ?? '' }] }
+      },
+    },
   }
+}
+
+/** Which writer is configured: a Claude key wins, then an OpenAI key. */
+export function aiProvider() {
+  return config.anthropicKey ? 'claude' : config.openaiKey ? 'openai' : null
+}
+
+export function getClient() {
+  const p = aiProvider()
+  if (p === 'claude') return new Anthropic({ apiKey: config.anthropicKey })
+  if (p === 'openai') return openaiClient()
+  throw new Error('Add a Claude key or an OpenAI key in Setup so the agent can write emails')
+}
+
+/** `client` is injectable for tests; defaults to whichever provider has a key. */
+export async function draftEmail(lead, { step = 0, previous = null, client } = {}) {
+  const c = client ?? getClient()
   const task =
     step === 0
       ? 'Write the first outreach email.'
       : `Write follow-up #${step}. It is a brief, friendly bump on this earlier email (do not repeat it, add no new claims):\n\nSubject: ${previous?.subject}\n\n${previous?.body}`
   const res = await c.messages.create({
-    model: config.model,
+    model: aiProvider() === 'openai' && !client ? config.openaiModel : config.model,
     max_tokens: 600,
     system: systemPrompt(),
     messages: [{ role: 'user', content: `${task}\n\nFacts:\n${facts(lead)}` }],

@@ -78,9 +78,13 @@
     </div>
 
     <div class="card">
-      <h2>B. Claude key (writes the emails)</h2>
-      <p class="sub">Create a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a> and paste it.</p>
-      <input id="anthropicKey" type="password" placeholder="sk-ant-..." autocomplete="off">
+      <h2>B. AI writer (writes the emails)</h2>
+      <p class="sub">Paste <b>one</b> of these. A Claude key from <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>, or an OpenAI (ChatGPT) API key from
+        <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com</a>. A ChatGPT or Claude.ai subscription login does not work; it must be an API key.</p>
+      <div class="row">
+        <div><label>Claude key</label><input id="anthropicKey" type="password" placeholder="sk-ant-..." autocomplete="off"></div>
+        <div><label>or OpenAI key</label><input id="openaiKey" type="password" placeholder="sk-..." autocomplete="off"></div>
+      </div>
       <p style="margin-top:12px"><button class="btn" data-save="anthropic">Save and test</button> <span id="r-anthropic"></span></p>
     </div>
 
@@ -179,13 +183,13 @@ async function refresh() {
     el('span', { textContent: S.windowOpen ? 'Send window: open' : `Send window closed (${S.sendWindow}, Mon-Fri)` }),
     el('span', { textContent: S.paused ? 'PAUSED' : 'Running' }),
   )
-  const missing = [!c.gmail && 'Gmail', !c.anthropic && 'Claude key', !c.places && 'Google Maps key'].filter(Boolean)
+  const missing = [!c.gmail && 'Gmail', !c.anthropic && 'Claude or OpenAI key', !c.places && 'Google Maps key'].filter(Boolean)
   const b = $('#setupBanner')
   b.className = 'banner ' + (missing.length ? 'warn' : 'ok')
   b.textContent = missing.length ? `Still to set up: ${missing.join(', ')}. Fill in each box below once.` : 'Everything is connected. Go to "2. Find customers".'
   for (const id of ['gmailUser', 'fromName', 'signOffName', 'replyTo', 'dailyCap']) { const i = $('#' + id); if (document.activeElement !== i && !i.value) i.value = S.settings[id] ?? '' }
   if (document.activeElement !== $('#capReview') && !$('#capReview').value) $('#capReview').value = S.settings.dailyCap
-  for (const [id, ok] of [['gmailAppPassword', c.gmail], ['anthropicKey', c.anthropic], ['placesKey', c.places]]) $('#' + id).placeholder = ok ? 'Saved. Leave blank to keep it.' : $('#' + id).placeholder
+  for (const [id, ok] of [['gmailAppPassword', c.gmail], ['anthropicKey', c.anthropic], ['openaiKey', c.anthropic], ['placesKey', c.places]]) $('#' + id).placeholder = ok ? 'Saved. Leave blank to keep it.' : $('#' + id).placeholder
 
   // job
   const j = S.job
@@ -229,7 +233,7 @@ async function refresh() {
 
 document.querySelectorAll('[data-save]').forEach((b) => (b.onclick = async () => {
   const w = b.dataset.save
-  const fields = { gmail: ['gmailUser', 'gmailAppPassword', 'fromName', 'signOffName', 'replyTo'], anthropic: ['anthropicKey'], places: ['placesKey'] }[w]
+  const fields = { gmail: ['gmailUser', 'gmailAppPassword', 'fromName', 'signOffName', 'replyTo'], anthropic: ['anthropicKey', 'openaiKey'], places: ['placesKey'] }[w]
   const payload = Object.fromEntries(fields.map((f) => [f, $('#' + f).value]))
   b.disabled = true; show('Working...', true, '#r-' + w)
   try {

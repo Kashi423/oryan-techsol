@@ -4,7 +4,7 @@ import { config, requireKeys } from './config.js'
 import { openDb, domainOf } from './db.js'
 import { searchPlaces } from './places.js'
 import { enrichSite } from './enrich.js'
-import { draftEmail, withFooter } from './write.js'
+import { draftEmail, withFooter, aiProvider } from './write.js'
 import { sendApproved, dueFollowUps, optOut, sentToday, makeTransport, inSendWindow } from './sender.js'
 import { checkReplies } from './inbox.js'
 
@@ -68,7 +68,7 @@ async function enrich() {
 }
 
 async function draft() {
-  requireKeys('anthropic')
+  if (!aiProvider()) throw new Error('Add ANTHROPIC_API_KEY or OPENAI_API_KEY to .env')
   const rows = db.prepare("SELECT * FROM leads WHERE status='ready'").all().slice(0, limit)
   for (const l of rows) {
     try {
@@ -111,7 +111,7 @@ function setStatus(to, from) {
 }
 
 async function followups() {
-  requireKeys('anthropic')
+  if (!aiProvider()) throw new Error('Add ANTHROPIC_API_KEY or OPENAI_API_KEY to .env')
   for (const { lead, previous, step } of dueFollowUps(db)) {
     try {
       const d = await draftEmail(lead, { step, previous })

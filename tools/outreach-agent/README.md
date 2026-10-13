@@ -68,3 +68,7 @@ The app only listens on your own computer. Close its window to stop it.
 ## Try it first: demo mode
 
 Double-click `start-demo.bat`. It runs the same app with fake businesses, fake websites, fake drafts and a fake mail server, so you can click through every step with no keys. Nothing is searched or sent, and your real settings and data are not touched. Use "Demo: skip ahead 5 days" on the Sent tab to see follow-ups appear.
+
+## Which AI writes the emails
+
+Paste either a **Claude API key** (console.anthropic.com) or an **OpenAI API key** (platform.openai.com) on the Setup tab. A Claude key is used if both are set. A ChatGPT Plus or Claude.ai subscription login cannot be used by apps; it has to be an API key, which is billed per use (a few cents per hundred drafts).

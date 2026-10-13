@@ -62,3 +62,29 @@ test('web app serves UI and state, blocks foreign hosts', async () => {
     server.close()
   }
 })
+
+test('OpenAI writer works through the same draft path and is chosen when only that key is set', async () => {
+  const { draftEmail, aiProvider } = await import('../src/write.js')
+  const saved = { a: config.anthropicKey, o: config.openaiKey }
+  const realFetch = globalThis.fetch
+  let seen
+  globalThis.fetch = async (url, opts) => {
+    seen = { url, body: JSON.parse(opts.body), auth: opts.headers.Authorization }
+    return { ok: true, json: async () => ({ choices: [{ message: { content: '{"subject":"Hi from GPT","body":"Hello"}' } }] }) }
+  }
+  try {
+    config.anthropicKey = ''; config.openaiKey = 'sk-test'
+    assert.equal(aiProvider(), 'openai')
+    const d = await draftEmail({ name: 'Acme', observations: '[]' })
+    assert.equal(d.subject, 'Hi from GPT')
+    assert.equal(seen.url, 'https://api.openai.com/v1/chat/completions')
+    assert.equal(seen.auth, 'Bearer sk-test')
+    assert.equal(seen.body.messages[0].role, 'system')
+    config.openaiKey = ''
+    assert.equal(aiProvider(), null)
+    await assert.rejects(() => draftEmail({ name: 'Acme', observations: '[]' }), /Claude key or an OpenAI key/)
+  } finally {
+    globalThis.fetch = realFetch
+    config.anthropicKey = saved.a; config.openaiKey = saved.o
+  }
+})

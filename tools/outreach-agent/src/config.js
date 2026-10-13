@@ -20,6 +20,9 @@ export const config = {
   // Keys
   anthropicKey: process.env.ANTHROPIC_API_KEY ?? '',
   placesKey: process.env.GOOGLE_PLACES_API_KEY ?? '',
+  // Optional alternative writer: an OpenAI API key (not a ChatGPT subscription login).
+  openaiKey: process.env.OPENAI_API_KEY ?? '',
+  openaiModel: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
   model: process.env.OUTREACH_MODEL ?? 'claude-sonnet-5-5',
 
   // Legal footer (CAN-SPAM needs a real postal address + a working opt-out)

@@ -2,13 +2,12 @@
 import http from 'node:http'
 import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'node:fs'
 import path from 'node:path'
-import Anthropic from '@anthropic-ai/sdk'
 import { config, ROOT } from './config.js'
 import { findLeads, enrichLeads, draftLeads, queueFollowUps, setDraftStatus } from './pipeline.js'
 import { sendApproved, sentToday, makeTransport, inSendWindow, optOut } from './sender.js'
 import { checkReplies } from './inbox.js'
 import { searchPlaces } from './places.js'
-import { withFooter } from './write.js'
+import { withFooter, getClient, aiProvider } from './write.js'
 import { demoKit } from './demo.js'
 import os from 'node:os'
 
@@ -17,6 +16,7 @@ const KEY_MAP = {
   gmailUser: ['GMAIL_USER', 'gmailUser'],
   gmailAppPassword: ['GMAIL_APP_PASSWORD', 'gmailAppPassword'],
   anthropicKey: ['ANTHROPIC_API_KEY', 'anthropicKey'],
+  openaiKey: ['OPENAI_API_KEY', 'openaiKey'],
   placesKey: ['GOOGLE_PLACES_API_KEY', 'placesKey'],
   fromName: ['FROM_NAME', 'fromName'],
   signOffName: ['SIGN_OFF_NAME', 'signOffName'],
@@ -74,7 +74,7 @@ export function createApp(db, { demo = false } = {}) {
     if (!auto || job.running) return
     runJob('Auto mode', async () => {
       if (demo || config.gmailAppPassword) { try { await readInbox() } catch (e) { log(`Inbox check failed: ${e.message}`) } }
-      if (demo || config.anthropicKey) await queueFollowUps(db, { log, client: kit.client })
+      if (demo || aiProvider()) await queueFollowUps(db, { log, client: kit.client })
       return `sent ${await liveSend(Infinity)}`
     }).catch(() => {})
   }
@@ -85,7 +85,8 @@ export function createApp(db, { demo = false } = {}) {
     demo,
     configured: demo
       ? { gmail: true, anthropic: true, places: true }
-      : { gmail: !!(config.gmailUser && config.gmailAppPassword), anthropic: !!config.anthropicKey, places: !!config.placesKey },
+      : { gmail: !!(config.gmailUser && config.gmailAppPassword), anthropic: !!aiProvider(), places: !!config.placesKey },
+    ai: aiProvider(),
     settings: { gmailUser: config.gmailUser, fromName: config.fromName, signOffName: config.signOffName, replyTo: config.replyTo, dailyCap: config.dailyCap },
     paused: existsSync(config.pauseFile),
     auto,
@@ -123,9 +124,10 @@ export function createApp(db, { demo = false } = {}) {
           return { ok: true, message: `Test email sent to ${config.gmailUser}. Check that inbox.`, id: info.messageId }
         }
         if (body.which === 'anthropic') {
-          if (!config.anthropicKey) throw new Error('Paste your Claude key first')
-          await new Anthropic({ apiKey: config.anthropicKey }).messages.create({ model: config.model, max_tokens: 5, messages: [{ role: 'user', content: 'Say OK' }] })
-          return { ok: true, message: 'Claude key works.' }
+          const p = aiProvider()
+          if (!p) throw new Error('Paste a Claude key or an OpenAI key first')
+          await getClient().messages.create({ model: p === 'openai' ? config.openaiModel : config.model, max_tokens: 16, system: 'Reply with OK', messages: [{ role: 'user', content: 'Say OK' }] })
+          return { ok: true, message: `${p === 'openai' ? 'OpenAI' : 'Claude'} key works.` }
         }
         if (body.which === 'places') {
           const r = await searchPlaces('coffee shop in New York', 1)
@@ -144,7 +146,7 @@ export function createApp(db, { demo = false } = {}) {
           log('Reading their websites for a public email...')
           const e = await enrichLeads(db, { log, fetchImpl: kit.siteFetch })
           log(`${e.ready} have a usable email`)
-          if (!demo && !config.anthropicKey) throw new Error('Add your Claude key in Setup to write emails')
+          if (!demo && !aiProvider()) throw new Error('Add a Claude key or an OpenAI key in Setup to write emails')
           log('Writing personalised emails...')
           return draftLeads(db, { log, client: kit.client })
         })
