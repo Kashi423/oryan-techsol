@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ArrowLeft, ExternalLink, Plus, Save, Trash2 } from 'lucide-react'
+import { ArrowLeft, DownloadCloud, ExternalLink, Plus, Save, Trash2 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { api } from '@/lib/cms/api'
 import BlockEditor, { fromForm, toForm } from './BlockEditor'
@@ -10,16 +10,44 @@ import {
 
 export function PostsList() {
   const { data, error, loading, reload } = useApi('/admin/posts')
+  const toast = useToast()
+  const [importing, setImporting] = useState(false)
+
+  // Adds the articles that are in the website's starter content but not in the database yet. Existing
+  // articles are never touched. Articles dated in the future are saved as scheduled: they stay hidden
+  // until their day, then go live at the next site rebuild (just after midnight UTC).
+  async function importMissing() {
+    if (!(await confirmAction('Import the starter articles that are not in the blog yet? Existing articles are left alone. Future-dated ones will be scheduled.'))) return
+    setImporting(true)
+    try {
+      const result = await api('/admin/seed', { method: 'POST', body: {} })
+      toast(`Imported ${result.imported.posts} new article${result.imported.posts === 1 ? '' : 's'}.`)
+      reload()
+    } catch (err) {
+      toast(err.message, 'error')
+    } finally {
+      setImporting(false)
+    }
+  }
+
+  const today = new Date().toISOString().slice(0, 10)
+  const isScheduled = (post) => post.status === 'published' && (post.publishedAt ?? '').slice(0, 10) > today
   return (
     <>
       <PageHeader
         title="Blog"
         description="Write and publish articles. Published articles appear on the website straight away."
         actions={
-          <Link to="/admin/posts/new" className={btn.primary}>
-            <Plus className="size-4" aria-hidden="true" />
-            New article
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className={btn.secondary} disabled={importing} onClick={importMissing}>
+              <DownloadCloud className="size-4" aria-hidden="true" />
+              {importing ? 'Importing…' : 'Import missing articles'}
+            </button>
+            <Link to="/admin/posts/new" className={btn.primary}>
+              <Plus className="size-4" aria-hidden="true" />
+              New article
+            </Link>
+          </div>
         }
       />
       <Panel padded={false}>
@@ -39,8 +67,8 @@ export function PostsList() {
                     <p className="text-xs text-fg-subtle">/blog/{post.slug} · {post.category || 'No category'}</p>
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-1">
-                    <Pill tone={post.status}>{post.status}</Pill>
-                    <span className="text-[11px] text-fg-subtle">{post.status === 'published' ? formatDay(post.publishedAt) : `Edited ${formatDay(post.updatedAt)}`}</span>
+                    <Pill tone={isScheduled(post) ? 'neutral' : post.status}>{isScheduled(post) ? 'scheduled' : post.status}</Pill>
+                    <span className="text-[11px] text-fg-subtle">{post.status === 'published' ? `${isScheduled(post) ? 'Goes live ' : ''}${formatDay(post.publishedAt)}` : `Edited ${formatDay(post.updatedAt)}`}</span>
                   </div>
                 </Link>
               </li>
