@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react'
 import { api } from '@/lib/cms/api'
+import { caseStudies as templateProjects } from '@/data/caseStudies'
+import { describePlan, planSync } from './projectSync'
 import {
   btn, confirmAction, EmptyState, ErrorNote, inputClass, Labeled, Loading, Modal, PageHeader, Panel, Pill, useApi, useToast,
 } from './ui'
@@ -53,6 +55,33 @@ export default function Projects() {
     }
   }
 
+  // Makes the Portfolio match the site's template file (src/data/caseStudies.js): adds the real
+  // projects, updates ones with the same address, and removes the old samples. Create/update first,
+  // delete last, so a failure half-way never leaves the portfolio empty.
+  async function publishTemplate() {
+    const plan = planSync(items, templateProjects)
+    if (!confirmAction(`Make the Portfolio match the site template? This will: ${describePlan(plan)}.`)) return
+    setBusy(true)
+    try {
+      for (const c of plan.creates) await api('/admin/projects', { method: 'POST', body: c.body })
+      for (const u of plan.updates) await api(`/admin/projects/${u.id}`, { method: 'PUT', body: u.body })
+      for (const d of plan.deletes) await api(`/admin/projects/${d.id}`, { method: 'DELETE' })
+      const order = []
+      const fresh = await api('/admin/projects')
+      for (const t of templateProjects) {
+        const hit = (fresh.items ?? []).find((p) => p.slug === t.slug)
+        if (hit) order.push(hit.id)
+      }
+      if (order.length > 1) await api('/admin/projects/reorder', { method: 'POST', body: { ids: order } })
+      toast('Portfolio updated. It goes live on the next site rebuild (or press Publish).')
+      reload()
+    } catch (err) {
+      toast(err.message, 'error')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function remove(project) {
     if (!confirmAction(`Delete "${project.title}"?`)) return
     try {
@@ -83,10 +112,15 @@ export default function Projects() {
         title="Portfolio"
         description="Case studies shown on the Portfolio page, the homepage and the service pages. Tick “Sample project” for illustrative entries so visitors are told they aren't real clients."
         actions={
-          <button type="button" className={btn.primary} onClick={() => setEditing({ ...blank })}>
-            <Plus className="size-4" aria-hidden="true" />
-            Add project
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className={btn.small} disabled={busy} onClick={publishTemplate}>
+              Publish the site template projects
+            </button>
+            <button type="button" className={btn.primary} onClick={() => setEditing({ ...blank })}>
+              <Plus className="size-4" aria-hidden="true" />
+              Add project
+            </button>
+          </div>
         }
       />
       <Panel padded={false}>

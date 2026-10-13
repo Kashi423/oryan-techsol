@@ -20,12 +20,22 @@ import path from 'node:path'
 import fs from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { posts } from '../src/data/posts.js'
+import { caseStudies } from '../src/data/caseStudies.js'
+import snapshot from '../src/data/cms-snapshot.js'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url)) + '/..'
 const distDir = path.join(rootDir, 'dist')
 
-// Every public, indexable route. Placeholder case studies are intentionally excluded (see
-// caseStudies.js / sitemap.xml) — only add a case-study path here once it ships for real.
+// Project pages to pre-render: the same list the site itself shows (admin projects when the admin
+// manages them, otherwise the template file), minus illustrative samples. This keeps a page from
+// being baked as "not found" for a project that exists only in the template, not yet in the admin.
+function projectRoutes() {
+  const shown = snapshot.managed?.projects ? snapshot.projects : caseStudies
+  return shown.filter((project) => !project.placeholder).map((project) => `/portfolio/${project.slug}`)
+}
+
+// Every public, indexable route. Case studies come from src/data/caseStudies.js; entries marked
+// `placeholder` (illustrative samples) are intentionally excluded and stay noindex.
 const routes = [
   '/',
   '/app-development',
@@ -37,7 +47,7 @@ const routes = [
   '/saas-development',
   '/api-integrations',
   '/portfolio',
-  '/portfolio/aurex7',
+  ...projectRoutes(),
   '/about',
   '/faq',
   '/blog',

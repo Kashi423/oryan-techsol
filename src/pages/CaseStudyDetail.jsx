@@ -26,6 +26,8 @@ export default function CaseStudyDetail() {
 
   if (!project) return <NotFound />
 
+  const technology = project.technology ?? []
+  const hasResult = Boolean(project.result && String(project.result).trim())
   const categoryLabel = categories.find((category) => category.value === project.category)?.label ?? project.category
 
   return (
@@ -93,17 +95,21 @@ export default function CaseStudyDetail() {
         </div>
       </Section>
 
+      {(technology.length > 0 || hasResult) && (
       <Section>
         <div className="mx-auto max-w-4xl">
+          {technology.length > 0 && (
           <Reveal>
             <Label>Technology</Label>
             <div className="mt-4 flex flex-wrap gap-2">
-              {project.technology.map((tech) => (
+              {technology.map((tech) => (
                 <Tag key={tech}>{tech}</Tag>
               ))}
             </div>
           </Reveal>
+          )}
 
+          {hasResult && (
           <Reveal delay={0.05}>
             <div className="mt-10 border-t border-line pt-10">
               <Label>Result</Label>
@@ -118,8 +124,10 @@ export default function CaseStudyDetail() {
               </p>
             </div>
           </Reveal>
+          )}
         </div>
       </Section>
+      )}
 
       <Section tone="inverse">
         <Reveal>

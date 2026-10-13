@@ -5,7 +5,7 @@ import Seo from '@/components/seo/Seo'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import { Badge, Button, CaseStudyCard, Reveal, Section } from '@/components/ui'
 import { primaryCta } from '@/config/site'
-import { categories } from '@/data/caseStudies'
+import { categories, categoriesInUse, hasSamples } from '@/data/caseStudies'
 import { useCaseStudies } from '@/lib/cms/store'
 import { cn } from '@/lib/cn'
 
@@ -31,7 +31,7 @@ function ProjectLibraryMockup() {
       <div className="flex items-center justify-between gap-3">
         <p className="font-display text-sm font-bold text-fg">Project library</p>
         <div className="flex gap-1">
-          {categories.slice(0, 4).map((category, index) => (
+          {categoriesInUse(caseStudies, categories).slice(0, 4).map((category, index) => (
             <span
               key={category.value}
               className={
@@ -66,7 +66,7 @@ function ProjectLibraryMockup() {
                   {study.industry} · {study.solutionType}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1">
-                  {study.technology.slice(0, 3).map((tech) => (
+                  {(study.technology ?? []).slice(0, 3).map((tech) => (
                     <span key={tech} className="rounded-md bg-highlight/10 px-1.5 py-0.5 text-[9px] font-semibold text-highlight">
                       {tech}
                     </span>
@@ -78,13 +78,14 @@ function ProjectLibraryMockup() {
         })}
       </ul>
       <p className="mt-4 rounded-xl bg-surface-overlay px-3 py-2.5 text-[11px] text-fg-muted">
-        {caseStudies.length} case studies · real projects added as they ship
+        {caseStudies.length} case studies{hasSamples(caseStudies) ? ' · real projects added as they ship' : ' · real client projects'}
       </p>
     </div>
   )
 }
 
 function HeroSection() {
+  const projects = useCaseStudies()
   return (
     <Section tone="inverse" spacing="hero" background={<HeroBackground />} aria-labelledby="hero-title">
       <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
@@ -102,8 +103,9 @@ function HeroSection() {
           </Reveal>
           <Reveal delay={0.1}>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl lg:mx-0">
-              Real projects are added here as they ship. Until then, these sample case
-              studies — clearly marked — show the shape of what we build and how we write it up.
+              {hasSamples(projects)
+                ? 'Real projects are added here as they ship. Until then, these sample case studies — clearly marked — show the shape of what we build and how we write it up.'
+                : 'Real projects we have built and shipped for clients. Some are private systems, so they are described without a public link.'}
             </p>
           </Reveal>
           <Reveal delay={0.15}>
@@ -143,7 +145,7 @@ function GridSection() {
 
       <Reveal>
         <div className="flex flex-wrap justify-center gap-2">
-          {categories.map((category) => (
+          {categoriesInUse(caseStudies, categories).map((category) => (
             <button
               key={category.value}
               type="button"

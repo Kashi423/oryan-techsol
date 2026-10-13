@@ -36,7 +36,11 @@ export default function CaseStudyCard({
             Sample project
           </span>
         ) : (
-          result && <p className="font-display text-3xl font-extrabold text-white">{result}</p>
+          result ? (
+            <p className="font-display text-3xl font-extrabold text-white">{result}</p>
+          ) : (
+            industry && <p className="font-display text-2xl font-extrabold text-white">{industry}</p>
+          )
         )}
       </div>
       <div className="flex flex-1 flex-col p-6 sm:p-8">

@@ -41,6 +41,7 @@ import {
   TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
+import { hasSamples } from '@/data/caseStudies'
 import { useCaseStudies } from '@/lib/cms/store'
 import { cn } from '@/lib/cn'
 
@@ -741,6 +742,7 @@ function SecuritySection() {
 function PortfolioSection() {
   const caseStudies = useCaseStudies()
   const webProjects = caseStudies.filter((project) => project.category === 'web')
+  if (webProjects.length === 0) return null
   return (
     <Section aria-labelledby="portfolio-title">
       <SectionHeading
@@ -749,7 +751,7 @@ function PortfolioSection() {
         eyebrow="Portfolio"
         align="center"
         title="Examples of what we build."
-        description="Real projects are added here as they ship. The example below is a clearly marked placeholder."
+        description={hasSamples(webProjects) ? 'Real projects are added here as they ship. The example below is a clearly marked placeholder.' : 'Real projects we have built and shipped for clients. Some are private systems, so they are described without a public link.'}
         className="mx-auto"
       />
       <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

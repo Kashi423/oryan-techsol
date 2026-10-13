@@ -70,7 +70,7 @@ import {
   TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
-import { categories } from '@/data/caseStudies'
+import { categories, categoriesInUse, hasSamples } from '@/data/caseStudies'
 import { useCaseStudies } from '@/lib/cms/store'
 import { testimonials } from '@/data/testimonials'
 import { cn } from '@/lib/cn'
@@ -1048,13 +1048,13 @@ function PortfolioSection() {
         eyebrow="Portfolio"
         align="center"
         title="Examples of what we build."
-        description="Real projects are added here as they ship. Until then, these sample case studies — clearly marked — show the shape of what we build and how we write it up."
+        description={hasSamples(caseStudies) ? 'Real projects are added here as they ship. Until then, these sample case studies — clearly marked — show the shape of what we build and how we write it up.' : 'Real projects we have built and shipped for clients. Some are private systems, so they are described without a public link.'}
         className="mx-auto"
       />
 
       <Reveal delay={0.05}>
         <div className="mt-12 flex flex-wrap justify-center gap-2">
-          {categories.map((category) => (
+          {categoriesInUse(caseStudies, categories).map((category) => (
             <button
               key={category.value}
               type="button"
