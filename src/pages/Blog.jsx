@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BookOpen, Clock, Layers } from 'lucide-react'
+import { BookOpen, CalendarDays, Users } from 'lucide-react'
 import PageHero from '@/components/layout/PageHero'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import JsonLd from '@/components/seo/JsonLd'
@@ -13,7 +13,6 @@ import { cn } from '@/lib/cn'
 export default function Blog() {
   const posts = usePosts()
   const categories = ['All', ...new Set(posts.map((post) => post.category).filter(Boolean))]
-  const totalMinutes = posts.reduce((sum, post) => sum + post.readMinutes, 0)
   const [category, setCategory] = useState('All')
   const visible = category === 'All' ? posts : posts.filter((post) => post.category === category)
   const [featured, ...rest] = visible
@@ -58,9 +57,9 @@ export default function Blog() {
         description="In-depth, plain-English advice on apps, software, AI and automation — written for business owners who are making real decisions, not chasing buzzwords."
         crumbs={[{ name: 'Blog' }]}
         meta={[
-          { icon: BookOpen, label: `${posts.length} in-depth guides` },
-          { icon: Layers, label: `${categories.length - 1} topics` },
-          { icon: Clock, label: `${totalMinutes} min of reading` },
+          { icon: BookOpen, label: 'Plain-English guides' },
+          { icon: Users, label: 'Written by our team' },
+          { icon: CalendarDays, label: 'New guides every week' },
         ]}
         actions={
           <Button href="#articles" size="lg">
