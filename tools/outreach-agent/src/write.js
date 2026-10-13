@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { config } from './config.js'
+import { templateDraft } from './template.js'
 
 const systemPrompt = () => `You write short, honest cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses.
 
@@ -75,6 +76,8 @@ export function getClient() {
 
 /** `client` is injectable for tests; defaults to whichever provider has a key. */
 export async function draftEmail(lead, { step = 0, previous = null, client } = {}) {
+  // No AI key configured: use the built-in templates so the app works with zero setup.
+  if (!client && !aiProvider()) return templateDraft(lead, { step, previous })
   const c = client ?? getClient()
   const task =
     step === 0

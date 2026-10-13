@@ -5,11 +5,17 @@ import { draftEmail } from './write.js'
 import { domainOf } from './db.js'
 import { dueFollowUps } from './sender.js'
 
-export async function findLeads(db, { query, area, max = 40, fetchImpl }) {
-  const places = await searchPlaces(`${query} in ${area}`, max, fetchImpl)
-  const ins = db.prepare('INSERT OR IGNORE INTO leads (place_id,name,address,phone,website,category,rating,area) VALUES (?,?,?,?,?,?,?,?)')
+/** `search` is ({query, area, max, fetchImpl}) => places[]. Defaults to Google Places (needs a key). */
+export async function findLeads(db, { query, area, max = 40, fetchImpl, search }) {
+  const places = search
+    ? await search({ query, area, max, fetchImpl })
+    : await searchPlaces(`${query} in ${area}`, max, fetchImpl)
+  const ins = db.prepare('INSERT OR IGNORE INTO leads (place_id,name,address,phone,website,email,domain,category,rating,area) VALUES (?,?,?,?,?,?,?,?,?,?)')
   let added = 0
-  for (const p of places) added += Number(ins.run(p.place_id, p.name, p.address, p.phone, p.website, p.category, p.rating, area).changes)
+  for (const p of places) {
+    const email = p.email || null
+    added += Number(ins.run(p.place_id, p.name, p.address, p.phone, p.website, email, email ? domainOf(email) : null, p.category, p.rating, area).changes)
+  }
   return { found: places.length, added, noWebsite: places.filter((p) => !p.website).length }
 }
 
@@ -17,14 +23,15 @@ export async function enrichLeads(db, { limit = Infinity, log = () => {}, fetchI
   const rows = db.prepare("SELECT * FROM leads WHERE status='found'").all().slice(0, limit)
   let ready = 0
   for (const l of rows) {
-    if (!l.website) { db.prepare("UPDATE leads SET status='no_email' WHERE id=?").run(l.id); continue }
-    const r = await enrichSite(l.website, fetchImpl)
-    const dup = r.email && db.prepare('SELECT 1 FROM leads WHERE domain=? AND id<>?').get(domainOf(r.email), l.id)
-    const status = r.email && !dup ? 'ready' : 'no_email'
+    // A listing may already carry its own public email (e.g. from the map data).
+    const r = l.website ? await enrichSite(l.website, fetchImpl) : { email: null, observations: [], summary: '' }
+    const email = r.email || l.email || null
+    const dup = email && db.prepare('SELECT 1 FROM leads WHERE domain=? AND id<>? AND status<>\'found\'').get(domainOf(email), l.id)
+    const status = email && !dup ? 'ready' : 'no_email'
     db.prepare('UPDATE leads SET email=?, domain=?, observations=?, site_summary=?, status=? WHERE id=?')
-      .run(r.email, r.email ? domainOf(r.email) : null, JSON.stringify(r.observations), r.summary, status, l.id)
+      .run(email, email ? domainOf(email) : null, JSON.stringify(r.observations), r.summary, status, l.id)
     if (status === 'ready') ready++
-    log(`${status === 'ready' ? 'Found email' : 'No email'}: ${l.name}${r.email ? ' (' + r.email + ')' : ''}`)
+    log(`${status === 'ready' ? 'Found email' : 'No email'}: ${l.name}${email ? ' (' + email + ')' : ''}`)
   }
   return { checked: rows.length, ready }
 }

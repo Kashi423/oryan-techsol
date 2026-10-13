@@ -7,6 +7,7 @@ import { findLeads, enrichLeads, draftLeads, queueFollowUps, setDraftStatus } fr
 import { sendApproved, sentToday, makeTransport, inSendWindow, optOut } from './sender.js'
 import { checkReplies } from './inbox.js'
 import { searchPlaces } from './places.js'
+import { searchOsm } from './osm.js'
 import { withFooter, getClient, aiProvider } from './write.js'
 import { demoKit } from './demo.js'
 import os from 'node:os'
@@ -76,7 +77,7 @@ export function createApp(db, { demo = false } = {}) {
     if (!auto || job.running) return
     runJob('Auto mode', async () => {
       if (demo || config.gmailAppPassword) { try { await readInbox() } catch (e) { log(`Inbox check failed: ${e.message}`) } }
-      if (demo || aiProvider()) await queueFollowUps(db, { log, client: kit.client })
+      await queueFollowUps(db, { log, client: kit.client })
       return `sent ${await liveSend(Infinity)}`
     }).catch(() => {})
   }
@@ -87,8 +88,11 @@ export function createApp(db, { demo = false } = {}) {
     demo,
     configured: demo
       ? { gmail: true, anthropic: true, places: true }
-      : { gmail: !!(config.gmailUser && config.gmailAppPassword), anthropic: !!aiProvider(), places: !!config.placesKey },
-    ai: aiProvider(),
+      : { gmail: !!(config.gmailUser && config.gmailAppPassword), anthropic: true, places: true },
+    ai: demo ? 'demo' : aiProvider() ?? 'template',
+    search: demo ? 'demo' : config.placesKey ? 'google' : 'openstreetmap',
+    hasAiKey: !!aiProvider(),
+    hasPlacesKey: !!config.placesKey,
     settings: { gmailUser: config.gmailUser, fromName: config.fromName, signOffName: config.signOffName, replyTo: config.replyTo, dailyCap: config.dailyCap },
     paused: existsSync(config.pauseFile),
     auto,
@@ -142,14 +146,14 @@ export function createApp(db, { demo = false } = {}) {
         if (!query || !area) throw new Error('Enter a business type and an area')
         const max = Math.min(Number(body.max) || 20, 60)
         await runJob(`Finding ${query} in ${area}`, async () => {
-          log('Searching Google Maps...')
-          const f = await findLeads(db, { query, area, max, fetchImpl: kit.placesFetch })
+          const useOsm = !demo && !config.placesKey
+          log(useOsm ? 'Searching OpenStreetMap (free, no key)...' : 'Searching Google Maps...')
+          const f = await findLeads(db, { query, area, max, fetchImpl: kit.placesFetch, search: useOsm ? searchOsm : undefined })
           log(`${f.found} businesses found, ${f.added} new, ${f.noWebsite} without a website (skipped)`)
           log('Reading their websites for a public email...')
           const e = await enrichLeads(db, { log, fetchImpl: kit.siteFetch })
           log(`${e.ready} have a usable email`)
-          if (!demo && !aiProvider()) throw new Error('Add a Claude key or an OpenAI key in Setup to write emails')
-          log('Writing personalised emails...')
+          log(demo || aiProvider() ? 'Writing personalised emails...' : 'Writing emails from built-in templates (add an AI key in Setup for fully personalised ones)...')
           return draftLeads(db, { log, client: kit.client })
         })
         return { ok: true }

@@ -78,8 +78,9 @@
     </div>
 
     <div class="card">
-      <h2>B. AI writer (writes the emails)</h2>
-      <p class="sub">Pick a service and paste its API key. <b>Google Gemini and Groq have free plans</b>, which is plenty for 10 emails a day.
+      <h2>B. AI writer <span class="pill no">optional</span></h2>
+      <p class="sub"><b>Not needed.</b> With no key the app writes emails from built-in templates. Add a key for fully personalised emails.
+        Pick a service and paste its API key. <b>Google Gemini and Groq have free plans</b>, which is plenty for 10 emails a day.
         A ChatGPT or Claude.ai subscription login does not work; it has to be an API key.</p>
       <label>Service</label>
       <select id="aiPreset">
@@ -97,7 +98,8 @@
     </div>
 
     <div class="card">
-      <h2>C. Google Maps key (finds businesses)</h2>
+      <h2>C. Google Maps key <span class="pill no">optional</span></h2>
+      <p class="sub"><b>Not needed.</b> Without it the app searches OpenStreetMap, which is free and needs no key but has fewer listings.</p>
       <p class="sub">Open <a href="https://console.cloud.google.com/apis/library/places.googleapis.com" target="_blank" rel="noopener">Places API (New)</a>, click Enable, then
         <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Credentials &rarr; Create API key</a>. Billing must be on.</p>
       <input id="placesKey" type="password" placeholder="AIza..." autocomplete="off">
@@ -115,6 +117,7 @@
   <section id="t-find" class="hide">
     <div class="card">
       <h2>Find businesses that may need a website or app</h2>
+      <p class="sub" id="modeLine" style="font-weight:600"></p>
       <p class="sub">Type the kind of business and the area. The agent searches Google Maps, reads each site for a public email, and writes a draft for your approval. Nothing is sent yet.</p>
       <div class="row">
         <div><label>Business type</label><input id="q" placeholder="dentists, restaurants, gyms, plumbers..."></div>
@@ -191,10 +194,14 @@ async function refresh() {
     el('span', { textContent: S.windowOpen ? 'Send window: open' : `Send window closed (${S.sendWindow}, Mon-Fri)` }),
     el('span', { textContent: S.paused ? 'PAUSED' : 'Running' }),
   )
-  const missing = [!c.gmail && 'Gmail', !c.anthropic && 'Claude or OpenAI key', !c.places && 'Google Maps key'].filter(Boolean)
   const b = $('#setupBanner')
-  b.className = 'banner ' + (missing.length ? 'warn' : 'ok')
-  b.textContent = missing.length ? `Still to set up: ${missing.join(', ')}. Fill in each box below once.` : 'Everything is connected. Go to "2. Find customers".'
+  b.className = 'banner ' + (c.gmail ? 'ok' : 'warn')
+  b.textContent = c.gmail
+    ? 'Ready. Gmail is connected and your settings are saved on this computer, so you never have to enter them again. Go to "2. Find customers".'
+    : 'One thing to set up, once: the Gmail App Password in box A. Boxes B and C are optional.'
+  const modes = { demo: 'demo data', template: 'built-in templates (no key)', claude: 'Claude', openai: 'AI key' }
+  const src = { demo: 'demo data', google: 'Google Maps', openstreetmap: 'OpenStreetMap (free, no key)' }
+  $('#modeLine').textContent = `Search: ${src[S.search]}   •   Email writer: ${modes[S.ai]}`
   for (const id of ['gmailUser', 'fromName', 'signOffName', 'replyTo', 'dailyCap']) { const i = $('#' + id); if (document.activeElement !== i && !i.value) i.value = S.settings[id] ?? '' }
   if (document.activeElement !== $('#capReview') && !$('#capReview').value) $('#capReview').value = S.settings.dailyCap
   for (const [id, ok] of [['gmailAppPassword', c.gmail], ['aiKey', c.anthropic], ['placesKey', c.places]]) $('#' + id).placeholder = ok ? 'Saved. Leave blank to keep it.' : $('#' + id).placeholder
