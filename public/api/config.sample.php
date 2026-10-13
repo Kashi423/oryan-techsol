@@ -23,7 +23,7 @@ return [
     'install_key' => 'CHANGE-ME-TO-A-LONG-RANDOM-STRING',
 
     // --- Email (new-lead alerts) ---------------------------------------------------------
-    'notify_email' => 'hello@oryantechsol.com',
+    'notify_email' => 'sales@oryantechsol.com',
     'mail_from'    => 'no-reply@oryantechsol.com',   // must be an address on your own domain
 
     // --- "Publish site" button (optional) ------------------------------------------------

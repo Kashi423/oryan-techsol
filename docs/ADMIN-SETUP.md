@@ -48,7 +48,7 @@ In the extensions list make sure these are ticked (they usually already are): `p
    - `db` → `name`, `user`, `pass` (from step 2). Leave `host` as `localhost`.
    - `install_key` → a long random string (40+ characters). Think of it as a one-time master password.
      Any password generator works. **Keep it secret.**
-   - `notify_email` → where new-lead alerts should go (e.g. `hello@oryantechsol.com`).
+   - `notify_email` → where new-lead alerts should go (e.g. `sales@oryantechsol.com`).
    - `mail_from` → an address on your own domain, e.g. `no-reply@oryantechsol.com`.
 4. Save.
 

@@ -20,7 +20,7 @@ export const siteConfig = {
 export const primaryCta = { label: 'Book a Free Consultation', to: '/contact' }
 
 export const contactInfo = {
-  email: 'hello@oryantechsol.com',
+  email: 'sales@oryantechsol.com',
   phone: '+1 (917) 217-0535',
   // Digits-only form for `tel:` hrefs — the formatted `phone` above is what's displayed.
   phoneHref: '+19172170535',

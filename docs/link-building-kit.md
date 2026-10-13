@@ -9,7 +9,7 @@ Inconsistent name/address/phone across listings weakens local SEO. Never vary it
 
 - **Name:** Oryan Techsol
 - **Website:** https://oryantechsol.com
-- **Email:** hello@oryantechsol.com
+- **Email:** sales@oryantechsol.com
 - **Phone:** +1 (917) 217-0535
 - **Address:** 1938 West 7th Street, Brooklyn, NY
 - **Tagline:** Innovate. Integrate. Elevate.
@@ -71,7 +71,7 @@ Behance, Dribbble, Product Hunt (launch a project/product), Indie Hackers, Hacke
 > I read your piece on [specific article] — [one genuine sentence about it]. I'm [your name] at Oryan Techsol, where we build apps and AI automation for growing businesses.
 > I'd like to contribute an article: **"[Title]"**. It would cover [3 bullets]. I can include [original data / screenshots / a real project example] and it'd be unpublished elsewhere.
 > Happy to share an outline or a past sample. Would this fit your readers?
-> Thanks, [Name] — hello@oryantechsol.com
+> Thanks, [Name] — sales@oryantechsol.com
 
 **Partner/resource link request**
 > Hi [Name], I noticed your page "[page title]" lists resources on [topic]. We published [asset + URL], which [one-line value]. If you find it useful, it may be a good addition for your readers. Either way, thanks for the great resource.
