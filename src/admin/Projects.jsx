@@ -110,7 +110,7 @@ export default function Projects() {
     <>
       <PageHeader
         title="Portfolio"
-        description="Case studies shown on the Portfolio page, the homepage and the service pages. Tick “Sample project” for illustrative entries so visitors are told they aren't real clients."
+        description="Case studies shown on the Portfolio page, the homepage and the service pages. Projects listed in the site template (src/data/caseStudies.js) show the template's version even if edited here; projects you add here appear alongside them. Tick “Sample project” only for illustrative entries."
         actions={
           <div className="flex flex-wrap gap-2">
             <button type="button" className={btn.small} disabled={busy} onClick={publishTemplate}>

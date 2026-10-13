@@ -27,6 +27,14 @@ export default function CaseStudyDetail() {
   if (!project) return <NotFound />
 
   const technology = project.technology ?? []
+  const platform = project.platform ?? []
+  const features = project.features ?? []
+  const extras = [
+    ['Back-end', project.backend],
+    ['AI', project.aiIntegration],
+    ['Automation', project.automation],
+  ].filter(([, value]) => value && String(value).trim())
+  const hasDetails = platform.length > 0 || features.length > 0 || extras.length > 0
   const hasResult = Boolean(project.result && String(project.result).trim())
   const categoryLabel = categories.find((category) => category.value === project.category)?.label ?? project.category
 
@@ -94,6 +102,50 @@ export default function CaseStudyDetail() {
           </Reveal>
         </div>
       </Section>
+
+      {hasDetails && (
+        <Section>
+          <div className="mx-auto max-w-4xl">
+            <Reveal>
+              <Label>Project details</Label>
+            </Reveal>
+            {platform.length > 0 && (
+              <Reveal delay={0.03}>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <span className="text-sm text-fg-subtle">Platform</span>
+                  {platform.map((item) => (
+                    <Tag key={item}>{item}</Tag>
+                  ))}
+                </div>
+              </Reveal>
+            )}
+            {features.length > 0 && (
+              <Reveal delay={0.05}>
+                <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+                  {features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3 rounded-xl border border-line bg-surface-raised p-4 text-sm leading-relaxed text-fg-muted">
+                      <span aria-hidden="true" className="mt-1.5 size-1.5 shrink-0 rounded-full bg-highlight" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            )}
+            {extras.length > 0 && (
+              <Reveal delay={0.07}>
+                <dl className="mt-6 grid gap-3 sm:grid-cols-2">
+                  {extras.map(([name, value]) => (
+                    <div key={name} className="rounded-xl border border-line p-4">
+                      <dt className="font-display text-xs font-bold tracking-[0.15em] text-highlight uppercase">{name}</dt>
+                      <dd className="mt-1 text-sm text-fg-muted">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </Reveal>
+            )}
+          </div>
+        </Section>
+      )}
 
       {(technology.length > 0 || hasResult) && (
       <Section>

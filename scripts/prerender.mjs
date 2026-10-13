@@ -20,7 +20,7 @@ import path from 'node:path'
 import fs from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { posts } from '../src/data/posts.js'
-import { caseStudies } from '../src/data/caseStudies.js'
+import { caseStudies, mergeProjects } from '../src/data/caseStudies.js'
 import snapshot from '../src/data/cms-snapshot.js'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url)) + '/..'
@@ -30,7 +30,7 @@ const distDir = path.join(rootDir, 'dist')
 // manages them, otherwise the template file), minus illustrative samples. This keeps a page from
 // being baked as "not found" for a project that exists only in the template, not yet in the admin.
 function projectRoutes() {
-  const shown = snapshot.managed?.projects ? snapshot.projects : caseStudies
+  const shown = mergeProjects(snapshot.managed?.projects, snapshot.projects)
   return shown.filter((project) => !project.placeholder).map((project) => `/portfolio/${project.slug}`)
 }
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { contactInfo, socialLinks } from '@/config/site'
 import snapshot from '@/data/cms-snapshot'
-import { caseStudies } from '@/data/caseStudies'
+import { caseStudies, mergeProjects } from '@/data/caseStudies'
 import postsIndex from '@/data/posts-index.json'
 import { enrichPosts, publishedOnly } from '@/data/posts-light'
 import { teamLead, teamMembers } from '@/data/team'
@@ -37,7 +37,7 @@ let state = {
   texts: snapshot.texts ?? [],
   settings: snapshot.settings ?? {},
   team: snapshot.managed?.team && snapshot.team?.lead ? snapshot.team : staticTeam,
-  projects: snapshot.managed?.projects ? snapshot.projects : caseStudies,
+  projects: mergeProjects(snapshot.managed?.projects, snapshot.projects),
   posts: postsIndex, // light (no article bodies); see loadFullPosts()
   postsVersion: snapshot.version,
   remountKey: 0,
@@ -105,7 +105,7 @@ export async function syncContent() {
       texts: data.texts ?? [],
       settings: data.settings ?? {},
       team: data.managed?.team && data.team?.lead ? data.team : state.team,
-      projects: data.managed?.projects ? (data.projects ?? []) : state.projects,
+      projects: data.managed?.projects ? mergeProjects(true, data.projects) : state.projects,
       remountKey: state.remountKey + 1,
     }
     setTexts(state.texts)

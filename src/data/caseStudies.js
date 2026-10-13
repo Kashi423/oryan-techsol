@@ -39,8 +39,17 @@ export const caseStudies = [
     problem:
       'The business wanted one account covering crypto mining, token sales and trading — instead of stitching together separate tools and logins.',
     solution:
-      'We built Aurex7 end to end: a unified platform with cloud mining plans, ICO token sales, spot and futures trading, secure two-factor authentication and a full admin back office.',
+      'We built Aurex7 end to end: one account for spot and futures trading, Earn products, daily token mining with boost packages and an ICO token sale, protected by two-factor authentication and manually reviewed withdrawals, with a full admin back office.',
     technology: ['Next.js', 'PostgreSQL', 'Prisma'],
+    platform: ['Web'],
+    features: [
+      'Spot trading with market and limit orders across 280+ pairs, plus a futures mode',
+      'Earn: flexible and locked products with interest',
+      'Free daily mining of the AX7 token, with boost packages and referral bonuses',
+      'ICO token sale in phases',
+      'Two-factor authentication, device and session control, and manual review of every withdrawal',
+      'A full ledger entry for every balance change, plus an audit log of admin actions',
+    ],
     result: '',
     placeholder: false,
   },
@@ -54,7 +63,14 @@ export const caseStudies = [
       'A luxury hotel booking brand needed a premium online experience where guests can book stays and access exclusive VIP perks.',
     solution:
       'We built Skylark, a booking platform for luxury hotel stays with VIP perks for its guests, live at skylark.com.',
-    technology: [],
+    technology: ['Next.js'],
+    platform: ['Web'],
+    features: [
+      'Hotel search by destination, dates, guests and rooms',
+      'A curated Members’ List of luxury hotels with member benefits',
+      'Destination pages and a plan-a-trip section',
+      'Membership accounts for VIP perks',
+    ],
     result: '',
     placeholder: false,
   },
@@ -68,6 +84,8 @@ export const caseStudies = [
     solution:
       'We built a custom CRM portal for a school. It is a private client system, so there is no public link; details are available on request.',
     technology: [],
+    platform: ['Web'],
+    features: ['Student, family and school administration managed in one portal'],
     result: '',
     placeholder: false,
   },
@@ -81,6 +99,7 @@ export const caseStudies = [
     solution:
       'We built a custom point-of-sale system covering the everyday needs of a pharmacy. It is a private client system, so there is no public link; details are available on request.',
     technology: [],
+    features: ['Point-of-sale billing and the everyday operations of a pharmacy in one system'],
     result: '',
     placeholder: false,
   },
@@ -94,6 +113,8 @@ export const caseStudies = [
     solution:
       'We built a custom portal for appointments and record keeping covering the everyday needs of a clinic. It is a private client system, so there is no public link; details are available on request.',
     technology: [],
+    platform: ['Web'],
+    features: ['Appointment booking', 'Patient record keeping'],
     result: '',
     placeholder: false,
   },
@@ -106,6 +127,26 @@ export function getCaseStudyBySlug(slug) {
 /** Filter tabs worth showing: "All" plus only the categories that actually have a project. */
 export function categoriesInUse(projects, all = categories) {
   return all.filter((c) => c.value === 'all' || projects.some((p) => p.category === c.value))
+}
+
+/**
+ * The portfolio the site actually shows.
+ *  - Real projects in this file are the source of truth: for the same address (slug) they override
+ *    whatever the admin database holds, so a stale or sample copy there can never leak out.
+ *  - Real projects added in the admin appear after them.
+ *  - Illustrative samples are never shown once any real project exists.
+ * Without admin-managed projects the template is used as is.
+ */
+export function mergeProjects(managed, dbProjects, template = caseStudies) {
+  if (!managed) return template
+  const db = Array.isArray(dbProjects) ? dbProjects : []
+  const realTemplate = template.filter((p) => !p.placeholder)
+  const out = [...realTemplate]
+  for (const p of db) {
+    if (!p.placeholder && !out.some((x) => x.slug === p.slug)) out.push(p)
+  }
+  if (out.length === 0) return db.length ? db : template
+  return out
 }
 
 /** True when at least one project is an illustrative sample. */
