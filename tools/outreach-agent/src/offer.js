@@ -24,13 +24,13 @@ export const PHRASES = {
 }
 
 export function recommendOffer(lead, audit) {
-  const out = (service, why) => ({ service, why, key: OFFERS[service] })
+  const out = (service, why, checkId = null) => ({ service, why, key: OFFERS[service], checkId })
   if (!lead.website) return out('a simple, mobile-friendly website', 'no website was found online')
   const failed = new Set((audit?.checks ?? []).filter((c) => !c.ok).map((c) => c.id))
-  if (failed.has('booking')) return out('online booking or enquiry system', 'no online booking or ordering was visible')
-  if (failed.has('mobile') || failed.has('https')) return out('a modern, mobile-friendly website refresh', 'the site may not display well on phones or is not secure')
-  if (failed.has('form')) return out('a lead-capture form with an AI chatbot', 'no contact or enquiry form was visible')
-  if (failed.has('speed')) return out('a faster, cleaner website', 'the homepage responded slowly')
-  if (failed.has('dated')) return out('a website refresh', 'the site looks out of date')
+  if (failed.has('booking')) return out('online booking or enquiry system', 'no online booking or ordering was visible', 'booking')
+  if (failed.has('mobile') || failed.has('https')) return out('a modern, mobile-friendly website refresh', 'the site may not display well on phones or is not secure', failed.has('mobile') ? 'mobile' : 'https')
+  if (failed.has('form')) return out('a lead-capture form with an AI chatbot', 'no contact or enquiry form was visible', 'form')
+  if (failed.has('speed')) return out('a faster, cleaner website', 'the homepage responded slowly', 'speed')
+  if (failed.has('dated')) return out('a website refresh', 'the site looks out of date', 'dated')
   return out('small automations and an AI assistant for enquiries', 'the site looks fine, so lead with saving them time')
 }

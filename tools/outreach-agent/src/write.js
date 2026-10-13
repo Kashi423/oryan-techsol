@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { config } from './config.js'
 import { templateDraft } from './template.js'
 import { startingPrice, money, servicesLine, proofPoints } from './catalog.js'
+import { auditBullets } from './findings.js'
 
 const systemPrompt = (signOff) => `You write cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses. Every email must read like a short note from one person who really looked at THEIR business, not a template.
 
@@ -35,9 +36,7 @@ export function parseDraft(text) {
   return { subject: j.subject.trim().replace(/\s+/g, ' '), body: j.body.trim() }
 }
 
-export function auditBullets(lead) {
-  try { return (JSON.parse(lead.audit || 'null')?.bullets ?? []).slice(0, 3) } catch { return [] }
-}
+export { auditBullets }
 
 const STYLE = {
   A: 'Subject style A: plain and specific, 2-4 words, e.g. "<Business> online booking".',
@@ -190,6 +189,9 @@ async function draftWithAi(lead, { step, previous, client, variant, tone, signOf
     const stray = strayNumbers(all, lead)
     problem = unsupportedClaim(all) || (stray.length ? `used a number that is not in the facts (${stray.slice(0, 3).join(', ')})` : null)
     if (!problem) {
+      // The signature is guaranteed in code, whatever the model did.
+      const who = signOff || config.signOffName || config.fromName
+      if (who && !endsWithName(draft.body, who)) draft.body = `${draft.body.trim()}\n\n${who}`
       // Follow-ups reply in the same thread, so keep the original subject (with "Re:") for clean threading.
       if (step > 0 && previous?.subject) draft.subject = `Re: ${previous.subject.replace(/^Re:\s*/i, '')}`
       return draft
@@ -207,10 +209,19 @@ export function strayNumbers(text, lead = {}) {
   return [...new Set(found.map((n) => n.replace(/[$%,]/g, '')))].filter((n) => n && !known.replace(/,/g, '').includes(n))
 }
 
+/** True when the last non-empty line of the body is just the sign-off name. */
+export function endsWithName(body, name) {
+  const last = String(body).trim().split('\n').filter((l) => l.trim()).pop() ?? ''
+  return last.trim().toLowerCase().replace(/[,.!]+$/, '') === String(name).trim().toLowerCase()
+}
+
 export function unsupportedClaim(text) {
+  if (/\b(ensures?|guarantee[ds]?|never miss|always (get|have|be)|you('| wi)ll (get|see|gain|win|double)|will (increase|double|boost|grow|triple|transform|skyrocket)|(double|triple) your|guaranteed|(get|bring|drive|secure|generate|win|attract)s?(ing)? (you |your \w+ )?(more|extra|new) )/i.test(text)) return 'promised a result'
+  if (/\bwho (prefer|want|expect|like|tend to)\b/i.test(text)) return 'made a general claim that is not in the facts'
+  if (/\b(does ?n[o']t|do ?n[o']t|does not|do not) (currently )?(feature|offer|include|show|provide|list)\b/i.test(text)) return 'stated a certainty instead of what was seen'
   if (/\b(most|many|majority of|studies show|research shows|statistics show|according to|everyone|nobody|people (prefer|expect|want)|customers (prefer|expect|want|now))\b[^.?!]{0,50}\b(patients|visitors|customers|people|clients|users|consumers|businesses|buyers)\b/i.test(text)
       && /\b(prefer|expect|want|check|choose|search|book|leave|abandon|trust|look for|rather|bounce|visit|use)\b/i.test(text)) return 'made a general claim that is not in the facts'
-  if (/\b(there (is|are) no|there isn'?t|there'?s no|you (lack|don'?t have|do not have|have no|are missing|'?re missing))\b/i.test(text)) return 'stated a certainty instead of what was seen'
+  if (/\b(there (is|are) no|there isn'?t|there'?s no|you (lack|don'?t have|do not have|have no|are missing|'?re missing)|(does ?n[o']t|do ?n[o']t|does not|do not) have|(your|the) (site|website|homepage) (lacks|is missing)|lacks (an?|any))\b/i.test(text)) return 'stated a certainty instead of what was seen'
   if (/\b(cheapest|lowest (price|cost)|best price|cheaper than|unbeatable (price|value)|below[- ]market|market rate|most affordable|undercut)\b/i.test(text)) return 'made a price comparison'
   if (/\b(i am|i'm|we are|we're|as) (a |an )?(local|neighbo(u)?r|nearby)\b/i.test(text)) return 'claimed to be local'
   if (/\bhere in\b/i.test(text)) return 'said "here in <city>"'

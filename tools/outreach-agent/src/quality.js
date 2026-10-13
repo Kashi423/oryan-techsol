@@ -30,7 +30,9 @@ export function localReview(draft, lead = {}) {
     }
   }
   for (const [re, label] of SPAM) if (re.test(text)) hit(10, `Spam-trigger wording: ${label}.`)
-  const caps = (text.match(/\b[A-Z]{4,}\b/g) ?? []).filter((w) => !['HTTP', 'HTTPS', 'HTML', 'CSS', 'SEO', 'OSM'].includes(w))
+  // Acronyms in the business's own name (BLVD, KC) are not shouting.
+  const nameWords = new Set(String(lead.name ?? '').toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean))
+  const caps = (text.match(/\b[A-Z]{4,}\b/g) ?? []).filter((w) => !['HTTP', 'HTTPS', 'HTML', 'CSS', 'SEO', 'OSM'].includes(w) && !nameWords.has(w))
   if (caps.length >= 1) hit(8, `ALL-CAPS words: ${caps.slice(0, 3).join(', ')}.`)
   if ((body.match(/https?:\/\//g) ?? []).length > 1) hit(10, 'More than one link.')
   // The final break-up note (step 3) legitimately has no question.
@@ -38,7 +40,7 @@ export function localReview(draft, lead = {}) {
   const claim = unsupportedClaim(text)
   if (claim) hit(30, `Unsupported claim: ${claim}.`)
   if (subject.length > 45) hit(5, 'Subject is long (over 45 characters). 2 to 5 words works best.')
-  if (/[A-Z]{4,}|!/.test(subject)) hit(5, 'Subject has caps or exclamation marks.')
+  if (/!/.test(subject) || (subject.match(/\b[A-Z]{4,}\b/g) ?? []).some((w) => !nameWords.has(w))) hit(5, 'Subject has caps or exclamation marks.')
   if (lead.name && !text.toLowerCase().includes(String(lead.name).toLowerCase().split(/\s+/)[0])) hit(5, 'Does not mention the business by name.')
 
   // Numbers must come from the facts we collected or the price you supplied.

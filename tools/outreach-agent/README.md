@@ -152,3 +152,15 @@ With 5 mailboxes, start 8, +1 a day, 25 per mailbox and a total limit of 100 a d
 | 21 | 25 | 100 |
 
 Follow-ups count towards these numbers (each business gets up to four emails), so roughly one send in four is to a new business. Two or more bounces, or four or more opt-outs among a mailbox's last 25 sends, hold that mailbox at 5 a day automatically.
+
+## Lessons from the first real batch (14 dentists, Austin TX)
+
+Running real searches and real websites found problems that test data never did. All are fixed and covered by tests:
+
+- A phone number printed next to an email was captured as part of the address (`242-7455info@...`). Now stripped.
+- The finding mentioned in an email now always matches the offer (a slow-site note followed by a chatbot pitch made no sense).
+- Subjects stay under 40 characters; long names are shortened; the subject topic follows the offer.
+- No more "Business Name's site"; wording is varied across a batch so mail does not look copied.
+- The signature is added in code if the AI omits it.
+- Blocked claims: result promises ("ensure you never miss", "secure more sign-ups"), certainties ("does not have", "doesn't currently feature"), and generalisations about customers ("visitors who prefer messaging").
+- A slow or retired AI model can no longer stall a batch: 30-second timeouts, model fallback, then the template.

@@ -11,7 +11,10 @@ export function extractEmails(html) {
   const found = new Set()
   const decoded = html.replace(/&#64;|&commat;|\[at\]|\(at\)/gi, '@').replace(/%40/g, '@')
   for (const m of decoded.matchAll(/[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g)) {
-    const e = m[0].toLowerCase().replace(/^[.%+-]+/, '')
+    let e = m[0].toLowerCase().replace(/^[.%+-]+/, '')
+    // A phone number printed right before the address ("242-7455info@...") gets captured with it.
+    e = e.replace(/^\+?\d[\d().\s-]{5,}(?=[a-z])/, '').replace(/^\d{4,}(?=[a-z])/, '') // also a trailing chunk like 0100hello@
+    if (!/^[a-z0-9]/.test(e) || e.split('@')[0].length < 2) continue
     if (FILE_EXT.test(e) || JUNK_LOCAL.test(e) || JUNK_DOMAIN.test(e.split('@')[1])) continue
     found.add(e)
   }

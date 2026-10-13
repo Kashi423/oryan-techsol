@@ -113,7 +113,7 @@ test('first email follows the research shape: short, specific, interest question
     assert.ok(d.subject.length <= 40, d.subject)
     assert.match(d.subject, /Brightside Dental/)
     assert.match(d.body, /\?\s+Rai$|\?\s*\n\nRai$/)
-    assert.ok(!/minute|call|meeting|schedule/i.test(d.body), 'no call ask in first email')
+    assert.ok(!/\b(call|meeting|schedule|calendar)\b|\d+[- ]minute (call|chat)/i.test(d.body), 'no call ask in first email')
     assert.ok(!/footer still says/.test(d.body), 'one observation only')
     const q = localReview(d, lead)
     assert.equal(q.level, 'good', q.issues.join(' | '))
@@ -194,4 +194,97 @@ test('guard: unsupported general claims are blocked; a gone model is skipped; fo
     globalThis.fetch = realFetch
     Object.assign(config, { anthropicKey: saved.a, openaiKey: saved.o, openaiBaseUrl: saved.u, openaiFallbackModels: saved.f, openaiModel: saved.m })
   }
+})
+
+test('real-batch fixes: finding matches the offer, short subjects, no clumsy possessives, signature guaranteed', async () => {
+  const { auditBullets, shortName } = await import('../src/findings.js')
+  const { recommendOffer } = await import('../src/offer.js')
+  const { buildAudit } = await import('../src/audit.js')
+  const { draftEmail, endsWithName, unsupportedClaim } = await import('../src/write.js')
+  useMemoryCatalog({ web: 499, ai: 600 })
+  config.signOffName = 'Rai'
+
+  // A slow site that ALSO lacks a contact form: the offer is the chatbot/form, so the email must
+  // lead with the form finding, not the speed finding that sorts first by weight.
+  const html = '<title>Central Texas Pediatric Dentistry</title><meta name="viewport" content="x"><meta name="description" content="A friendly pediatric dental practice in Austin offering care for kids."><h1>Hi</h1> book an appointment today'
+  const audit = buildAudit(html, 'https://ctpd.test', 3700)
+  const lead = { id: 1, name: 'Central Texas Pediatric Dentistry', website: 'https://ctpd.test', observations: '[]', audit: JSON.stringify(audit) }
+  const offer = recommendOffer(lead, audit)
+  assert.equal(offer.checkId, 'form')
+  lead.offer = offer.service
+  assert.match(auditBullets(lead)[0], /contact or enquiry form/, 'the finding behind the offer comes first')
+  const t = templateDraft(lead)
+  assert.match(t.body, /contact or enquiry form/)
+  assert.ok(!/3\.7 seconds/.test(t.body.split('\n\n')[1]), 'does not lead with the unrelated speed note')
+
+  // subject: short name, topic follows the offer, within 40 characters, name still present
+  for (const v of ['A', 'B']) {
+    const s = templateDraft(lead, { variant: v }).subject
+    assert.ok(s.length <= 40, `${v}: "${s}" (${s.length})`)
+    assert.match(s, /Central Texas/)
+  }
+  assert.equal(shortName('Dental Smiles Family and Cosmetic'), 'Dental Smiles Family')
+  assert.equal(shortName('KC Dental'), 'KC Dental')
+
+  // no "Name's site" possessives; singular ask reads correctly
+  const body = templateDraft({ ...lead, name: 'Dental Smiles Family and Cosmetic' }).body
+  assert.ok(!/Cosmetic's/.test(body)); assert.match(body, /your (site|website|homepage)/)
+  const one = templateDraft({ ...lead, audit: JSON.stringify({ ...audit, bullets: [audit.bullets[0]], items: [audit.items[0]] }) }).body
+  assert.ok(!/list of the fix/.test(one))
+
+  // the signature is added when the model forgets it, and not duplicated when present
+  const reply = (b) => ({ content: [{ type: 'text', text: JSON.stringify({ subject: 'Acme booking', body: b }) }] })
+  const noSign = { messages: { create: async () => reply("I couldn't spot a booking option for Acme. Want the quick fix?") } }
+  const d = await draftEmail({ id: 1, name: 'Acme', website: 'https://a.test', observations: '[]' }, { client: noSign, signOff: 'Sara' })
+  assert.ok(endsWithName(d.body, 'Sara'), d.body)
+  const signed = { messages: { create: async () => reply("I couldn't spot a booking option for Acme. Want the quick fix?\n\nSara") } }
+  const d2 = await draftEmail({ id: 1, name: 'Acme', website: 'https://a.test', observations: '[]' }, { client: signed, signOff: 'Sara' })
+  assert.equal((d2.body.match(/Sara/g) ?? []).length, 1)
+
+  // "does not have" is a certainty, not an observation
+  for (const bad of ['Your homepage does not have a contact form.', "Your site doesn't have online booking.", 'The site lacks a booking option.']) {
+    assert.equal(unsupportedClaim(bad), 'stated a certainty instead of what was seen', bad)
+  }
+})
+
+test('quality gate: acronyms inside the business name are not flagged as shouting', async () => {
+  const { localReview } = await import('../src/quality.js')
+  const r = localReview({ subject: 'BLVD Dentistry website idea', body: "I couldn't see a contact form on the BLVD Dentistry homepage. Want me to send over the fix?" }, { name: 'BLVD Dentistry & Orthodontics' })
+  assert.ok(!r.issues.some((i) => /caps/i.test(i)), r.issues.join(' | '))
+})
+
+test('real-batch fixes 2: phone numbers glued to emails, result promises, and varied wording', async () => {
+  const { extractEmails, pickBestEmail } = await import('../src/enrich.js')
+  const { unsupportedClaim } = await import('../src/write.js')
+  assert.deepEqual(extractEmails('Call 242-7455info@orthodonticteachinginstitute.com today'), ['info@orthodonticteachinginstitute.com'])
+  assert.deepEqual(extractEmails('(512) 555-0100contact@smile.test'), ['contact@smile.test'])
+  assert.deepEqual(extractEmails('+1 512 555 0100hello@a.test'), ['hello@a.test'])
+  assert.deepEqual(extractEmails('mailto:2fast@2furious.test'), ['2fast@2furious.test'], 'a real address that starts with a digit is kept')
+  assert.equal(pickBestEmail(extractEmails('242-7455info@x.test'), 'x.test'), 'info@x.test')
+
+  for (const bad of ['This would ensure you never miss a new booking.', 'We guarantee more patients.', 'It will double your enquiries.', 'You will get more bookings.']) {
+    assert.equal(unsupportedClaim(bad), 'promised a result', bad)
+  }
+  assert.equal(unsupportedClaim('That is something we do: online booking systems.'), null)
+
+  // Same offer, different businesses: not all the same words
+  useMemoryCatalog({ ai: 600 })
+  const audit = JSON.stringify({ checks: [{ id: 'form', ok: false, weight: 8 }], bullets: ["I couldn't see a contact or enquiry form on the homepage."], items: [{ id: 'form', bullet: "I couldn't see a contact or enquiry form on the homepage." }] })
+  const bodies = new Set()
+  for (let i = 1; i <= 12; i++) {
+    bodies.add(templateDraft({ id: i, name: `Clinic ${i}`, website: 'https://c.test', observations: '[]', offer: 'a lead-capture form with an AI chatbot', audit }).body.replace(/Clinic \d+/g, 'X'))
+  }
+  assert.ok(bodies.size >= 5, `expected varied wording, got ${bodies.size} distinct bodies`)
+})
+
+test('real-batch fixes 3: soft result promises, customer-preference claims and "does not feature" are blocked', async () => {
+  const { unsupportedClaim } = await import('../src/write.js')
+  assert.equal(unsupportedClaim('This could secure more sign-ups for your courses.'), 'promised a result')
+  assert.equal(unsupportedClaim('It will bring you more patients.'), 'promised a result')
+  assert.equal(unsupportedClaim('It helps you reach visitors who prefer messaging over calling.'), 'made a general claim that is not in the facts')
+  assert.equal(unsupportedClaim("Your homepage doesn't currently feature a contact form."), 'stated a certainty instead of what was seen')
+  assert.equal(unsupportedClaim('The site does not include online booking.'), 'stated a certainty instead of what was seen')
+  assert.equal(unsupportedClaim("I couldn't see a contact or enquiry form on your homepage."), null)
+  assert.equal(unsupportedClaim('A contact form is not visible on your homepage.'), null)
+  assert.equal(unsupportedClaim('We build online booking systems for local businesses, with packages from $499.'), null)
 })

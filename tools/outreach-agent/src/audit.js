@@ -25,6 +25,7 @@ export function buildAudit(html, url, ms = 0) {
   return {
     checks: checks.map(({ id, ok, weight }) => ({ id, ok, weight })),
     bullets: failed.map((c) => c.bullet),
+    items: failed.map((c) => ({ id: c.id, bullet: c.bullet })),
     issueWeight: failed.reduce((s, c) => s + c.weight, 0),
   }
 }
