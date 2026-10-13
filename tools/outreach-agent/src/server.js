@@ -9,6 +9,8 @@ import { sendApproved, sentToday, makeTransport, inSendWindow, optOut } from './
 import { checkReplies } from './inbox.js'
 import { searchPlaces } from './places.js'
 import { withFooter } from './write.js'
+import { demoKit } from './demo.js'
+import os from 'node:os'
 
 const ENV_FILE = path.join(ROOT, '.env')
 const KEY_MAP = {
@@ -40,12 +42,19 @@ export function saveSettings(updates) {
   writeFileSync(ENV_FILE, lines.join('\n').replace(/\n*$/, '\n'))
 }
 
-export function createApp(db) {
+export function createApp(db, { demo = false } = {}) {
+  const kit = demo ? demoKit() : {}
+  if (demo) {
+    // Demo must never touch real keys, the real .env or the real pause file.
+    config.placesKey = 'demo'
+    config.pauseFile = path.join(os.tmpdir(), 'oryan-demo-PAUSE')
+    if (existsSync(config.pauseFile)) unlinkSync(config.pauseFile)
+  }
   const job = { running: false, name: '', log: [], error: null, finished: null }
   const uiFile = path.join(ROOT, 'src', 'ui.html')
   const autoFile = path.join(ROOT, 'data', 'auto.json')
   let auto = false
-  try { auto = JSON.parse(readFileSync(autoFile, 'utf8')).auto === true } catch { /* default off */ }
+  if (!demo) { try { auto = JSON.parse(readFileSync(autoFile, 'utf8')).auto === true } catch { /* default off */ } }
   const log = (m) => { job.log.push(`${new Date().toLocaleTimeString()}  ${m}`); if (job.log.length > 300) job.log.shift() }
 
   async function runJob(name, fn) {
@@ -56,13 +65,16 @@ export function createApp(db) {
       .finally(() => { job.running = false; job.finished = new Date().toISOString() })
   }
 
-  const liveSend = (limit) => sendApproved(db, { live: true, limit, log })
+  const liveSend = (limit) => sendApproved(db, demo
+    ? { live: true, limit, log, transport: kit.transport, force: true, wait: async () => {} }
+    : { live: true, limit, log })
+  const readInbox = () => (demo ? kit.checkReplies(db, { log }) : checkReplies(db, { log }))
 
   async function autoCycle() {
     if (!auto || job.running) return
     runJob('Auto mode', async () => {
-      if (config.gmailAppPassword) { try { await checkReplies(db, { log }) } catch (e) { log(`Inbox check failed: ${e.message}`) } }
-      if (config.anthropicKey) await queueFollowUps(db, { log })
+      if (demo || config.gmailAppPassword) { try { await readInbox() } catch (e) { log(`Inbox check failed: ${e.message}`) } }
+      if (demo || config.anthropicKey) await queueFollowUps(db, { log, client: kit.client })
       return `sent ${await liveSend(Infinity)}`
     }).catch(() => {})
   }
@@ -70,12 +82,15 @@ export function createApp(db) {
   timer.unref?.()
 
   const state = () => ({
-    configured: { gmail: !!(config.gmailUser && config.gmailAppPassword), anthropic: !!config.anthropicKey, places: !!config.placesKey },
+    demo,
+    configured: demo
+      ? { gmail: true, anthropic: true, places: true }
+      : { gmail: !!(config.gmailUser && config.gmailAppPassword), anthropic: !!config.anthropicKey, places: !!config.placesKey },
     settings: { gmailUser: config.gmailUser, fromName: config.fromName, signOffName: config.signOffName, replyTo: config.replyTo, dailyCap: config.dailyCap },
     paused: existsSync(config.pauseFile),
     auto,
     sentToday: sentToday(db),
-    windowOpen: inSendWindow(),
+    windowOpen: demo || inSendWindow(),
     sendWindow: config.sendWindow,
     counts: Object.fromEntries(db.prepare('SELECT status, COUNT(*) n FROM leads GROUP BY status').all().map((r) => [r.status, r.n])),
     drafts: db.prepare("SELECT m.id, m.step, m.subject, m.body, m.status, l.name, l.email, l.website, l.category FROM messages m JOIN leads l ON l.id=m.lead_id WHERE m.status IN ('draft','approved') ORDER BY m.status, m.id").all(),
@@ -92,10 +107,17 @@ export function createApp(db) {
           const n = Number(body.dailyCap)
           if (!Number.isInteger(n) || n < 1 || n > 200) throw new Error('Daily limit must be a whole number from 1 to 200')
         }
+        if (demo) { if (body.dailyCap) config.dailyCap = Number(body.dailyCap); return { ok: true } }
         saveSettings(body)
         return { ok: true }
       }
+      case '/api/demo/advance': {
+        if (!demo) throw new Error('Only available in demo mode')
+        db.prepare("UPDATE messages SET sent_at = datetime(sent_at, '-5 days') WHERE status='sent'").run()
+        return { ok: true }
+      }
       case '/api/test': {
+        if (demo) return { ok: true, message: 'Demo mode: this would send / test the real connection.' }
         if (body.which === 'gmail') {
           const info = await makeTransport().sendMail({ from: `"${config.fromName}" <${config.gmailUser}>`, to: config.gmailUser, subject: 'Oryan outreach agent: test', text: withFooter('This is a test from the outreach agent.') })
           return { ok: true, message: `Test email sent to ${config.gmailUser}. Check that inbox.`, id: info.messageId }
@@ -117,14 +139,14 @@ export function createApp(db) {
         const max = Math.min(Number(body.max) || 20, 60)
         await runJob(`Finding ${query} in ${area}`, async () => {
           log('Searching Google Maps...')
-          const f = await findLeads(db, { query, area, max })
+          const f = await findLeads(db, { query, area, max, fetchImpl: kit.placesFetch })
           log(`${f.found} businesses found, ${f.added} new, ${f.noWebsite} without a website (skipped)`)
           log('Reading their websites for a public email...')
-          const e = await enrichLeads(db, { log })
+          const e = await enrichLeads(db, { log, fetchImpl: kit.siteFetch })
           log(`${e.ready} have a usable email`)
-          if (!config.anthropicKey) throw new Error('Add your Claude key in Setup to write emails')
+          if (!demo && !config.anthropicKey) throw new Error('Add your Claude key in Setup to write emails')
           log('Writing personalised emails...')
-          return draftLeads(db, { log })
+          return draftLeads(db, { log, client: kit.client })
         })
         return { ok: true }
       }
@@ -135,21 +157,21 @@ export function createApp(db) {
       case '/api/approve': return { changed: setDraftStatus(db, body.ids === 'all' ? 'all' : body.ids, 'approved') }
       case '/api/reject': return { changed: setDraftStatus(db, body.ids === 'all' ? 'all' : body.ids, 'rejected') }
       case '/api/send': {
-        if (!config.gmailAppPassword) throw new Error('Finish Gmail setup first')
+        if (!demo && !config.gmailAppPassword) throw new Error('Finish Gmail setup first')
         await runJob('Sending approved emails', async () => `sent ${await liveSend(Number(body.limit) || Infinity)}`)
         return { ok: true }
       }
       case '/api/check-replies': {
-        await runJob('Checking replies', async () => checkReplies(db, { log }))
+        await runJob('Checking replies', async () => readInbox())
         return { ok: true }
       }
       case '/api/followups': {
-        await runJob('Writing follow-ups', async () => queueFollowUps(db, { log }))
+        await runJob('Writing follow-ups', async () => queueFollowUps(db, { log, client: kit.client }))
         return { ok: true }
       }
       case '/api/auto': {
         auto = !!body.on
-        try { writeFileSync(autoFile, JSON.stringify({ auto })) } catch { /* data dir may not exist yet */ }
+        if (!demo) { try { writeFileSync(autoFile, JSON.stringify({ auto })) } catch { /* data dir may not exist yet */ } }
         return { auto }
       }
       case '/api/pause': writeFileSync(config.pauseFile, 'paused'); return { paused: true }

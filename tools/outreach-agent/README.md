@@ -64,3 +64,7 @@ npm run agent run --live           # replies -> follow-ups -> send (put this on 
 Double-click `start-agent.bat` (or run `npm start`). A page opens at http://localhost:4477 with four tabs:
 Setup (paste three keys once), Find customers, Review & send, Sent & replies. No terminal commands, no config files.
 The app only listens on your own computer. Close its window to stop it.
+
+## Try it first: demo mode
+
+Double-click `start-demo.bat`. It runs the same app with fake businesses, fake websites, fake drafts and a fake mail server, so you can click through every step with no keys. Nothing is searched or sent, and your real settings and data are not touched. Use "Demo: skip ahead 5 days" on the Sent tab to see follow-ups appear.

@@ -55,6 +55,7 @@
   <button data-t="sent">4. Sent &amp; replies</button>
 </nav>
 <main>
+  <div id="demoBanner" class="banner warn hide"><b>DEMO MODE.</b> Fake businesses, fake websites and a fake mail server. Nothing real is searched, written or sent, and your settings are untouched. Try: Find customers &rarr; Review &amp; send &rarr; Approve &rarr; Send.</div>
   <div id="job" class="card hide"><strong id="jobname"></strong><div class="log" id="joblog" style="margin-top:8px"></div></div>
 
   <section id="t-setup">
@@ -134,7 +135,8 @@
     <div class="card">
       <div class="row"><div><h2>Sent</h2><p class="sub">Follow-ups go out automatically on day 4 and day 10 if there is no reply.</p></div>
       <button class="btn ghost" id="replies">Check replies now</button>
-      <button class="btn ghost" id="followups">Write follow-ups now</button></div>
+      <button class="btn ghost" id="followups">Write follow-ups now</button>
+      <button class="btn ghost hide" id="advance">Demo: skip ahead 5 days</button></div>
       <table id="sentTable"></table>
     </div>
     <div class="card">
@@ -168,6 +170,9 @@ function show(msg, ok, target) { const n = $(target); n.textContent = msg; n.sty
 async function refresh() {
   try { S = await api('/api/state') } catch { return }
   const c = S.configured
+  $('#demoBanner').classList.toggle('hide', !S.demo)
+  $('#advance').classList.toggle('hide', !S.demo)
+  document.title = S.demo ? 'Oryan Outreach (DEMO)' : 'Oryan Outreach'
   $('#stats').textContent = ''
   $('#stats').append(
     el('span', { textContent: `Sent today: ${S.sentToday}/${S.settings.dailyCap}` }),
@@ -258,6 +263,7 @@ $('#sendNow').onclick = async () => {
 $('#auto').onchange = async (e) => { await api('/api/auto', { on: e.target.checked }) }
 $('#replies').onclick = async () => { try { await api('/api/check-replies', {}); refresh() } catch (e) { alert(e.message) } }
 $('#followups').onclick = async () => { try { await api('/api/followups', {}); refresh() } catch (e) { alert(e.message) } }
+$('#advance').onclick = async () => { await api('/api/demo/advance', {}); alert('Skipped ahead 5 days. Click "Write follow-ups now" to see the follow-ups appear.'); refresh() }
 $('#pause').onclick = async () => { await api(S.paused ? '/api/resume' : '/api/pause', {}); refresh() }
 
 setTab(tab); refresh(); setInterval(refresh, 3000)
