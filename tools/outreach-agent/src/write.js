@@ -74,7 +74,12 @@ function openaiClient() {
               }),
             })
             if (!res.ok) {
-              lastErr = new Error(`AI service ${res.status}: ${(await res.text()).slice(0, 200)}`)
+              const detail = (await res.text()).slice(0, 300)
+              lastErr = new Error(`AI service ${res.status}: ${detail}`)
+              if (/insufficient_quota|no credits|billing/i.test(detail)) {
+                lastErr = new Error('The AI account has no credits left. Add credit at platform.openai.com/settings/organization/billing, or switch service in Setup.')
+                throw lastErr // retrying cannot help
+              }
               if ([429, 500, 502, 503, 504].includes(res.status)) continue // busy: retry, then next model
               throw lastErr
             }
@@ -105,6 +110,16 @@ export function getClient() {
 export async function draftEmail(lead, { step = 0, previous = null, client, variant = 'A' } = {}) {
   // No AI key configured: use the built-in templates so the app works with zero setup.
   if (!client && !aiProvider()) return templateDraft(lead, { step, previous, variant })
+  try {
+    return await draftWithAi(lead, { step, previous, client, variant })
+  } catch (e) {
+    // The AI is unavailable (no credit, outage...): keep going with the built-in template.
+    if (client) throw e
+    return { ...templateDraft(lead, { step, previous, variant }), fallbackReason: e.message }
+  }
+}
+
+async function draftWithAi(lead, { step, previous, client, variant }) {
   const c = client ?? getClient()
   const task =
     step === 0

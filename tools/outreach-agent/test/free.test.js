@@ -100,3 +100,21 @@ test('OSM: falls back to a mirror when the first Overpass server is busy', async
     : { ok: false, status: 504, json: async () => ({}) }
   await assert.rejects(() => searchOsm({ query: 'dentists', area: 'X', fetchImpl: allBusy }), /busy right now \(504\)/)
 })
+
+test('AI out of credit: no retry storm, falls back to the template and says why', async () => {
+  const { draftEmail } = await import('../src/write.js')
+  const saved = { a: config.anthropicKey, o: config.openaiKey, u: config.openaiBaseUrl, f: config.openaiFallbackModels }
+  const realFetch = globalThis.fetch
+  let calls = 0
+  globalThis.fetch = async () => { calls++; return { ok: false, status: 429, text: async () => '{"error":{"type":"insufficient_quota","message":"You have no credits remaining."}}' } }
+  try {
+    config.anthropicKey = ''; config.openaiKey = 'sk-test'; config.openaiBaseUrl = 'https://api.openai.com/v1'; config.openaiFallbackModels = ['m2', 'm3']
+    const d = await draftEmail({ id: 1, name: 'Acme', website: 'https://a.test', observations: '[]' })
+    assert.match(d.subject, /Acme/)
+    assert.match(d.fallbackReason, /no credits/i)
+    assert.equal(calls, 1, 'quota errors are not retried or sent to fallback models')
+  } finally {
+    globalThis.fetch = realFetch
+    Object.assign(config, { anthropicKey: saved.a, openaiKey: saved.o, openaiBaseUrl: saved.u, openaiFallbackModels: saved.f })
+  }
+})

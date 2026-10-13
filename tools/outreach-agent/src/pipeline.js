@@ -48,10 +48,12 @@ export async function draftLeads(db, { limit = Infinity, log = () => {}, client 
   // Best prospects first, so a limit picks the leads that need us most.
   const rows = db.prepare("SELECT * FROM leads WHERE status='ready' ORDER BY score DESC, id").all().slice(0, limit)
   let drafted = 0
+  let warned = false
   for (const l of rows) {
     try {
       const variant = nextVariant(db)
       const d = await draftEmail(l, { client, variant })
+      if (d.fallbackReason && !warned) { warned = true; log(`AI writer unavailable, using built-in templates instead. ${d.fallbackReason}`) }
       db.prepare('INSERT INTO messages (lead_id, step, subject, body, variant) VALUES (?,0,?,?,?)').run(l.id, d.subject, d.body, variant)
       db.prepare("UPDATE leads SET status='drafted' WHERE id=?").run(l.id)
       drafted++
