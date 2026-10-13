@@ -52,6 +52,10 @@ test('web app serves UI and state, blocks foreign hosts', async () => {
     assert.equal(badStatus, 403)
     const cross = await fetch(base + '/api/approve', { method: 'POST', headers: { Origin: 'https://evil.example' }, body: '{}' })
     assert.equal(cross.status, 403)
+    for (const bad of ['0', '-5', '1.5', '999', 'abc']) {
+      const r = await fetch(base + '/api/settings', { method: 'POST', body: JSON.stringify({ dailyCap: bad }) })
+      assert.equal(r.status, 400, `dailyCap ${bad} should be rejected`)
+    }
     const none = await (await fetch(base + '/api/approve', { method: 'POST', body: JSON.stringify({ ids: [999] }) })).json()
     assert.equal(none.changed, 0)
   } finally {

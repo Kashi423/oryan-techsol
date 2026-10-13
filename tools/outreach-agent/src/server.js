@@ -87,7 +87,14 @@ export function createApp(db) {
     if (method === 'GET' && url === '/api/state') return state()
     if (method !== 'POST') throw Object.assign(new Error('Not found'), { status: 404 })
     switch (url) {
-      case '/api/settings': saveSettings(body); return { ok: true }
+      case '/api/settings': {
+        if (body.dailyCap !== undefined && String(body.dailyCap).trim() !== '') {
+          const n = Number(body.dailyCap)
+          if (!Number.isInteger(n) || n < 1 || n > 200) throw new Error('Daily limit must be a whole number from 1 to 200')
+        }
+        saveSettings(body)
+        return { ok: true }
+      }
       case '/api/test': {
         if (body.which === 'gmail') {
           const info = await makeTransport().sendMail({ from: `"${config.fromName}" <${config.gmailUser}>`, to: config.gmailUser, subject: 'Oryan outreach agent: test', text: withFooter('This is a test from the outreach agent.') })

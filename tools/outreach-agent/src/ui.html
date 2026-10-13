@@ -120,6 +120,11 @@
         <button class="btn ghost" id="approveAll">Approve all</button>
         <button class="btn" id="sendNow">Send approved now</button>
       </div>
+      <div class="row" style="margin-top:14px;align-items:end">
+        <div style="flex:0 0 200px"><label>Daily sending limit</label><input id="capReview" type="number" min="1" max="200" step="1"></div>
+        <button class="btn ghost" id="setCap">Set limit</button>
+        <span id="capMsg" style="flex:1 1 200px;font-size:13px"></span>
+      </div>
       <label style="display:flex;gap:8px;align-items:center;margin-top:12px;color:var(--ink)"><input type="checkbox" id="auto" style="width:auto"> Auto mode: while this window is open, send approved emails and follow-ups automatically within the daily limit</label>
     </div>
     <div id="drafts"></div>
@@ -174,6 +179,7 @@ async function refresh() {
   b.className = 'banner ' + (missing.length ? 'warn' : 'ok')
   b.textContent = missing.length ? `Still to set up: ${missing.join(', ')}. Fill in each box below once.` : 'Everything is connected. Go to "2. Find customers".'
   for (const id of ['gmailUser', 'fromName', 'signOffName', 'replyTo', 'dailyCap']) { const i = $('#' + id); if (document.activeElement !== i && !i.value) i.value = S.settings[id] ?? '' }
+  if (document.activeElement !== $('#capReview') && !$('#capReview').value) $('#capReview').value = S.settings.dailyCap
   for (const [id, ok] of [['gmailAppPassword', c.gmail], ['anthropicKey', c.anthropic], ['placesKey', c.places]]) $('#' + id).placeholder = ok ? 'Saved. Leave blank to keep it.' : $('#' + id).placeholder
 
   // job
@@ -229,7 +235,16 @@ document.querySelectorAll('[data-save]').forEach((b) => (b.onclick = async () =>
   } catch (e) { show(e.message, false, '#r-' + w) }
   b.disabled = false; refresh()
 }))
-$('#saveCap').onclick = async () => { await api('/api/settings', { dailyCap: $('#dailyCap').value }); refresh() }
+async function setCap(value, msgSel) {
+  try {
+    await api('/api/settings', { dailyCap: value })
+    show(`Saved. Up to ${value} emails per day.`, true, msgSel)
+    $('#dailyCap').value = value; $('#capReview').value = value
+  } catch (e) { show(e.message, false, msgSel) }
+  refresh()
+}
+$('#saveCap').onclick = () => setCap($('#dailyCap').value, '#capMsg')
+$('#setCap').onclick = () => setCap($('#capReview').value, '#capMsg')
 $('#go').onclick = async () => {
   try { await api('/api/find', { query: $('#q').value, area: $('#area').value, max: $('#max').value }); setTab('find'); refresh() } catch (e) { alert(e.message) }
 }
