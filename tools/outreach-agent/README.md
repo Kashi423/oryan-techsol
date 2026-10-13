@@ -72,3 +72,8 @@ Double-click `start-demo.bat`. It runs the same app with fake businesses, fake w
 ## Which AI writes the emails
 
 Paste either a **Claude API key** (console.anthropic.com) or an **OpenAI API key** (platform.openai.com) on the Setup tab. A Claude key is used if both are set. A ChatGPT Plus or Claude.ai subscription login cannot be used by apps; it has to be an API key, which is billed per use (a few cents per hundred drafts).
+
+### Free options
+- **AI writer:** Google Gemini (aistudio.google.com/apikey) or Groq (console.groq.com/keys) both have free plans. Pick the service on the Setup tab and paste its key.
+- **Business search:** Google Places has a free monthly allowance, but needs a billing account on file. At 20-60 searches a day you stay inside it.
+- **Sending:** your existing Google Workspace mailbox.

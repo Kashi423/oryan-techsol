@@ -17,6 +17,8 @@ const KEY_MAP = {
   gmailAppPassword: ['GMAIL_APP_PASSWORD', 'gmailAppPassword'],
   anthropicKey: ['ANTHROPIC_API_KEY', 'anthropicKey'],
   openaiKey: ['OPENAI_API_KEY', 'openaiKey'],
+  openaiBaseUrl: ['OPENAI_BASE_URL', 'openaiBaseUrl'],
+  openaiModel: ['OPENAI_MODEL', 'openaiModel'],
   placesKey: ['GOOGLE_PLACES_API_KEY', 'placesKey'],
   fromName: ['FROM_NAME', 'fromName'],
   signOffName: ['SIGN_OFF_NAME', 'signOffName'],
@@ -127,7 +129,7 @@ export function createApp(db, { demo = false } = {}) {
           const p = aiProvider()
           if (!p) throw new Error('Paste a Claude key or an OpenAI key first')
           await getClient().messages.create({ model: p === 'openai' ? config.openaiModel : config.model, max_tokens: 16, system: 'Reply with OK', messages: [{ role: 'user', content: 'Say OK' }] })
-          return { ok: true, message: `${p === 'openai' ? 'OpenAI' : 'Claude'} key works.` }
+          return { ok: true, message: p === 'openai' ? `AI key works (${config.openaiModel}).` : 'Claude key works.' }
         }
         if (body.which === 'places') {
           const r = await searchPlaces('coffee shop in New York', 1)

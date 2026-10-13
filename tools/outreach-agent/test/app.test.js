@@ -88,3 +88,25 @@ test('OpenAI writer works through the same draft path and is chosen when only th
     config.anthropicKey = saved.a; config.openaiKey = saved.o
   }
 })
+
+test('free OpenAI-compatible services (Gemini/Groq) use their own base URL and max_tokens', async () => {
+  const { draftEmail } = await import('../src/write.js')
+  const saved = { a: config.anthropicKey, o: config.openaiKey, u: config.openaiBaseUrl, m: config.openaiModel }
+  const realFetch = globalThis.fetch
+  let seen
+  globalThis.fetch = async (url, opts) => {
+    seen = { url, body: JSON.parse(opts.body) }
+    return { ok: true, json: async () => ({ choices: [{ message: { content: '{"subject":"Hi","body":"Hello"}' } }] }) }
+  }
+  try {
+    config.anthropicKey = ''; config.openaiKey = 'free-key'
+    config.openaiBaseUrl = 'https://generativelanguage.googleapis.com/v1beta/openai'; config.openaiModel = 'gemini-2.5-flash'
+    await draftEmail({ name: 'Acme', observations: '[]' })
+    assert.equal(seen.url, 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions')
+    assert.equal(seen.body.model, 'gemini-2.5-flash')
+    assert.ok('max_tokens' in seen.body && !('max_completion_tokens' in seen.body))
+  } finally {
+    globalThis.fetch = realFetch
+    Object.assign(config, { anthropicKey: saved.a, openaiKey: saved.o, openaiBaseUrl: saved.u, openaiModel: saved.m })
+  }
+})

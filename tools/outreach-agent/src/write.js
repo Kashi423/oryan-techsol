@@ -42,16 +42,18 @@ function openaiClient() {
   return {
     messages: {
       create: async ({ system, messages, max_tokens }) => {
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        const isOpenAI = config.openaiBaseUrl === 'https://api.openai.com/v1'
+        const res = await fetch(`${config.openaiBaseUrl}/chat/completions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.openaiKey}` },
           body: JSON.stringify({
             model: config.openaiModel,
-            max_completion_tokens: max_tokens,
+            // api.openai.com wants the newer field name; compatible services still use max_tokens.
+            [isOpenAI ? 'max_completion_tokens' : 'max_tokens']: max_tokens,
             messages: [{ role: 'system', content: system }, ...messages],
           }),
         })
-        if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 200)}`)
+        if (!res.ok) throw new Error(`AI service ${res.status}: ${(await res.text()).slice(0, 200)}`)
         const j = await res.json()
         return { content: [{ type: 'text', text: j.choices?.[0]?.message?.content ?? '' }] }
       },

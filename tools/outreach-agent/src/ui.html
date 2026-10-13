@@ -20,7 +20,7 @@
   h2 { font-size:16px; margin:0 0 4px; }
   p.sub { color:var(--muted); margin:0 0 12px; font-size:13.5px; }
   label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
-  input, textarea { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); font:inherit; }
+  input, textarea, select { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); font:inherit; }
   textarea { min-height:140px; resize:vertical; }
   button.btn { background:var(--brand); color:#fff; border:0; padding:10px 16px; border-radius:8px; font:inherit; font-weight:600; cursor:pointer; }
   button.btn.ghost { background:none; color:var(--ink); border:1px solid var(--line); }
@@ -79,13 +79,21 @@
 
     <div class="card">
       <h2>B. AI writer (writes the emails)</h2>
-      <p class="sub">Paste <b>one</b> of these. A Claude key from <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>, or an OpenAI (ChatGPT) API key from
-        <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com</a>. A ChatGPT or Claude.ai subscription login does not work; it must be an API key.</p>
+      <p class="sub">Pick a service and paste its API key. <b>Google Gemini and Groq have free plans</b>, which is plenty for 10 emails a day.
+        A ChatGPT or Claude.ai subscription login does not work; it has to be an API key.</p>
+      <label>Service</label>
+      <select id="aiPreset">
+        <option value="gemini">Google Gemini (free plan)</option>
+        <option value="groq">Groq (free plan)</option>
+        <option value="openai">OpenAI / ChatGPT API (paid)</option>
+        <option value="claude">Claude API (paid)</option>
+      </select>
+      <p class="sub" style="margin-top:8px">Get a key: <a id="aiLink" href="#" target="_blank" rel="noopener"></a></p>
       <div class="row">
-        <div><label>Claude key</label><input id="anthropicKey" type="password" placeholder="sk-ant-..." autocomplete="off"></div>
-        <div><label>or OpenAI key</label><input id="openaiKey" type="password" placeholder="sk-..." autocomplete="off"></div>
+        <div><label>API key</label><input id="aiKey" type="password" placeholder="Paste key" autocomplete="off"></div>
+        <div><label>Model (optional)</label><input id="aiModel" placeholder="default"></div>
       </div>
-      <p style="margin-top:12px"><button class="btn" data-save="anthropic">Save and test</button> <span id="r-anthropic"></span></p>
+      <p style="margin-top:12px"><button class="btn" id="saveAi">Save and test</button> <span id="r-anthropic"></span></p>
     </div>
 
     <div class="card">
@@ -189,7 +197,7 @@ async function refresh() {
   b.textContent = missing.length ? `Still to set up: ${missing.join(', ')}. Fill in each box below once.` : 'Everything is connected. Go to "2. Find customers".'
   for (const id of ['gmailUser', 'fromName', 'signOffName', 'replyTo', 'dailyCap']) { const i = $('#' + id); if (document.activeElement !== i && !i.value) i.value = S.settings[id] ?? '' }
   if (document.activeElement !== $('#capReview') && !$('#capReview').value) $('#capReview').value = S.settings.dailyCap
-  for (const [id, ok] of [['gmailAppPassword', c.gmail], ['anthropicKey', c.anthropic], ['openaiKey', c.anthropic], ['placesKey', c.places]]) $('#' + id).placeholder = ok ? 'Saved. Leave blank to keep it.' : $('#' + id).placeholder
+  for (const [id, ok] of [['gmailAppPassword', c.gmail], ['aiKey', c.anthropic], ['placesKey', c.places]]) $('#' + id).placeholder = ok ? 'Saved. Leave blank to keep it.' : $('#' + id).placeholder
 
   // job
   const j = S.job
@@ -233,7 +241,7 @@ async function refresh() {
 
 document.querySelectorAll('[data-save]').forEach((b) => (b.onclick = async () => {
   const w = b.dataset.save
-  const fields = { gmail: ['gmailUser', 'gmailAppPassword', 'fromName', 'signOffName', 'replyTo'], anthropic: ['anthropicKey', 'openaiKey'], places: ['placesKey'] }[w]
+  const fields = { gmail: ['gmailUser', 'gmailAppPassword', 'fromName', 'signOffName', 'replyTo'], places: ['placesKey'] }[w]
   const payload = Object.fromEntries(fields.map((f) => [f, $('#' + f).value]))
   b.disabled = true; show('Working...', true, '#r-' + w)
   try {
@@ -270,6 +278,31 @@ $('#followups').onclick = async () => { try { await api('/api/followups', {}); r
 $('#advance').onclick = async () => { await api('/api/demo/advance', {}); alert('Skipped ahead 5 days. Click "Write follow-ups now" to see the follow-ups appear.'); refresh() }
 $('#pause').onclick = async () => { await api(S.paused ? '/api/resume' : '/api/pause', {}); refresh() }
 
+const PRESETS = {
+  gemini: { url: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-2.5-flash', link: 'https://aistudio.google.com/apikey' },
+  groq: { url: 'https://api.groq.com/openai/v1', model: 'llama-3.3-70b-versatile', link: 'https://console.groq.com/keys' },
+  openai: { url: 'https://api.openai.com/v1', model: 'gpt-4o-mini', link: 'https://platform.openai.com/api-keys' },
+  claude: { link: 'https://console.anthropic.com/settings/keys' },
+}
+function paintPreset() {
+  const p = PRESETS[$('#aiPreset').value]
+  $('#aiLink').href = p.link; $('#aiLink').textContent = p.link.replace('https://', '')
+  $('#aiModel').placeholder = p.model || 'default'
+}
+$('#aiPreset').onchange = paintPreset
+$('#saveAi').onclick = async () => {
+  const preset = $('#aiPreset').value, p = PRESETS[preset], key = $('#aiKey').value
+  const payload = preset === 'claude'
+    ? { anthropicKey: key }
+    : { openaiKey: key, openaiBaseUrl: p.url, openaiModel: $('#aiModel').value || p.model }
+  $('#saveAi').disabled = true; show('Working...', true, '#r-anthropic')
+  try {
+    await api('/api/settings', payload); $('#aiKey').value = ''
+    show((await api('/api/test', { which: 'anthropic' })).message, true, '#r-anthropic')
+  } catch (e) { show(e.message, false, '#r-anthropic') }
+  $('#saveAi').disabled = false; refresh()
+}
+paintPreset()
 setTab(tab); refresh(); setInterval(refresh, 3000)
 </script>
 </body>
