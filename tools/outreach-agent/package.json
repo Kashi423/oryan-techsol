@@ -1,0 +1,17 @@
+{
+  "name": "oryan-outreach-agent",
+  "private": true,
+  "type": "module",
+  "description": "Finds local businesses that could use a website/app and sends them guarded, personalised outreach emails.",
+  "scripts": {
+    "agent": "node src/cli.js",
+    "test": "node --test --disable-warning=ExperimentalWarning test/*.test.js"
+  },
+  "engines": { "node": ">=22.5" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.40.0",
+    "imapflow": "^1.0.164",
+    "mailparser": "^3.7.1",
+    "nodemailer": "^6.9.16"
+  }
+}
