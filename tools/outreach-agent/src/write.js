@@ -9,6 +9,7 @@ Rules:
 - Write as one human, sign off as "${config.signOffName || config.fromName}" with no title lines (a footer is appended automatically).
 - Use ONLY the facts supplied about the business. Never invent numbers, awards, competitors, traffic, revenue or things you "noticed" that are not in the facts.
 - At most one specific observation, phrased kindly and as something that could be improved, not as an insult.
+- Describe observations only as what you could see ("I couldn't spot an online booking option on your homepage"), never as a certainty about their business ("patients cannot book online").
 - One clear, low-pressure call to action (e.g. "Worth a quick 15-minute chat?").
 - No hype, no emojis, no ALL CAPS, no "I hope this email finds you well", no fake urgency, no "Re:" or "Fwd:" subjects.
 - Do not claim a prior relationship or that they contacted us.
@@ -44,19 +45,34 @@ function openaiClient() {
     messages: {
       create: async ({ system, messages, max_tokens }) => {
         const isOpenAI = config.openaiBaseUrl === 'https://api.openai.com/v1'
-        const res = await fetch(`${config.openaiBaseUrl}/chat/completions`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.openaiKey}` },
-          body: JSON.stringify({
-            model: config.openaiModel,
-            // api.openai.com wants the newer field name; compatible services still use max_tokens.
-            [isOpenAI ? 'max_completion_tokens' : 'max_tokens']: max_tokens,
-            messages: [{ role: 'system', content: system }, ...messages],
-          }),
-        })
-        if (!res.ok) throw new Error(`AI service ${res.status}: ${(await res.text()).slice(0, 200)}`)
-        const j = await res.json()
-        return { content: [{ type: 'text', text: j.choices?.[0]?.message?.content ?? '' }] }
+        // "Thinking" models spend part of the budget on reasoning, so leave generous headroom.
+        const budget = Math.max(max_tokens, 2048)
+        let lastErr
+        // Main model first (2 tries), then each fallback model if the service is overloaded.
+        for (const model of [config.openaiModel, ...config.openaiFallbackModels]) {
+          for (let attempt = 0; attempt < 2; attempt++) {
+            if (attempt) await new Promise((r) => setTimeout(r, 2500))
+            const res = await fetch(`${config.openaiBaseUrl}/chat/completions`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.openaiKey}` },
+              body: JSON.stringify({
+                model,
+                // api.openai.com wants the newer field name; compatible services still use max_tokens.
+                [isOpenAI ? 'max_completion_tokens' : 'max_tokens']: budget,
+                messages: [{ role: 'system', content: system }, ...messages],
+              }),
+            })
+            if (!res.ok) {
+              lastErr = new Error(`AI service ${res.status}: ${(await res.text()).slice(0, 200)}`)
+              if ([429, 500, 502, 503, 504].includes(res.status)) continue // busy: retry, then next model
+              throw lastErr
+            }
+            const text = (await res.json()).choices?.[0]?.message?.content ?? ''
+            if (!text.trim()) { lastErr = new Error('AI service returned an empty reply'); continue }
+            return { content: [{ type: 'text', text }] }
+          }
+        }
+        throw lastErr
       },
     },
   }

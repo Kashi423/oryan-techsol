@@ -286,7 +286,7 @@ $('#advance').onclick = async () => { await api('/api/demo/advance', {}); alert(
 $('#pause').onclick = async () => { await api(S.paused ? '/api/resume' : '/api/pause', {}); refresh() }
 
 const PRESETS = {
-  gemini: { url: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-2.5-flash', link: 'https://aistudio.google.com/apikey' },
+  gemini: { url: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-3.1-flash-lite', link: 'https://aistudio.google.com/apikey' },
   groq: { url: 'https://api.groq.com/openai/v1', model: 'llama-3.3-70b-versatile', link: 'https://console.groq.com/keys' },
   openai: { url: 'https://api.openai.com/v1', model: 'gpt-4o-mini', link: 'https://platform.openai.com/api-keys' },
   claude: { link: 'https://console.anthropic.com/settings/keys' },

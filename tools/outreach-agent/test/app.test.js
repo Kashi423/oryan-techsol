@@ -65,8 +65,9 @@ test('web app serves UI and state, blocks foreign hosts', async () => {
 
 test('OpenAI writer works through the same draft path and is chosen when only that key is set', async () => {
   const { draftEmail, aiProvider } = await import('../src/write.js')
-  const saved = { a: config.anthropicKey, o: config.openaiKey }
+  const saved = { a: config.anthropicKey, o: config.openaiKey, u: config.openaiBaseUrl, m: config.openaiModel, f: config.openaiFallbackModels }
   const realFetch = globalThis.fetch
+  config.openaiBaseUrl = 'https://api.openai.com/v1'; config.openaiModel = 'gpt-4o-mini'; config.openaiFallbackModels = []
   let seen
   globalThis.fetch = async (url, opts) => {
     seen = { url, body: JSON.parse(opts.body), auth: opts.headers.Authorization }
@@ -88,7 +89,7 @@ test('OpenAI writer works through the same draft path and is chosen when only th
     assert.match(t.body, /15-minute call/)
   } finally {
     globalThis.fetch = realFetch
-    config.anthropicKey = saved.a; config.openaiKey = saved.o
+    Object.assign(config, { anthropicKey: saved.a, openaiKey: saved.o, openaiBaseUrl: saved.u, openaiModel: saved.m, openaiFallbackModels: saved.f })
   }
 })
 
@@ -103,10 +104,10 @@ test('free OpenAI-compatible services (Gemini/Groq) use their own base URL and m
   }
   try {
     config.anthropicKey = ''; config.openaiKey = 'free-key'
-    config.openaiBaseUrl = 'https://generativelanguage.googleapis.com/v1beta/openai'; config.openaiModel = 'gemini-2.5-flash'
+    config.openaiBaseUrl = 'https://generativelanguage.googleapis.com/v1beta/openai'; config.openaiModel = 'gemini-3.1-flash-lite'
     await draftEmail({ name: 'Acme', observations: '[]' })
     assert.equal(seen.url, 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions')
-    assert.equal(seen.body.model, 'gemini-2.5-flash')
+    assert.equal(seen.body.model, 'gemini-3.1-flash-lite')
     assert.ok('max_tokens' in seen.body && !('max_completion_tokens' in seen.body))
   } finally {
     globalThis.fetch = realFetch

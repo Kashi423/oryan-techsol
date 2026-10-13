@@ -23,6 +23,8 @@ export const config = {
   // Optional alternative writer: an OpenAI API key (not a ChatGPT subscription login).
   openaiKey: process.env.OPENAI_API_KEY ?? '',
   openaiModel: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+  // Tried in order if the main model is overloaded.
+  openaiFallbackModels: (process.env.OPENAI_FALLBACK_MODELS ?? '').split(',').map((s) => s.trim()).filter(Boolean),
   // Any OpenAI-compatible service works here (Gemini, Groq, OpenRouter, local Ollama...).
   openaiBaseUrl: (process.env.OPENAI_BASE_URL ?? 'https://api.openai.com/v1').replace(/\/+$/, ''),
   model: process.env.OUTREACH_MODEL ?? 'claude-sonnet-5-5',
