@@ -123,5 +123,11 @@ paste the same link everywhere.
 - /solutions/ai-chatbot-for-business
 - /solutions/business-automation-services
 - /solutions/mobile-app-development-for-business
+- /solutions/restaurant-ordering-website
+- /solutions/salon-spa-booking-website
+- /solutions/real-estate-website-development
+- /solutions/retail-pos-and-inventory-software
+- /solutions/saas-mvp-development
+- /solutions/website-redesign-for-small-business
 
 Add another by adding one object to `src/data/solutions.js`.

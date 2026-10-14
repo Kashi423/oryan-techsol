@@ -337,6 +337,206 @@ export const solutions = [
       },
     ],
   },
+  {
+    slug: 'restaurant-ordering-website',
+    title: 'Restaurant websites with online ordering and reservations',
+    seoTitle: 'Restaurant Website and Online Ordering Development',
+    description:
+      'Websites for restaurants and cafes: menu, online ordering, table reservations and an admin to update it yourself. Free consultation.',
+    eyebrow: 'Restaurant website and ordering',
+    intro:
+      'Hungry customers decide quickly. We build a restaurant website that shows your menu clearly and lets people order or book a table in a few taps.',
+    modules: [
+      { title: 'Menu that is easy to update', text: 'Change dishes, prices and availability yourself.' },
+      { title: 'Online ordering', text: 'Pickup or delivery orders taken directly on your site.' },
+      { title: 'Table reservations', text: 'Guests book a table without phoning.' },
+      { title: 'Mobile-first design', text: 'Built for the phone most visitors will use.' },
+      { title: 'Order notifications', text: 'Your team is told when a new order arrives.' },
+    ],
+    audience: [
+      'Restaurants and cafes relying on phone calls or delivery apps',
+      'Owners who want direct orders on their own site',
+      'New venues that need a menu site that looks professional',
+    ],
+    faqs: [
+      {
+        question: 'Can I update the menu myself?',
+        answer: 'Yes. The site comes with an admin where you edit the menu, prices and content.',
+      },
+      {
+        question: 'Can customers order and book from the same site?',
+        answer: 'Yes. Online ordering and table reservations can both be part of it.',
+      },
+      {
+        question: 'How do we get started?',
+        answer: 'Book a free consultation. Tell us how you take orders today and we outline the site.',
+      },
+    ],
+  },
+  {
+    slug: 'salon-spa-booking-website',
+    title: 'Salon and spa websites with online booking',
+    seoTitle: 'Salon and Spa Booking Website Development',
+    description:
+      'Websites for salons, spas and barbers: services and staff pages, online appointment booking and reminders. Free consultation.',
+    eyebrow: 'Salon and spa booking website',
+    intro:
+      'Clients book when it suits them, often late in the evening. We build a salon website that shows your services and takes bookings around the clock.',
+    modules: [
+      { title: 'Services and staff', text: 'Show what you offer and who offers it.' },
+      { title: 'Online booking', text: 'Clients pick a service and a time themselves.' },
+      { title: 'Reminders', text: 'Appointment reminders sent automatically.' },
+      { title: 'Photo gallery', text: 'Show your work with a clean gallery.' },
+      { title: 'Easy for your team', text: 'Manage bookings and content without technical help.' },
+    ],
+    audience: [
+      'Salons, barbers and spas booking by phone or messages',
+      'Independent stylists and therapists',
+      'Owners who want fewer no-shows and less admin',
+    ],
+    faqs: [
+      {
+        question: 'Can clients book without calling?',
+        answer: 'Yes. Online booking lets them choose a service and time themselves.',
+      },
+      {
+        question: 'How do we get started?',
+        answer: 'Book a free consultation. We talk through your services and how you take bookings.',
+      },
+    ],
+  },
+  {
+    slug: 'real-estate-website-development',
+    title: 'Real estate websites and property listing portals',
+    seoTitle: 'Real Estate Website Development',
+    description:
+      'Websites and listing portals for agents and agencies: property listings, search and filters, enquiry forms and an admin. Free consultation.',
+    eyebrow: 'Real estate website',
+    intro:
+      'Buyers and renters search before they call. We build property sites that make listings easy to browse and turn visits into enquiries.',
+    modules: [
+      { title: 'Property listings', text: 'Listings with photos, details and location.' },
+      { title: 'Search and filters', text: 'Visitors narrow down by area, type and budget.' },
+      { title: 'Enquiry forms', text: 'Interested visitors reach you straight from a listing.' },
+      { title: 'Admin for your team', text: 'Add and update properties without developer help.' },
+      { title: 'Agent profiles', text: 'Introduce the people behind the listings.' },
+    ],
+    audience: [
+      'Independent agents and small agencies',
+      'Developers marketing new projects',
+      'Agencies replacing a generic listing template',
+    ],
+    faqs: [
+      {
+        question: 'Can my team add listings themselves?',
+        answer: 'Yes. An admin lets your team add and edit listings.',
+      },
+      {
+        question: 'How do we get started?',
+        answer: 'Book a free consultation. We learn how you list and sell, and outline the site.',
+      },
+    ],
+  },
+  {
+    slug: 'retail-pos-and-inventory-software',
+    title: 'Point-of-sale and inventory software for shops',
+    seoTitle: 'Retail POS and Inventory Software Development',
+    description:
+      'Custom POS and inventory software for shops: counter billing, stock tracking, suppliers and purchasing, and sales reports. Web and desktop. Free consultation.',
+    eyebrow: 'Retail POS and inventory',
+    intro:
+      'Knowing what you sold, what is left and what it earned should not take a spreadsheet. We build a POS and inventory system shaped around how your shop runs.',
+    project: 'pharmacy-pos-system',
+    modules: [
+      { title: 'Billing at the counter', text: 'Quick billing for walk-in customers.' },
+      { title: 'Stock tracking', text: 'See what is on the shelf and what needs reordering.' },
+      { title: 'Suppliers and purchasing', text: 'Suppliers and purchases together with stock.' },
+      { title: 'Sales and profit reports', text: 'Know what sells and what it earns.' },
+    ],
+    audience: [
+      'Independent shops and small chains',
+      'Businesses outgrowing paper registers and spreadsheets',
+      'Owners who want web and desktop access',
+    ],
+    faqs: [
+      {
+        question: 'Have you built a POS before?',
+        answer: 'Yes. We built a custom POS for a pharmacy, covering billing, stock and expiry tracking, suppliers and purchasing, and sales and profit reports. It runs on web and desktop.',
+      },
+      {
+        question: 'How do we get started?',
+        answer: 'Book a free consultation. We talk through how your shop runs and outline the system.',
+      },
+    ],
+  },
+  {
+    slug: 'saas-mvp-development',
+    title: 'SaaS MVP development: from idea to first users',
+    seoTitle: 'SaaS MVP Development',
+    description:
+      'Build the first version of your SaaS product: accounts, core features, admin and a path to grow. Free consultation to shape your MVP.',
+    eyebrow: 'SaaS MVP development',
+    intro:
+      'The goal of an MVP is to learn from real users quickly. We help you decide what the first version needs, and build it so it can grow.',
+    modules: [
+      { title: 'Scoping the first version', text: 'Agree what the MVP must do, and what can wait.' },
+      { title: 'Accounts and access', text: 'Sign-up, sign-in and roles from the start.' },
+      { title: 'Core features', text: 'The one workflow your users come for, built well.' },
+      { title: 'Admin and data', text: 'A back office to see and manage what is happening.' },
+      { title: 'Built to grow', text: 'A foundation you can extend after launch.' },
+    ],
+    audience: [
+      'Founders with a product idea and no technical team',
+      'Businesses turning an internal tool into a product',
+      'Teams that want to validate before investing more',
+    ],
+    faqs: [
+      {
+        question: 'Can you help me decide what to build first?',
+        answer: 'Yes. The free consultation is the place to shape the idea and agree what the first version should include.',
+      },
+      {
+        question: 'Will it be able to grow after launch?',
+        answer: 'We build with growth in mind, so features can be added after you learn from users.',
+      },
+      {
+        question: 'How do we get started?',
+        answer: 'Book a free consultation and describe the problem your product solves.',
+      },
+    ],
+  },
+  {
+    slug: 'website-redesign-for-small-business',
+    title: 'Website redesign for businesses with an outdated site',
+    seoTitle: 'Website Redesign for Small Business',
+    description:
+      'Redesign an outdated website: a clearer layout, faster pages, mobile-friendly design and a way for visitors to enquire or book. Free consultation.',
+    eyebrow: 'Website redesign',
+    intro:
+      'If your site looks dated, loads slowly or hides how to contact you, visitors leave. We redesign it so it is clear, fast and works on a phone.',
+    modules: [
+      { title: 'Clear structure', text: 'Visitors can see what you do and how to reach you.' },
+      { title: 'Faster pages', text: 'Pages that load quickly on phones and laptops.' },
+      { title: 'Mobile-friendly', text: 'A layout that works on every screen size.' },
+      { title: 'Enquiry or booking', text: 'A visible way for visitors to contact or book you.' },
+      { title: 'Easy updates', text: 'Change text and images without a developer.' },
+    ],
+    audience: [
+      'Local businesses with a site from years ago',
+      'Owners whose site does not bring enquiries',
+      'Businesses that want a contact form or booking on the site',
+    ],
+    faqs: [
+      {
+        question: 'Do you review the current website first?',
+        answer: 'Yes. We look at your current site in the free consultation and point out what we would improve.',
+      },
+      {
+        question: 'How do we get started?',
+        answer: 'Book a free consultation and share your current website address.',
+      },
+    ],
+  },
 ]
 
 export const getSolution = (slug) => solutions.find((s) => s.slug === slug)
