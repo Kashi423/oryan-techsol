@@ -53,6 +53,7 @@ import {
   SectionHeading,
   TypeCard,
 } from '@/components/ui'
+import SolutionsShowcase from '@/components/SolutionsShowcase'
 import { primaryCta } from '@/config/site'
 import { hasSamples } from '@/data/caseStudies'
 import PostCard from '@/components/blog/PostCard'
@@ -925,6 +926,7 @@ export default function Home() {
       <WhySection />
       <LatestPostsSection />
       <FinalCtaSection />
+      <SolutionsShowcase />
     </>
   )
 }
