@@ -1,4 +1,24 @@
-import { Mail, MapPin, Phone } from 'lucide-react'
+import {
+  ArrowUpRight,
+  Bot,
+  Building2,
+  CalendarCheck,
+  GraduationCap,
+  Hotel,
+  LayoutTemplate,
+  Mail,
+  MapPin,
+  Phone,
+  Pill,
+  Rocket,
+  Scissors,
+  ShoppingCart,
+  Smartphone,
+  Stethoscope,
+  Store,
+  UtensilsCrossed,
+  Workflow,
+} from 'lucide-react'
 import { Link } from 'react-router'
 import Logo from '@/components/brand/Logo'
 import { Button, Container } from '@/components/ui'
@@ -17,6 +37,25 @@ const socialPaths = {
     'M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465a4.9 4.9 0 0 1 1.772 1.153 4.9 4.9 0 0 1 1.153 1.772c.248.637.415 1.363.465 2.428.05 1.066.06 1.405.06 4.122s-.01 3.056-.06 4.122c-.05 1.065-.217 1.79-.465 2.428a4.9 4.9 0 0 1-1.153 1.772 4.9 4.9 0 0 1-1.772 1.153c-.637.248-1.363.415-2.428.465-1.066.05-1.405.06-4.122.06s-3.056-.01-4.122-.06c-1.065-.05-1.79-.217-2.428-.465a4.9 4.9 0 0 1-1.772-1.153 4.9 4.9 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.01 15.056 2 14.717 2 12s.01-3.056.06-4.122c.05-1.065.217-1.79.465-2.428A4.9 4.9 0 0 1 3.678 3.678 4.9 4.9 0 0 1 5.45 2.525c.637-.248 1.363-.415 2.428-.465C8.944 2.01 9.283 2 12 2zm0 1.802c-2.67 0-2.986.01-4.04.059-.976.045-1.505.207-1.858.344-.467.182-.8.399-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.858-.05 1.054-.059 1.37-.059 4.04s.01 2.986.059 4.04c.045.976.207 1.505.344 1.858.182.467.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.858.344 1.054.05 1.37.059 4.04.059s2.986-.01 4.04-.059c.976-.045 1.505-.207 1.858-.344.467-.182.8-.399 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.858.05-1.054.059-1.37.059-4.04s-.01-2.986-.059-4.04c-.045-.976-.207-1.505-.344-1.858a3.1 3.1 0 0 0-.748-1.15 3.1 3.1 0 0 0-1.15-.748c-.353-.137-.882-.3-1.858-.344-1.054-.05-1.37-.059-4.04-.059zm0 4.595a5.603 5.603 0 1 1 0 11.206 5.603 5.603 0 0 1 0-11.206zm0 1.802a3.801 3.801 0 1 0 0 7.602 3.801 3.801 0 0 0 0-7.602zm5.883-1.997a1.31 1.31 0 1 1-2.62 0 1.31 1.31 0 0 1 2.62 0z',
   youtube:
     'M23.498 6.186a2.99 2.99 0 0 0-2.104-2.117C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.394.569A2.99 2.99 0 0 0 .502 6.186 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .502 5.814 2.99 2.99 0 0 0 2.104 2.117C4.495 20.5 12 20.5 12 20.5s7.505 0 9.394-.569a2.99 2.99 0 0 0 2.104-2.117A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.502-5.814zM9.75 15.568V8.432L15.818 12 9.75 15.568z',
+}
+
+// One icon per solution page (keyed by slug); pages without one fall back to a generic mark.
+const solutionIcons = {
+  'pharmacy-pos-software': Pill,
+  'school-management-software': GraduationCap,
+  'clinic-management-software': Stethoscope,
+  'hotel-booking-website': Hotel,
+  'ecommerce-store-development': ShoppingCart,
+  'ai-chatbot-for-business': Bot,
+  'business-automation-services': Workflow,
+  'mobile-app-development-for-business': Smartphone,
+  'appointment-booking-system': CalendarCheck,
+  'restaurant-ordering-website': UtensilsCrossed,
+  'salon-spa-booking-website': Scissors,
+  'real-estate-website-development': Building2,
+  'retail-pos-and-inventory-software': Store,
+  'saas-mvp-development': Rocket,
+  'website-redesign-for-small-business': LayoutTemplate,
 }
 
 function SocialIcon({ icon, className }) {
@@ -133,19 +172,41 @@ export default function Footer() {
           </div>
         </div>
 
-        <nav aria-label="Solutions" className="mt-8 border-t border-line pt-5 sm:mt-12 sm:pt-6">
-          <h2 className="text-xs tracking-[0.2em] text-fg">Solutions</h2>
-          <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:mt-4">
-            {solutions.map((solution) => (
-              <li key={solution.slug}>
-                <Link
-                  to={`/solutions/${solution.slug}`}
-                  className="rounded-sm text-sm text-fg-muted transition-colors hover:text-fg"
-                >
-                  {solution.eyebrow}
-                </Link>
-              </li>
-            ))}
+        <nav aria-label="Solutions" className="mt-8 border-t border-line pt-6 sm:mt-12 sm:pt-8">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h2 className="text-xs tracking-[0.2em] text-fg">Solutions</h2>
+              <p className="mt-2 text-sm text-fg-muted">Systems and sites we build for specific industries.</p>
+            </div>
+            <Link
+              to="/portfolio"
+              className="inline-flex items-center gap-1 font-display text-sm font-semibold text-highlight hover:underline"
+            >
+              See our work
+              <ArrowUpRight className="size-4" aria-hidden="true" />
+            </Link>
+          </div>
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {solutions.map((solution) => {
+              const Icon = solutionIcons[solution.slug] ?? LayoutTemplate
+              return (
+                <li key={solution.slug}>
+                  <Link
+                    to={`/solutions/${solution.slug}`}
+                    className="group flex items-center gap-3 rounded-xl border border-line bg-surface-raised p-3 transition-colors duration-200 hover:border-highlight/50 hover:bg-highlight/5"
+                  >
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white">
+                      <Icon className="size-5" aria-hidden="true" />
+                    </span>
+                    <span className="min-w-0 flex-1 text-sm font-semibold text-fg">{solution.eyebrow}</span>
+                    <ArrowUpRight
+                      className="size-4 shrink-0 text-fg-subtle transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-highlight"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </nav>
 
