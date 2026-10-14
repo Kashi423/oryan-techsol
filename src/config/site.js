@@ -122,7 +122,7 @@ export const transparentHeaderRoutes = [
 ]
 
 // Dynamic route families whose every page opens on a dark hero (e.g. /blog/<slug>).
-export const transparentHeaderPrefixes = ['/blog/']
+export const transparentHeaderPrefixes = ['/blog/', '/solutions/']
 
 export const footerNav = [
   {

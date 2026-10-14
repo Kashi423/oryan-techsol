@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url'
 import { posts } from '../src/data/posts.js'
 import { caseStudies, mergeProjects } from '../src/data/caseStudies.js'
 import snapshot from '../src/data/cms-snapshot.js'
+import { solutions } from '../src/data/solutions.js'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url)) + '/..'
 const distDir = path.join(rootDir, 'dist')
@@ -48,6 +49,7 @@ const routes = [
   '/api-integrations',
   '/portfolio',
   ...projectRoutes(),
+  ...solutions.map((s) => `/solutions/${s.slug}`),
   '/about',
   '/faq',
   '/blog',

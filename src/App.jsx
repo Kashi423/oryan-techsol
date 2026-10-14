@@ -42,7 +42,7 @@ const routePages = {
 export function preloadRoute(pathname) {
   const path = pathname.replace(/\/+$/, '') || '/'
   if (path === '/' || path.startsWith('/admin')) return Promise.resolve()
-  const name = routePages[path] ?? (/^\/blog\/[^/]+$/.test(path) ? 'BlogPost' : /^\/portfolio\/[^/]+$/.test(path) ? 'CaseStudyDetail' : 'NotFound')
+  const name = routePages[path] ?? (/^\/blog\/[^/]+$/.test(path) ? 'BlogPost' : /^\/portfolio\/[^/]+$/.test(path) ? 'CaseStudyDetail' : /^\/solutions\/[^/]+$/.test(path) ? 'Solution' : 'NotFound')
   const slug = name === 'BlogPost' ? path.split('/')[2] : null
   return Promise.all([pageLoaders.get(name)().catch(() => {}), slug ? loadPostBody(slug) : null]).then(() => {})
 }
@@ -59,6 +59,7 @@ const BusinessAutomation = page('BusinessAutomation', () => import('@/pages/Busi
 const Ecommerce = page('Ecommerce', () => import('@/pages/Ecommerce'))
 const SaasDevelopment = page('SaasDevelopment', () => import('@/pages/SaasDevelopment'))
 const ApiIntegrations = page('ApiIntegrations', () => import('@/pages/ApiIntegrations'))
+const Solution = page('Solution', () => import('@/pages/Solution'))
 const Portfolio = page('Portfolio', () => import('@/pages/Portfolio'))
 const About = page('About', () => import('@/pages/About'))
 const Faq = page('Faq', () => import('@/pages/Faq'))
@@ -143,6 +144,7 @@ export default function App() {
           <Route path="services/api-integrations" element={<Navigate to="/api-integrations" replace />} />
           <Route path="portfolio" element={<Portfolio />} />
           <Route path="portfolio/:slug" element={<CaseStudyDetail />} />
+          <Route path="solutions/:slug" element={<Solution />} />
           {Styleguide && <Route path="styleguide" element={<Styleguide />} />}
           <Route path="*" element={<NotFound />} />
         </Route>

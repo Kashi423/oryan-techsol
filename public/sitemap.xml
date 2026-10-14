@@ -34,6 +34,30 @@
     <loc>https://oryantechsol.com/portfolio/aurex7</loc>
   </url>
   <url>
+    <loc>https://oryantechsol.com/portfolio/skylark</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/portfolio/school-crm-portal</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/portfolio/pharmacy-pos-system</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/portfolio/clinic-appointment-records-portal</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/solutions/pharmacy-pos-software</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/solutions/school-management-software</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/solutions/clinic-management-software</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/solutions/hotel-booking-website</loc>
+  </url>
+  <url>
     <loc>https://oryantechsol.com/about</loc>
   </url>
   <url>
@@ -41,6 +65,48 @@
   </url>
   <url>
     <loc>https://oryantechsol.com/blog</loc>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/core-web-vitals-explained</loc>
+    <lastmod>2026-10-14</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/core-web-vitals-explained.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/how-to-validate-an-app-idea</loc>
+    <lastmod>2026-10-13</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/how-to-validate-an-app-idea.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/zapier-make-or-custom-automation</loc>
+    <lastmod>2026-10-12</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/zapier-make-or-custom-automation.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/train-a-chatbot-on-your-business-data</loc>
+    <lastmod>2026-10-11</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/train-a-chatbot-on-your-business-data.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/how-much-does-a-business-website-cost</loc>
+    <lastmod>2026-10-10</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/how-much-does-a-business-website-cost.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://oryantechsol.com/blog/mobile-app-development-process</loc>
+    <lastmod>2026-10-09</lastmod>
+    <image:image>
+      <image:loc>https://oryantechsol.com/blog/covers/mobile-app-development-process.webp</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://oryantechsol.com/blog/react-native-vs-flutter-vs-native</loc>
