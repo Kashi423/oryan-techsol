@@ -65,12 +65,12 @@ function SocialRow() {
 function ContactLine({ icon: Icon, value, href }) {
   const isPlaceholder = value.startsWith('[')
   return (
-    <li className="flex items-start gap-2.5 text-sm text-fg-muted">
+    <li className="flex min-w-0 items-start gap-2.5 text-sm text-fg-muted">
       <Icon className="mt-0.5 size-4 shrink-0 text-fg-subtle" aria-hidden="true" />
       {isPlaceholder ? (
         <span className="italic">{value}</span>
       ) : (
-        <a href={href} className="transition-colors hover:text-fg">
+        <a href={href} className="min-w-0 break-words transition-colors hover:text-fg">
           {value}
         </a>
       )}

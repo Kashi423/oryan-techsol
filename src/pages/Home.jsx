@@ -757,7 +757,8 @@ function WhySection() {
 
       <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {differentiators.map((item, index) => (
-          <li key={item.title}>
+          // On phones show the first four reasons only, to keep the page short.
+          <li key={item.title} className={index >= 4 ? "hidden sm:block" : undefined}>
             <Reveal className="h-full" delay={index * 0.05}>
               <TypeCard icon={item.icon} title={item.title} description={item.description} />
             </Reveal>
