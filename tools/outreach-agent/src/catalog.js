@@ -101,6 +101,7 @@ export const serviceByKey = (key) => getCatalog().find((s) => s.key === key) ?? 
 
 /** The starting price you set for the service this lead would be offered, or null. */
 export function startingPrice(lead) {
+  if (!config.quotePrices) return null // default: no price in emails, offer a free consultation
   const key = lead?.offer ? OFFERS[lead.offer] : null
   return key ? serviceByKey(key)?.from ?? null : null
 }

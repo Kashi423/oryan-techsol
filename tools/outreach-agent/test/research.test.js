@@ -133,7 +133,7 @@ test('first email follows the research shape: short, specific, interest question
     assert.ok(words >= 25 && words <= 100, `words: ${words}`)
     assert.ok(d.subject.length <= 40, d.subject)
     assert.match(d.subject, /Brightside Dental/)
-    assert.match(d.body, /\?\s+Rai$|\?\s*\n\nRai$/)
+    assert.match(d.body, /\?\s*\n\nBest regards,\nRai$/)
     assert.ok(!/\b(call|meeting|schedule|calendar)\b|\d+[- ]minute (call|chat)/i.test(d.body), 'no call ask in first email')
     assert.ok(!/footer still says/.test(d.body), 'one observation only')
     const q = localReview(d, lead)
@@ -152,6 +152,7 @@ test('quality gate: generic openers and call-asks in a first email are flagged',
 test('guard: invented numbers/years and absolute claims are rejected, supplied price and facts are fine', async () => {
   const { strayNumbers, unsupportedClaim, draftEmail } = await import('../src/write.js')
   useMemoryCatalog({ web: 499 })
+  config.quotePrices = true
   const lead = { id: 1, name: 'Acme Dental', rating: 4.7, offer: 'online booking or enquiry system', address: '12 Main St, Austin, TX 78701', observations: '[]', audit: JSON.stringify({ bullets: ['The footer still says \u00a9 2017.'] }) }
   assert.deepEqual(strayNumbers('from $499, rated 4.7, still says 2017, Main St 12', lead), [])
   assert.deepEqual(strayNumbers('Update the footer to 2024 and grow 30%', lead).sort(), ['2024', '30'])
@@ -172,6 +173,7 @@ test('guard: invented numbers/years and absolute claims are rejected, supplied p
 test('quality gate: supplied price and "feel free" are not false alarms; break-up note needs no question', async () => {
   const { localReview } = await import('../src/quality.js')
   useMemoryCatalog({ web: 499 })
+  config.quotePrices = true
   const lead = { name: 'Acme Dental', offer: 'online booking or enquiry system', observations: '[]' }
   const ok = localReview({ subject: 'Acme Dental booking', body: "I couldn't spot an online booking option on the Acme Dental homepage. We build booking systems from $499. Want me to send the quick fix?" }, lead)
   assert.deepEqual(ok.issues, [])

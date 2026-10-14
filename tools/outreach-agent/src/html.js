@@ -38,10 +38,13 @@ export function renderEmailHtml({ subject = '', body = '', replyTo = '', signOff
   const reply = replyTo || config.gmailUser || config.replyTo
   const preheader = String(body).replace(/\s+/g, ' ').trim().slice(0, 110)
   const unsub = `mailto:${reply}?subject=${encodeURIComponent('Unsubscribe')}`
-  const cta = `mailto:${reply}?subject=${encodeURIComponent('Re: ' + subject)}`
+  // The button opens your contact page, where they can book the free consultation.
+  const cta = `${site}/contact`
+  const word = `<span style="font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:700;letter-spacing:2px;color:#ffffff;">ORYAN</span><span style="font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:300;letter-spacing:2px;color:#5be4f4;"> TECHSOL</span>`
+  // Emblem next to the wordmark when a logo address is set; if the image is blocked the name still shows.
   const logo = config.logoUrl
-    ? `<img src="${esc(config.logoUrl)}" alt="Oryan Techsol" height="32" style="display:block;border:0;height:32px;">`
-    : `<span style="font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:700;letter-spacing:2px;color:#ffffff;">ORYAN</span><span style="font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:300;letter-spacing:2px;color:#5be4f4;"> TECHSOL</span>`
+    ? `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="padding-right:12px;"><img src="${esc(config.logoUrl)}" alt="" width="38" height="38" style="display:block;border:0;width:38px;height:38px;"></td><td>${word}</td></tr></table>`
+    : word
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(subject)}</title></head>
 <body style="margin:0;padding:0;background:#f1f5f9;">
@@ -55,7 +58,8 @@ export function renderEmailHtml({ subject = '', body = '', replyTo = '', signOff
 ${blocks(body, name)}
     </td></tr>
     <tr><td style="padding:4px 28px 24px 28px;">
-      <a href="${esc(cta)}" style="display:inline-block;background:${CYAN};color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding:11px 20px;border-radius:6px;">Reply to book a quick call</a>
+      <a href="${esc(cta)}" style="display:inline-block;background:${CYAN};color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:6px;">Book a free consultation</a>
+      <span style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${MUTED};margin-left:10px;">or just reply to this email</span>
     </td></tr>
     <tr><td style="padding:0 28px 26px 28px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:${INK};">
       <table role="presentation" cellpadding="0" cellspacing="0" style="border-top:1px solid #e2e8f0;padding-top:14px;width:100%;"><tr><td style="padding-top:14px;">

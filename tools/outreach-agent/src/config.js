@@ -52,6 +52,8 @@ export const config = {
   followUpDays: (process.env.FOLLOWUP_DAYS ?? '3,7,14').split(',').map(Number),
   // Across ALL mailboxes: they share one domain, so the domain-wide total is what mailbox providers see.
   totalDailyCap: num(process.env.TOTAL_DAILY_CAP, 40),
+  // Prices are NOT quoted in emails unless you switch this on (QUOTE_PRICES=1). Offer a free consultation instead.
+  quotePrices: process.env.QUOTE_PRICES === '1',
   warmup: process.env.WARMUP !== '0', // ramp the daily limit up gradually on a new sender
   warmupStart: num(process.env.WARMUP_START, 5), // emails per mailbox on its first day
   // Emails added per mailbox per day. Unset = the gentler default of +4 a week.

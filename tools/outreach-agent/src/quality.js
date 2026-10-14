@@ -3,7 +3,7 @@ import { config } from './config.js'
 import { aiProvider, getClient, unsupportedClaim, strayNumbers } from './write.js'
 
 const SPAM = [
-  [/(?<!feel )(?<!are you )\bfree\b/i, '"free"'], [/guarantee/i, '"guarantee"'], [/act now|buy now|order now/i, 'pushy call to action'],
+  [/(?<!feel )(?<!are you )\bfree\b(?!\s+consultation)/i, '"free"'], [/guarantee/i, '"guarantee"'], [/act now|buy now|order now/i, 'pushy call to action'],
   [/limited time|urgent|last chance|hurry/i, 'fake urgency'], [/click here/i, '"click here"'], [/risk[- ]free|no obligation/i, '"risk free"'],
   [/100%|\$\$+|!{2,}/, 'hype punctuation'], [/\bwinner\b|congratulations/i, 'prize language'],
 ]

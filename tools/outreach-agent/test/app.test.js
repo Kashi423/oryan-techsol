@@ -86,7 +86,7 @@ test('OpenAI writer works through the same draft path and is chosen when only th
     // no key at all: falls back to the built-in templates instead of failing
     const t = await draftEmail({ name: 'Acme', observations: '[]', website: 'https://acme.test' })
     assert.match(t.subject, /Acme/)
-    assert.match(t.body, /Want me to send|Would a short list|Worth me sending/)
+    assert.match(t.body, /free consultation/)
   } finally {
     globalThis.fetch = realFetch
     Object.assign(config, { anthropicKey: saved.a, openaiKey: saved.o, openaiBaseUrl: saved.u, openaiModel: saved.m, openaiFallbackModels: saved.f })
