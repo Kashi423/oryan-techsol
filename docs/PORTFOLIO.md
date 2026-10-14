@@ -33,11 +33,11 @@ Rules that keep the site honest:
 |---|---|---|
 | Aurex7 Trading Platform | aurex7.com | Spot and futures trading, Earn, daily AX7 mining with boost packages, ICO sale, 2FA and reviewed withdrawals, ledger and audit log. Next.js, PostgreSQL, Prisma |
 | Skylark Luxury Hotel Booking | skylark.com | Hotel search by destination, dates, guests and rooms; curated Members' List; destination pages; plan-a-trip; membership with VIP perks. Next.js |
-| School CRM Portal | private | Student, family and school administration in one portal |
-| Pharmacy POS System | private | Point-of-sale billing and everyday pharmacy operations |
-| Clinic Appointment & Records Portal | private | Appointment booking and patient record keeping |
+| School CRM Portal | private | Student and parent records, fees and invoices, attendance and results, admissions and messaging, staff salaries, inventory, biometric staff attendance, mobile app for homework, absence alerts and notifications. Web and Mobile |
+| Pharmacy POS System | private | Billing at the counter, stock and expiry tracking, suppliers and purchasing, sales and profit reports |
+| Clinic Appointment & Records Portal | private | Appointment scheduling, patient records and history, prescriptions and billing, reminders and reports, AI receptionist. Web |
 
-The Aurex7 and Skylark details come from what those two public sites show. The three private projects only say what you told me, so their pages are short until you send more.
+The Aurex7 and Skylark details come from what those two public sites show. The three private projects list exactly what you confirmed. Still missing: technology, the platform of the pharmacy system, how many users or branches, and go-live dates. Add them when you can; leave them out rather than guess.
 
 ## To make the three private projects stronger
 
