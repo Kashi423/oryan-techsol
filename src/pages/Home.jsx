@@ -468,7 +468,9 @@ function FeaturedAiCard() {
             </Link>
           </div>
 
-          <AiChatDemo />
+          <div className="hidden sm:block">
+            <AiChatDemo />
+          </div>
         </div>
       </Card>
     </Reveal>
@@ -490,12 +492,12 @@ function ServiceGridCard({ icon: Icon, title, description, to, number }) {
       <HoverAccentBar />
       <span
         aria-hidden="true"
-        className="absolute top-5 right-6 font-display text-4xl font-extrabold text-fg/[0.06] transition-colors duration-300 group-hover:text-highlight/10"
+        className="absolute top-5 right-6 hidden font-display text-4xl font-extrabold text-fg/[0.06] sm:block transition-colors duration-300 group-hover:text-highlight/10"
       >
         {number}
       </span>
 
-      <span className="relative mb-6 inline-flex size-12 items-center justify-center rounded-xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+      <span className="relative mb-3 inline-flex size-10 items-center justify-center rounded-xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110 sm:mb-6 sm:size-12">
         <Icon className="size-6" aria-hidden="true" />
       </span>
       <h3 className="relative text-xl">
@@ -503,10 +505,10 @@ function ServiceGridCard({ icon: Icon, title, description, to, number }) {
           {title}
         </Link>
       </h3>
-      <p className="relative mt-3 leading-relaxed text-fg-muted">{description}</p>
+      <p className="relative mt-2 line-clamp-2 leading-relaxed text-fg-muted sm:mt-3 sm:line-clamp-none">{description}</p>
       <span
         aria-hidden="true"
-        className="relative mt-auto inline-flex items-center gap-2 pt-6 font-display text-sm font-semibold text-highlight"
+        className="relative mt-auto hidden items-center gap-2 pt-6 font-display text-sm font-semibold text-highlight sm:inline-flex"
       >
         Explore
         <span className="inline-flex size-6 items-center justify-center rounded-full bg-highlight/10 transition-[background-color,transform] duration-200 group-hover:translate-x-1 group-hover:bg-highlight/20">
@@ -612,7 +614,7 @@ function AiSection() {
       />
 
       <Reveal delay={0.05}>
-        <div className="mt-16 flex flex-col items-stretch gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-0">
+        <div className="mt-16 hidden flex-col items-stretch gap-2 sm:flex sm:flex-row sm:items-start sm:justify-between sm:gap-0">
           {aiFlowSteps.map((step, index) => (
             <Fragment key={step.label}>
               <FlowStep icon={step.icon} label={step.label} index={index} total={aiFlowSteps.length} />
@@ -623,9 +625,9 @@ function AiSection() {
       </Reveal>
 
       <Reveal delay={0.1}>
-        <ul className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {aiCapabilities.map((capability) => (
-            <li key={capability.label}>
+        <ul className="mt-10 grid grid-cols-2 gap-3 sm:mt-16 sm:grid-cols-3 lg:grid-cols-5">
+          {aiCapabilities.map((capability, index) => (
+            <li key={capability.label} className={index >= 6 ? 'hidden sm:block' : undefined}>
               <CapabilityTile icon={capability.icon} label={capability.label} />
             </li>
           ))}
@@ -633,7 +635,7 @@ function AiSection() {
       </Reveal>
 
       <Reveal delay={0.15}>
-        <div className="mt-14 flex justify-center">
+        <div className="mt-10 flex justify-center sm:mt-14">
           <Button to={primaryCta.to} size="lg">
             Build My AI Solution
             <ArrowRight aria-hidden="true" />
@@ -666,7 +668,7 @@ function ProcessSection() {
       {/* No sm:gap on the row — a gap would shift the flex-1 columns' true centres away
           from the plain 1/(2n) math above, throwing off the line's alignment to the
           circles. Spacing between steps comes from each step's own padding instead. */}
-      <ol className="relative mt-16 flex flex-col gap-10 sm:flex-row sm:gap-0" style={{ '--line-inset': lineInset }}>
+      <ol className="relative mt-10 flex flex-col gap-6 sm:mt-16 sm:flex-row sm:gap-0 sm:gap-y-0" style={{ '--line-inset': lineInset }}>
         <div
           aria-hidden="true"
           className="absolute top-7 bottom-7 left-7 w-px bg-linear-to-b from-highlight/40 via-line-strong to-line-strong sm:bottom-auto sm:h-px sm:w-auto sm:inset-x-[var(--line-inset)] sm:bg-linear-to-r"
@@ -715,8 +717,8 @@ function PortfolioSection() {
       />
 
       <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {visible.map((project) => (
-          <li key={project.slug}>
+        {visible.map((project, index) => (
+          <li key={project.slug} className={index >= 2 ? 'hidden sm:block' : undefined}>
             <CaseStudyCard
               title={project.title}
               industry={project.industry}
@@ -757,8 +759,8 @@ function WhySection() {
 
       <ul className="mt-12 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {differentiators.map((item, index) => (
-          // On phones show the first four reasons only, to keep the page short.
-          <li key={item.title} className={index >= 4 ? "hidden sm:block" : undefined}>
+          // On phones show the first three reasons only, to keep the page short.
+          <li key={item.title} className={index >= 3 ? "hidden sm:block" : undefined}>
             <Reveal className="h-full" delay={index * 0.05}>
               <TypeCard icon={item.icon} title={item.title} description={item.description} />
             </Reveal>
@@ -877,7 +879,7 @@ export default function Home() {
             </Reveal>
           </div>
 
-          <Reveal delay={0.15} className="lg:pl-4">
+          <Reveal delay={0.15} className="hidden lg:block lg:pl-4">
             <HeroVisual />
           </Reveal>
         </div>
