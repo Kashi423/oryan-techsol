@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import Logo from '@/components/brand/Logo'
 import { Button, Container } from '@/components/ui'
 import { resetConsent } from '@/lib/consent'
+import { solutions } from '@/data/solutions'
 import { contactInfo, footerNav, primaryCta, siteConfig, socialLinks } from '@/config/site'
 
 // lucide-react ships no brand/social marks, so these are hand-drawn (same approach as the
@@ -131,6 +132,22 @@ export default function Footer() {
             </div>
           </div>
         </div>
+
+        <nav aria-label="Solutions" className="mt-8 border-t border-line pt-5 sm:mt-12 sm:pt-6">
+          <h2 className="text-xs tracking-[0.2em] text-fg">Solutions</h2>
+          <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:mt-4">
+            {solutions.map((solution) => (
+              <li key={solution.slug}>
+                <Link
+                  to={`/solutions/${solution.slug}`}
+                  className="rounded-sm text-sm text-fg-muted transition-colors hover:text-fg"
+                >
+                  {solution.eyebrow}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <p className="mt-8 border-t border-line pt-5 text-sm text-fg-subtle sm:mt-12 sm:pt-6">
           © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
