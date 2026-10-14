@@ -62,12 +62,20 @@ ${blocks(body, name)}
       <span style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${MUTED};margin-left:10px;">or just reply to this email</span>
     </td></tr>
     <tr><td style="padding:0 28px 26px 28px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:${INK};">
-      <table role="presentation" cellpadding="0" cellspacing="0" style="border-top:1px solid #e2e8f0;padding-top:14px;width:100%;"><tr><td style="padding-top:14px;">
-        <div style="font-weight:700;color:${NAVY};">${esc(name)}</div>
-        <div style="color:${MUTED};">Oryan Techsol &middot; Innovate &middot; Integrate &middot; Elevate</div>
-        <div style="margin-top:6px;font-size:12px;color:${MUTED};">${esc(servicesLine())}</div>
-        <div style="margin-top:6px;"><a href="${esc(site)}" style="color:${CYAN};text-decoration:none;">${esc(site.replace(/^https?:\/\//, ''))}</a></div>
-      </td></tr></table>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="border-top:1px solid #e2e8f0;width:100%;"><tr>
+        ${config.logoUrl ? `<td valign="top" style="padding:16px 16px 0 0;"><img src="${esc(config.logoUrl)}" alt="Oryan Techsol" width="56" height="56" style="display:block;border:0;width:56px;height:56px;"></td>` : ''}
+        <td valign="top" style="padding:16px 0 0 ${config.logoUrl ? '16px' : '0'};${config.logoUrl ? 'border-left:2px solid ' + CYAN + ';' : ''}">
+          <div style="font-size:16px;font-weight:700;color:${NAVY};">${esc(name)}</div>
+          <div style="color:${MUTED};font-size:13px;">Oryan Techsol &middot; Innovate &middot; Integrate &middot; Elevate</div>
+          <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:10px;">
+            ${[
+              ['&#9993;', `<a href="mailto:${esc(reply)}" style="color:${INK};text-decoration:none;">${esc(reply)}</a>`],
+              ['&#8599;', `<a href="${esc(site)}" style="color:${CYAN};text-decoration:none;">${esc(site.replace(/^https?:\/\//, ''))}</a>`],
+            ].map(([ic, v]) => `<tr><td style="padding:0 8px 6px 0;"><span style="display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:10px;background:${CYAN};color:#ffffff;font-size:12px;">${ic}</span></td><td style="padding:0 0 6px 0;font-size:13px;">${v}</td></tr>`).join('')}
+          </table>
+          <div style="margin-top:4px;font-size:12px;color:${MUTED};">${esc(servicesLine())}</div>
+        </td>
+      </tr></table>
     </td></tr>
     <tr><td style="background:#f8fafc;padding:16px 28px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:${MUTED};border-top:1px solid #e2e8f0;">
       ${esc(config.postalAddress)}<br>
