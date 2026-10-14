@@ -55,7 +55,7 @@ Follow-ups come out of the same numbers (days 3, 7 and 14 after the first email)
 4. **Review & send**: read the quality score and findings. Fix or reject anything under 80 or that you would not send yourself. Approve the rest.
 5. Leave the window open (or install the daily task, see below). Sending happens at the right local mornings by itself.
 
-Optional: double-click **install-daily-task.bat** once so Windows runs the cycle hourly on weekdays without the window open.
+Optional: double-click **install-daily-task.bat** once so Windows runs the cycle every 30 minutes without the window open.
 
 ## Part D. Weekly health check (5 minutes, Stats tab)
 

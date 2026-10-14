@@ -88,7 +88,7 @@ Paste either a **Claude API key** (console.anthropic.com) or an **OpenAI API key
 | **Reply handling** | Replies are read, labelled (interested / question / not interested / out of office), a suggested response is drafted for you to edit, and you get an email alert for hot leads. Nothing is sent until you click Send. |
 | **Pipeline** | New, Contacted, Replied, Meeting, Won, Lost, with notes and CSV export. A to-do strip shows what needs you today. |
 | **Warm-up ramp** | A new sender starts at 5 emails a day and gains 4 a day each week, never above your limit, and holds at 5 if 2+ recent sends bounced. Turn off with `WARMUP=0`. |
-| **Runs by itself** | Double-click `install-daily-task.bat` once. Windows then runs `src/daily.js` hourly on weekdays 9-17: reads replies, writes follow-ups, sends emails you already approved. It never approves or finds anything new on its own. Remove with `remove-daily-task.bat`. Log: `data/daily.log`. |
+| **Runs by itself** | Double-click `install-daily-task.bat` once. Windows then runs `src/daily.js` every 30 minutes, all day (the app itself only sends in each recipient's Tue-Thu 8-11am window): reads replies, writes follow-ups, sends emails you already approved. It never approves or finds anything new on its own. Remove with `remove-daily-task.bat`. Log: `data/daily.log`. |
 
 Safety that always applies: first emails need your approval, opted-out addresses are never contacted, a message can only be sent once even if the app and the daily runner run together, and the Pause button stops everything.
 
