@@ -1187,6 +1187,8 @@ function TestimonialSwitcher({ testimonial, active, onSelect }) {
 function TestimonialsSection() {
   const [active, setActive] = useState(0)
   const testimonial = testimonials[active]
+  // No real testimonials yet: show nothing rather than made-up ones (see src/data/testimonials.js).
+  if (!testimonial) return null
 
   return (
     <Section aria-labelledby="testimonials-title">
