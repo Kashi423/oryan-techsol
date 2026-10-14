@@ -118,5 +118,10 @@ paste the same link everywhere.
 - /solutions/school-management-software
 - /solutions/clinic-management-software
 - /solutions/hotel-booking-website
+- /solutions/appointment-booking-system
+- /solutions/ecommerce-store-development
+- /solutions/ai-chatbot-for-business
+- /solutions/business-automation-services
+- /solutions/mobile-app-development-for-business
 
 Add another by adding one object to `src/data/solutions.js`.

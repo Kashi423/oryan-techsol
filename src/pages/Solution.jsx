@@ -42,15 +42,15 @@ export default function Solution() {
                   {primaryCta.label}
                   <ArrowRight aria-hidden="true" />
                 </Button>
-                <Button to={`/portfolio/${page.project}`} variant="secondary" size="lg">
-                  See the project we built
+                <Button to={page.project ? `/portfolio/${page.project}` : '/portfolio'} variant="secondary" size="lg">
+                  {page.project ? 'See the project we built' : 'See our work'}
                 </Button>
               </div>
             </Reveal>
           </div>
           <Reveal delay={0.1}>
             <div className="overflow-hidden rounded-2xl border border-white/15 shadow-card">
-              <ProjectCover slug={page.project} title={page.eyebrow} className="aspect-16/10 w-full" />
+              <ProjectCover slug={page.project ?? ''} title={page.eyebrow} className="aspect-16/10 w-full" />
             </div>
           </Reveal>
         </div>
@@ -90,13 +90,15 @@ export default function Solution() {
               </li>
             ))}
           </ul>
-          <p className="mt-8 text-fg-muted">
-            This page is based on a system we have built:{' '}
-            <Link to={`/portfolio/${page.project}`} className="font-semibold text-highlight hover:underline">
-              read the case study
-            </Link>
-            .
-          </p>
+          {page.project && (
+            <p className="mt-8 text-fg-muted">
+              This page is based on a system we have built:{' '}
+              <Link to={`/portfolio/${page.project}`} className="font-semibold text-highlight hover:underline">
+                read the case study
+              </Link>
+              .
+            </p>
+          )}
         </div>
       </Section>
 
