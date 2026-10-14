@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { m } from 'framer-motion'
-import { ArrowRight, Bot, Code2, FolderKanban, Layers, Workflow } from 'lucide-react'
+import { ArrowRight, FolderKanban } from 'lucide-react'
+import ProjectCover from '@/components/portfolio/ProjectCover'
 import Seo from '@/components/seo/Seo'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import { Badge, Button, CaseStudyCard, Reveal, Section } from '@/components/ui'
 import { primaryCta } from '@/config/site'
-import { categories, categoriesInUse, hasSamples } from '@/data/caseStudies'
+import { categoriesInUse, categories, hasSamples } from '@/data/caseStudies'
 import { useCaseStudies } from '@/lib/cms/store'
 import { cn } from '@/lib/cn'
 
@@ -18,68 +19,23 @@ function HeroBackground() {
   )
 }
 
-const categoryIcons = { ai: Bot, web: Code2, software: Layers, automation: Workflow }
-
-// The hero visual: a project library built from the real case-study entries (first three),
-// including their "Sample" flag — so the hero never shows a project the grid below doesn't.
-// Same family as the browser, phone, chat and dashboard mockups on the service pages.
-function ProjectLibraryMockup() {
-  const caseStudies = useCaseStudies()
-  const featured = caseStudies.slice(0, 3)
+// The hero visual: a collage of the real project covers (first four), the same artwork the cards
+// below use, so the hero never shows a project the grid doesn't.
+function CoverCollage() {
+  const featured = useCaseStudies().slice(0, 4)
   return (
-    <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface-raised p-5 shadow-card backdrop-blur-xl">
-      <div className="flex items-center justify-between gap-3">
-        <p className="font-display text-sm font-bold text-fg">Project library</p>
-        <div className="flex gap-1">
-          {categoriesInUse(caseStudies, categories).slice(0, 4).map((category, index) => (
-            <span
-              key={category.value}
-              className={
-                index === 0
-                  ? 'rounded-full bg-highlight/15 px-2 py-0.5 text-[10px] font-semibold text-highlight'
-                  : 'rounded-full px-2 py-0.5 text-[10px] font-medium text-fg-subtle'
-              }
-            >
-              {category.label}
-            </span>
-          ))}
+    <div className="relative mx-auto grid w-full max-w-lg grid-cols-2 gap-3 sm:gap-4">
+      {featured.map((study, index) => (
+        <div
+          key={study.slug}
+          className={cn(
+            'overflow-hidden rounded-2xl border border-white/20 shadow-card',
+            index % 2 === 1 && 'translate-y-6',
+          )}
+        >
+          <ProjectCover slug={study.slug} title={study.title} className="aspect-16/10 w-full" />
         </div>
-      </div>
-      <ul className="mt-4 space-y-2.5">
-        {featured.map((study) => {
-          const Icon = categoryIcons[study.category] ?? Layers
-          return (
-            <li key={study.slug} className="flex items-start gap-3 rounded-xl bg-surface-overlay p-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white">
-                <Icon className="size-4" aria-hidden="true" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="truncate text-xs font-semibold text-fg">{study.title}</p>
-                  {study.placeholder && (
-                    <span className="shrink-0 rounded bg-surface-raised px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-fg-subtle uppercase">
-                      Sample
-                    </span>
-                  )}
-                </div>
-                <p className="mt-0.5 text-[10px] text-fg-subtle">
-                  {study.industry} · {study.solutionType}
-                </p>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {(study.technology ?? []).slice(0, 3).map((tech) => (
-                    <span key={tech} className="rounded-md bg-highlight/10 px-1.5 py-0.5 text-[9px] font-semibold text-highlight">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </li>
-          )
-        })}
-      </ul>
-      <p className="mt-4 rounded-xl bg-surface-overlay px-3 py-2.5 text-[11px] text-fg-muted">
-        {caseStudies.length} case studies{hasSamples(caseStudies) ? ' · real projects added as they ship' : ' · real client projects'}
-      </p>
+      ))}
     </div>
   )
 }
@@ -122,7 +78,7 @@ function HeroSection() {
         </div>
 
         <Reveal delay={0.15}>
-          <ProjectLibraryMockup />
+          <CoverCollage />
         </Reveal>
       </div>
     </Section>

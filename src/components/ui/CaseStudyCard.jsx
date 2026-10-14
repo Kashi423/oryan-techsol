@@ -1,6 +1,7 @@
 import { ArrowUpRight, FlaskConical } from 'lucide-react'
 import { Link } from 'react-router'
 import { cn } from '@/lib/cn'
+import ProjectCover from '@/components/portfolio/ProjectCover'
 import Card from './Card'
 import Tag from './Tag'
 
@@ -22,6 +23,7 @@ export default function CaseStudyCard({
   placeholder = false,
   className,
 }) {
+  const slug = to ? String(to).split('/').filter(Boolean).pop() : ''
   return (
     <Card
       as="article"
@@ -29,17 +31,23 @@ export default function CaseStudyCard({
       padding="none"
       className={cn('group flex h-full flex-col overflow-hidden', className)}
     >
-      <div className="flex aspect-4/3 items-end overflow-hidden bg-linear-to-br from-brand-900 via-brand-700 to-accent-500 p-6 transition-transform duration-500 group-hover:scale-110">
+      <div className="relative aspect-16/10 overflow-hidden bg-brand-900">
+        <ProjectCover
+          slug={slug}
+          title={title}
+          className="h-full w-full transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-brand-900/70 to-transparent" />
         {placeholder ? (
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 font-display text-xs font-semibold text-white backdrop-blur-sm">
+          <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 font-display text-xs font-semibold text-white backdrop-blur-sm">
             <FlaskConical className="size-3.5" aria-hidden="true" />
             Sample project
           </span>
         ) : (
-          result ? (
-            <p className="font-display text-3xl font-extrabold text-white">{result}</p>
-          ) : (
-            industry && <p className="font-display text-2xl font-extrabold text-white">{industry}</p>
+          industry && (
+            <span className="absolute bottom-3 left-3 rounded-full bg-white/15 px-3 py-1 font-display text-xs font-semibold text-white backdrop-blur-sm">
+              {industry}
+            </span>
           )
         )}
       </div>

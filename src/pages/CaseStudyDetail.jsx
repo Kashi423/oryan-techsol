@@ -1,11 +1,12 @@
-import { FlaskConical } from 'lucide-react'
-import { useParams } from 'react-router'
+import { ArrowRight, FlaskConical } from 'lucide-react'
+import { Link, useParams } from 'react-router'
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema'
 import Seo from '@/components/seo/Seo'
 import { Button, Card, Reveal, Section, SectionHeading, Tag } from '@/components/ui'
 import { categories } from '@/data/caseStudies'
 import { useCaseStudies } from '@/lib/cms/store'
 import { primaryCta } from '@/config/site'
+import ProjectCover from '@/components/portfolio/ProjectCover'
 import NotFound from './NotFound'
 
 // A real heading (not a styled paragraph) — these are genuine sub-sections of the page
@@ -53,10 +54,10 @@ export default function CaseStudyDetail() {
         ]}
       />
 
-      <Section spacing="hero">
+      <Section tone="inverse" spacing="hero" aria-labelledby="project-title">
         {project.placeholder && (
           <Reveal>
-            <div className="mx-auto mb-10 flex max-w-2xl items-start gap-3 rounded-2xl border border-line-strong bg-surface-muted p-4">
+            <div className="mx-auto mb-10 flex max-w-2xl items-start gap-3 rounded-2xl border border-white/20 bg-white/5 p-4">
               <FlaskConical className="mt-0.5 size-5 shrink-0 text-highlight" aria-hidden="true" />
               <p className="text-sm leading-relaxed text-fg-muted">
                 <strong className="font-display font-bold text-fg">Sample project.</strong> This case study is a
@@ -67,23 +68,67 @@ export default function CaseStudyDetail() {
           </Reveal>
         )}
 
-        <Reveal delay={0.05}>
-          <SectionHeading
-            as="h1"
-            align="center"
-            eyebrow={`${categoryLabel} · ${project.industry}`}
-            title={project.title}
-            description={project.solutionType}
-            className="mx-auto"
-          />
-        </Reveal>
+        <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-14">
+          <div>
+            <Reveal>
+              <nav aria-label="Breadcrumb" className="text-sm text-fg-subtle">
+                <Link to="/portfolio" className="hover:text-fg">Portfolio</Link>
+                <span aria-hidden="true"> / </span>
+                <span>{categoryLabel}</span>
+              </nav>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <p className="mt-6 font-display text-xs font-bold tracking-[0.2em] text-highlight uppercase">
+                {categoryLabel} · {project.industry}
+              </p>
+              <h1 id="project-title" className="mt-3 text-4xl sm:text-5xl">
+                {project.title}
+              </h1>
+              <p className="mt-4 text-lg leading-relaxed text-fg-muted">{project.solutionType}</p>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <dl className="mt-8 grid grid-cols-2 gap-4 border-t border-white/10 pt-6 text-sm">
+                <div>
+                  <dt className="text-fg-subtle">Industry</dt>
+                  <dd className="mt-1 font-display font-semibold text-fg">{project.industry}</dd>
+                </div>
+                {platform.length > 0 && (
+                  <div>
+                    <dt className="text-fg-subtle">Platform</dt>
+                    <dd className="mt-1 font-display font-semibold text-fg">{platform.join(' · ')}</dd>
+                  </div>
+                )}
+                {technology.length > 0 && (
+                  <div className="col-span-2">
+                    <dt className="text-fg-subtle">Built with</dt>
+                    <dd className="mt-2 flex flex-wrap gap-2">
+                      {technology.map((tech) => (
+                        <Tag key={tech}>{tech}</Tag>
+                      ))}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button to={primaryCta.to} size="lg">
+                  {primaryCta.label}
+                  <ArrowRight aria-hidden="true" />
+                </Button>
+                <Button to="/portfolio" variant="secondary" size="lg">
+                  All projects
+                </Button>
+              </div>
+            </Reveal>
+          </div>
 
-        <Reveal delay={0.1}>
-          <div
-            aria-hidden="true"
-            className="mx-auto mt-10 aspect-video max-w-4xl rounded-2xl bg-linear-to-br from-brand-900 via-brand-700 to-accent-500"
-          />
-        </Reveal>
+          <Reveal delay={0.1}>
+            <div className="overflow-hidden rounded-2xl border border-white/15 shadow-card">
+              <ProjectCover slug={project.slug} title={project.title} className="aspect-16/10 w-full" />
+            </div>
+          </Reveal>
+        </div>
       </Section>
 
       <Section tone="muted">
