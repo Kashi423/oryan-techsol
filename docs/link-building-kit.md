@@ -96,3 +96,31 @@ Behance, Dribbble, Product Hunt (launch a project/product), Indie Hackers, Hacke
 - Skip: link farms, paid link packages, comment spam, "1000 backlinks" services, PBNs.
 - Check progress monthly in Google Search Console → Links, and disavow only genuinely toxic links.
 - Before launch of outreach: set `VITE_SITE_URL=https://oryantechsol.com` and confirm real social URLs are in `socialLinks` (they're `#` placeholders now) so profiles can cross-link.
+
+---
+
+## 5. Linkable assets (live on the site)
+
+Link to these from profiles, guest posts and outreach: sites link to useful tools, not service pages.
+
+| Asset | URL | Best for |
+|-------|-----|----------|
+| Free Project Cost Estimator | https://oryantechsol.com/tools/project-cost-estimator | Directories, startup resource lists, Reddit/Indie Hackers, "how much does an app cost" articles |
+| How much does a mobile app cost (2026) | https://oryantechsol.com/blog/how-much-does-a-mobile-app-cost | Startup blogs, app-cost round-ups |
+| How much does a business website cost | https://oryantechsol.com/blog/how-much-does-a-business-website-cost | Small-business and web-design resource pages |
+| What is API integration? | https://oryantechsol.com/blog/what-is-api-integration | Glossaries, SaaS/integration blogs |
+| MVP development guide | https://oryantechsol.com/blog/mvp-development-guide-for-startups | Startup communities, accelerators |
+| How to choose a software company | https://oryantechsol.com/blog/how-to-choose-a-software-development-company | Procurement/vendor-selection resource pages |
+
+**Outreach template for the estimator**
+> Hi [Name], I noticed [their page] lists tools for founders planning software projects. We built a free, no-signup project cost estimator that gives a realistic range and timeline for a website, app, store or AI bot: https://oryantechsol.com/tools/project-cost-estimator. If you find it useful, it could suit your list. Either way, thanks for the resource.
+
+## 6. Tracking sheet
+
+Copy into a spreadsheet; one row per target. Columns: Date | Site | URL of our listing/link | Type (profile/guest/directory/partner) | Status (to-do/submitted/live/rejected) | Login email | Notes.
+
+## 7. Do not
+
+- Buy links, join link exchanges or networks, or mass-submit to hundreds of directories.
+- Use different names/addresses on different listings (see section 1).
+- Post the same article on several sites. Write a different angle and link to the original.

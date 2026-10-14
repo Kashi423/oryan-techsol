@@ -36,6 +36,7 @@ const routePages = {
   '/privacy': 'Privacy',
   '/terms': 'Terms',
   '/contact': 'Contact',
+  '/tools/project-cost-estimator': 'CostEstimator',
 }
 
 /** Starts loading (and resolves when ready) the code for the page at `pathname`. Never rejects. */
@@ -51,6 +52,7 @@ export function preloadRoute(pathname) {
 // Every other page is code-split and loaded on navigation.
 const NotFound = page('NotFound', () => import('@/pages/NotFound'))
 const CaseStudyDetail = page('CaseStudyDetail', () => import('@/pages/CaseStudyDetail'))
+const CostEstimator = page('CostEstimator', () => import('@/pages/CostEstimator'))
 const AppDevelopment = page('AppDevelopment', () => import('@/pages/AppDevelopment'))
 const AiBots = page('AiBots', () => import('@/pages/AiBots'))
 const WebDevelopment = page('WebDevelopment', () => import('@/pages/WebDevelopment'))
@@ -129,6 +131,7 @@ export default function App() {
           <Route path="api-integrations" element={<ApiIntegrations />} />
           <Route path="about" element={<About />} />
           <Route path="faq" element={<Faq />} />
+          <Route path="tools/project-cost-estimator" element={<CostEstimator />} />
           <Route path="blog" element={<Blog />} />
           <Route path="blog/:slug" element={<BlogPost />} />
           <Route path="privacy" element={<Privacy />} />

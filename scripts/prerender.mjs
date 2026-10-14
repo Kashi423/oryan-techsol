@@ -52,6 +52,7 @@ const routes = [
   ...solutions.map((s) => `/solutions/${s.slug}`),
   '/about',
   '/faq',
+  '/tools/project-cost-estimator',
   '/blog',
   ...posts.map((post) => `/blog/${post.slug}`),
   '/contact',

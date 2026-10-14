@@ -115,6 +115,7 @@ export const transparentHeaderRoutes = [
   '/portfolio',
   '/about',
   '/faq',
+  '/tools/project-cost-estimator',
   '/blog',
   '/privacy',
   '/terms',
@@ -150,6 +151,7 @@ export const footerNav = [
     links: [
       { label: 'Blog', to: '/blog' },
       { label: 'FAQs', to: '/faq' },
+      { label: 'Cost Estimator', to: '/tools/project-cost-estimator' },
       { label: 'Privacy Policy', to: '/privacy' },
       { label: 'Terms & Conditions', to: '/terms' },
     ],
