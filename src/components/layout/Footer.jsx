@@ -81,8 +81,8 @@ function ContactLine({ icon: Icon, value, href }) {
 export default function Footer() {
   return (
     <footer data-tone="inverse" className="bg-surface text-fg">
-      <Container className="py-12 lg:py-16">
-        <div className="grid gap-12 lg:grid-cols-[1.3fr_2fr] lg:gap-16">
+      <Container className="py-8 lg:py-16">
+        <div className="grid gap-8 lg:grid-cols-[1.3fr_2fr] lg:gap-16">
           <div>
             <Link to="/" aria-label={`${siteConfig.name} — home`} className="inline-block rounded-md">
               <Logo />
@@ -91,20 +91,22 @@ export default function Footer() {
               Custom software, web solutions and AI automation for companies that want to move
               faster and spend less time on manual work.
             </p>
-            <p className="mt-4 font-display text-xs font-semibold tracking-[0.2em] text-fg-subtle uppercase">
+            <p className="mt-4 hidden font-display text-xs font-semibold tracking-[0.2em] text-fg-subtle uppercase sm:block">
               {siteConfig.pillars.join(' · ')}
             </p>
-            <Button to={primaryCta.to} variant="secondary" className="mt-6">
-              {primaryCta.label}
-            </Button>
-            <SocialRow />
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
+              <Button to={primaryCta.to} variant="secondary" className="mt-6">
+                {primaryCta.label}
+              </Button>
+              <SocialRow />
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-[1fr_0.8fr_1fr_1.5fr] sm:gap-8">
             {footerNav.map((group) => (
               <nav key={group.title} aria-label={group.title}>
                 <h2 className="text-xs tracking-[0.2em] text-fg">{group.title}</h2>
-                <ul className="mt-4 space-y-3">
+                <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2 sm:mt-4 sm:block sm:space-y-3">
                   {group.links.map((link) => (
                     <li key={link.to + link.label}>
                       <Link
@@ -121,7 +123,7 @@ export default function Footer() {
 
             <div>
               <h2 className="text-xs tracking-[0.2em] text-fg">Contact</h2>
-              <ul className="mt-4 space-y-3">
+              <ul className="mt-3 space-y-2 sm:mt-4 sm:space-y-3">
                 <ContactLine icon={Mail} value={contactInfo.email} href={`mailto:${contactInfo.email}`} />
                 <ContactLine icon={Phone} value={contactInfo.phone} href={`tel:${contactInfo.phoneHref}`} />
                 <ContactLine icon={MapPin} value={contactInfo.location} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contactInfo.location)}`} />
@@ -130,7 +132,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <p className="mt-12 border-t border-line pt-6 text-sm text-fg-subtle">
+        <p className="mt-8 border-t border-line pt-5 text-sm text-fg-subtle sm:mt-12 sm:pt-6">
           © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           {siteConfig.analyticsId && (
             <>
