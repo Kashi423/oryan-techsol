@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'gdpr-cookie-consent-for-websites',
   title: 'GDPR and Cookie Consent for Websites: A Practical Guide',
+  metaTitle: 'GDPR and Cookie Consent for Websites',
   shortTitle: 'GDPR and cookie consent',
   description:
     'GDPR and cookie consent for websites: what the rules require, cookie types, compliant banners, privacy policies, analytics and a practical checklist.',

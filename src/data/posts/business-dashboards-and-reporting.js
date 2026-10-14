@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'business-dashboards-and-reporting',
   title: 'Dashboards and Reporting: Turning Business Data Into Decisions',
+  metaTitle: 'Dashboards and Reporting',
   shortTitle: 'Business dashboards and reporting',
   description:
     'Business dashboards and reporting: what to measure, design principles, data sources, tools, build vs buy and data quality that turns numbers into decisions.',

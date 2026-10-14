@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, p, table, timeline, ul } from './helpers.j
 export default {
   slug: 'software-project-checklist',
   title: 'Software Project Checklist: From Idea to Launch in 12 Steps',
+  metaTitle: 'Software Project Checklist',
   shortTitle: 'Software project checklist',
   description:
     'A 12-step software project checklist from idea to launch: validate, scope, plan, design, build, test, secure, launch and maintain, with questions at each stage.',

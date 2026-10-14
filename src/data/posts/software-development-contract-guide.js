@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'software-development-contract-guide',
   title: 'Software Development Contracts: What to Put in Your Agreement',
+  metaTitle: 'Software Development Contracts',
   shortTitle: 'Software development contract guide',
   description:
     'What to include in a software development contract: scope, IP ownership, payment milestones, acceptance, warranty, confidentiality, change control and exit.',

@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'ai-lead-qualification-for-sales-teams',
   title: 'AI Lead Qualification: How to Score, Route and Respond to Leads Faster',
+  metaTitle: 'AI Lead Qualification for Sales Teams',
   shortTitle: 'AI lead qualification',
   description:
     'How AI lead qualification works: capturing the right details, scoring leads, instant follow-up and routing to sales, plus a rollout plan and mistakes to avoid.',

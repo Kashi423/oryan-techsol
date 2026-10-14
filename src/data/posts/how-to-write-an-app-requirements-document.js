@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, table, ul } from './helper
 export default {
   slug: 'how-to-write-an-app-requirements-document',
   title: 'How to Write an App Requirements Document (With a Free Template Outline)',
+  metaTitle: 'How to Write an App Requirements Document',
   shortTitle: 'App requirements document',
   description:
     'How to write an app requirements document: what to include, how to describe features as user stories, common mistakes and a ready-to-use outline.',

@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, p, steps, table, timeline, ul } from './he
 export default {
   slug: 'how-to-build-a-saas-product',
   title: 'How to Build a SaaS Product: From Idea to Launch and Your First Customers',
+  metaTitle: 'How to Build a SaaS Product',
   shortTitle: 'How to build a SaaS product',
   description:
     'How to build a SaaS product: validate the problem, design for multi-tenancy, plan billing and security, launch an MVP and track the metrics that matter.',

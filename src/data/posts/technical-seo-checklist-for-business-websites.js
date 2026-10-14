@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, p, steps, table, ul } from './helpers.js'
 export default {
   slug: 'technical-seo-checklist-for-business-websites',
   title: 'Technical SEO Checklist for Business Websites (2026 Edition)',
+  metaTitle: 'Technical SEO Checklist for Business Websites',
   shortTitle: 'Technical SEO checklist',
   description:
     'A practical technical SEO checklist for business websites: crawling, indexing, structure, speed, mobile, structured data, security and how to audit each step.',

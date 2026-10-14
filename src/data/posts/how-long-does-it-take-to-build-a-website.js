@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, timeline, ul } from '
 export default {
   slug: 'how-long-does-it-take-to-build-a-website',
   title: 'How Long Does It Take to Build a Website? A Realistic Timeline',
+  metaTitle: 'How Long Does It Take to Build a Website?',
   shortTitle: 'How long a website takes to build',
   description:
     'How long does it take to build a website? Realistic timelines for brochure sites, shops and web apps, what slows projects down and how to launch faster.',

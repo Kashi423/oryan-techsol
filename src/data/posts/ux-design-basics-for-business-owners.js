@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'ux-design-basics-for-business-owners',
   title: 'UX Design Basics for Business Owners: Principles That Improve Conversions',
+  metaTitle: 'UX Design Basics for Business Owners',
   shortTitle: 'UX design basics for business owners',
   description:
     'UX design basics for business owners: UX vs UI, core principles, user research, navigation, forms, mobile design, usability testing and quick wins.',

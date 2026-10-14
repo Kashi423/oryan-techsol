@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'software-testing-for-founders',
   title: 'Software Testing for Non-Technical Founders: What to Know and Ask',
+  metaTitle: 'Software Testing for Non-Technical Founders',
   shortTitle: 'Software testing for founders',
   description:
     'Software testing for non-technical founders: test types, who tests what, automation vs manual, acceptance testing, bug reports and questions to ask developers.',

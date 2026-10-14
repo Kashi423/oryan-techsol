@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'legacy-software-modernization-guide',
   title: 'Legacy Software Modernization: When to Upgrade, Rebuild or Replace',
+  metaTitle: 'Legacy Software Modernization',
   shortTitle: 'Legacy software modernization',
   description:
     'Modernizing legacy software: warning signs, the four options (rehost, refactor, rebuild, replace), a phased plan, risks and how to decide.',

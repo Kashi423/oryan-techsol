@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'automate-your-business-with-n8n',
   title: 'How to Automate Your Business With n8n: A Practical Introduction',
+  metaTitle: 'How to Automate Your Business With n8n',
   shortTitle: 'Automate your business with n8n',
   description:
     'A practical intro to n8n: what it is, how workflows work, real automation examples, self-hosting vs cloud, costs, limits and when to bring in a developer.',

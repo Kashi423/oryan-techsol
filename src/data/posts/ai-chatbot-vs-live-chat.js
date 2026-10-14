@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, timeline, ul } from '
 export default {
   slug: 'ai-chatbot-vs-live-chat-for-small-business',
   title: 'AI Chatbot vs. Live Chat: Which Is Right for Your Business in 2026?',
+  metaTitle: 'AI Chatbot vs. Live Chat for Small Business',
   shortTitle: 'AI chatbot vs. live chat',
   description:
     'AI chatbot or live chat for your business? Compare speed, cost and accuracy, see where each wins and how a hybrid setup gives you both.',

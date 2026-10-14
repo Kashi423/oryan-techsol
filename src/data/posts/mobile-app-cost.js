@@ -3,6 +3,7 @@ import { bars, callout, checklist, compare, cta, h2, h3, p, steps, table, timeli
 export default {
   slug: 'how-much-does-a-mobile-app-cost',
   title: 'How Much Does It Cost to Build a Mobile App in 2026? A Plain-English Guide',
+  metaTitle: 'How Much Does a Mobile App Cost in 2026?',
   shortTitle: 'How much does a mobile app cost?',
   description:
     'What a mobile app really costs in 2026: five cost drivers, budget ranges by complexity, hidden costs and ways to save without cutting quality.',

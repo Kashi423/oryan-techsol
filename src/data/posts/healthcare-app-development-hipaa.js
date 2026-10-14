@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'healthcare-app-development-hipaa',
   title: 'Healthcare App Development: HIPAA and Privacy Basics',
+  metaTitle: 'Healthcare App Development',
   shortTitle: 'Healthcare app development and HIPAA',
   description:
     'Healthcare app development basics: app types, HIPAA and privacy rules, secure architecture, key features, integrations, costs and compliance mistakes.',

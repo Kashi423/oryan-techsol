@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'freelancer-vs-agency-vs-in-house',
   title: 'Hiring a Freelancer vs. an Agency vs. an In-House Team',
+  metaTitle: 'Freelancer vs. Agency vs. In-House Team',
   shortTitle: 'Freelancer vs. agency vs. in-house',
   description:
     'Freelancer, agency or in-house developers? Compare cost, speed, quality and risk, with a decision guide by project stage and tips for vetting each option.',

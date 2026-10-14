@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, ul } from './helpers.
 export default {
   slug: 'google-search-console-indexing-guide',
   title: 'Google Search Console: A Beginner’s Guide to Fixing Indexing Issues',
+  metaTitle: 'Google Search Console Indexing Guide',
   shortTitle: 'Search Console indexing guide',
   description:
     'Google Search Console for beginners: set up, submit sitemaps, read the reports and fix indexing issues like crawled or discovered but not indexed.',

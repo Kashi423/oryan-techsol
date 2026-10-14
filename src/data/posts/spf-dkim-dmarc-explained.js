@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'spf-dkim-dmarc-explained',
   title: 'Email Deliverability Basics: SPF, DKIM and DMARC Explained',
+  metaTitle: 'SPF, DKIM & DMARC Explained',
   shortTitle: 'SPF, DKIM and DMARC explained',
   description:
     'SPF, DKIM and DMARC explained simply: why business email goes to spam, how to set up email authentication, check it and fix common deliverability problems.',

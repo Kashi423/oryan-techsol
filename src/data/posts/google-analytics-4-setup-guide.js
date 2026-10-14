@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'google-analytics-4-setup-guide',
   title: 'Google Analytics 4 Setup for Business Websites: A Practical Guide',
+  metaTitle: 'Google Analytics 4 Setup for Business Websites',
   shortTitle: 'Google Analytics 4 setup guide',
   description:
     'Google Analytics 4 setup for business websites: create a property, install tracking, set up key events, privacy settings, core reports and common mistakes.',

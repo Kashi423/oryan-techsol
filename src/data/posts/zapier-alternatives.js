@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'zapier-alternatives',
   title: 'Zapier Alternatives for Growing Businesses: How to Choose',
+  metaTitle: 'Zapier Alternatives for Growing Businesses',
   shortTitle: 'Zapier alternatives',
   description:
     'Outgrowing Zapier? Compare alternatives like Make, n8n and custom automation: pricing models, limits and how to choose as your business grows.',

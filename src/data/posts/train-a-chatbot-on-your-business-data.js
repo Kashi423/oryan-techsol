@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'train-a-chatbot-on-your-business-data',
   title: 'How to Train a Chatbot on Your Own Business Data (Without Making It Hallucinate)',
+  metaTitle: 'How to Train a Chatbot on Your Business Data',
   shortTitle: 'Train a chatbot on your data',
   description:
     'How a business chatbot learns from your own content: RAG vs fine-tuning, preparing data, guardrails against wrong answers, testing and keeping it up to date.',

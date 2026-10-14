@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'build-an-app-like-uber',
   title: 'How to Build an App Like Uber: Features, Costs and Architecture',
+  metaTitle: 'How to Build an App Like Uber',
   shortTitle: 'Build an app like Uber',
   description:
     'How to build an app like Uber: core features, the three apps you need, architecture, costs, regulations, business model and a staged plan to launch.',

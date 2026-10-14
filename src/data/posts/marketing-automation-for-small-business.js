@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, ul } from './helpers.
 export default {
   slug: 'marketing-automation-for-small-business',
   title: 'Marketing Automation for Small Business: Email, SMS and WhatsApp',
+  metaTitle: 'Marketing Automation for Small Business',
   shortTitle: 'Marketing automation for small business',
   description:
     'Marketing automation for small business: email, SMS and WhatsApp workflows, segmentation, consent rules, tools, examples and how to start simply.',

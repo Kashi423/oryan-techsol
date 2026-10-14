@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'local-seo-checklist-for-service-businesses',
   title: 'Local SEO for Service Businesses: The Complete Checklist',
+  metaTitle: 'Local SEO for Service Businesses',
   shortTitle: 'Local SEO checklist',
   description:
     'A complete local SEO checklist for service businesses: Google Business Profile, citations, reviews, location pages, on-page signals, links and tracking.',

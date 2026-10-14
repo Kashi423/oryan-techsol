@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'software-project-estimation',
   title: 'Software Estimation: Why Projects Run Over and How to Prevent It',
+  metaTitle: 'Software Project Estimation: Why It Goes Over',
   shortTitle: 'Software project estimation',
   description:
     'Why software projects run over budget and how to prevent it: how estimates work, hidden causes, scope control, contingency and how to get an accurate quote.',

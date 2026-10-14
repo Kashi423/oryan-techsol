@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'ai-chatbot-mistakes',
   title: 'AI Chatbot Mistakes That Cost You Customers (and How to Fix Them)',
+  metaTitle: 'AI Chatbot Mistakes That Cost You Customers',
   shortTitle: 'AI chatbot mistakes',
   description:
     'The most common AI chatbot mistakes, from wrong answers and no human handover to poor design and privacy gaps, with practical fixes and a quality checklist.',

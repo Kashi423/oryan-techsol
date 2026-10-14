@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, ul } from './helpers.
 export default {
   slug: 'publish-an-app-on-the-app-store-and-google-play',
   title: 'How to Publish an App on the App Store and Google Play',
+  metaTitle: 'Publish an App on the App Store & Google Play',
   shortTitle: 'Publish an app on the App Store and Google Play',
   description:
     'How to publish an app on the Apple App Store and Google Play: accounts, requirements, review process, common rejections, listing assets and a launch checklist.',

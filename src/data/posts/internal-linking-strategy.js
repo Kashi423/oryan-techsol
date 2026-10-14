@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'internal-linking-strategy',
   title: 'Internal Linking Strategy: How to Link Your Pages for Better Rankings',
+  metaTitle: 'Internal Linking Strategy',
   shortTitle: 'Internal linking strategy',
   description:
     'Internal linking strategy for SEO: how to link pages, choose anchor text, build topic clusters, fix orphan pages and audit your links step by step.',

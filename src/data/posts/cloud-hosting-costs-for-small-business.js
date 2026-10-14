@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'cloud-hosting-costs-for-small-business',
   title: 'Cloud Hosting Costs for Small Business: AWS, Azure, Google Cloud and Simpler Options',
+  metaTitle: 'Cloud Hosting Costs for Small Business',
   shortTitle: 'Cloud hosting costs for small business',
   description:
     'Cloud hosting costs for small business explained: AWS, Azure and Google Cloud vs VPS and managed hosting, what drives the bill and how to avoid surprises.',

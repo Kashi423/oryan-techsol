@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'messenger-and-instagram-chatbots-for-leads',
   title: 'Instagram and Facebook Messenger Chatbots for Lead Generation',
+  metaTitle: 'Messenger & Instagram Chatbots for Leads',
   shortTitle: 'Messenger and Instagram chatbots for leads',
   description:
     'Instagram and Facebook Messenger chatbots for lead generation: platform rules, flows, qualifying questions, comment automation, CRM handover and compliance.',

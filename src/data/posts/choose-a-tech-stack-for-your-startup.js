@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'choose-a-tech-stack-for-your-startup',
   title: 'How to Choose a Tech Stack for Your Startup in 2027',
+  metaTitle: 'How to Choose a Tech Stack for Your Startup',
   shortTitle: 'Choose a tech stack for your startup',
   description:
     'How to choose a startup tech stack in 2027: criteria that matter, sensible defaults for web, mobile and SaaS, mistakes to avoid and questions to ask developers.',

@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'customer-portal-development-guide',
   title: 'Customer Portal Development: Features, Benefits, Costs and Best Practices',
+  metaTitle: 'Customer Portal Development',
   shortTitle: 'Customer portal development',
   description:
     'Build a customer portal: key features, benefits, security, integrations, build-vs-buy options, costs and a step-by-step plan to launch and drive adoption.',

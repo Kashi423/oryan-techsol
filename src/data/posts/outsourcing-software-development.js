@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'outsourcing-software-development',
   title: 'Outsourcing Software Development: Pros, Cons and Pitfalls',
+  metaTitle: 'Outsourcing Software Development',
   shortTitle: 'Outsourcing software development',
   description:
     'Outsourcing software development: benefits, risks, onshore vs nearshore vs offshore, contracts, IP, communication, security and how to manage a remote team.',

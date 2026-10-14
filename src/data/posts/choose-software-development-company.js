@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table } from './hel
 export default {
   slug: 'how-to-choose-a-software-development-company',
   title: 'How to Choose a Software Development Company: A 10-Point Checklist',
+  metaTitle: 'How to Choose a Software Development Company',
   shortTitle: 'How to choose a software development company',
   description:
     'Use this 10-point checklist to evaluate software development companies on experience, process, pricing, code ownership and red flags.',

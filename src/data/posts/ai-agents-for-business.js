@@ -3,6 +3,7 @@ import { bars, callout, checklist, compare, cta, h2, h3, p, steps, table, timeli
 export default {
   slug: 'ai-agents-for-business-explained',
   title: 'AI Agents for Business, Explained: What They Are and Where They Actually Help',
+  metaTitle: 'AI Agents for Business, Explained',
   shortTitle: 'AI agents for business, explained',
   description:
     'What is an AI agent? How agents differ from chatbots and automation, real business use cases, the risks to manage and how to start safely.',

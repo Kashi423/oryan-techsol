@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'vibe-coding-risks-and-benefits',
   title: 'AI Pair Programming and Vibe Coding: Benefits and Risks for Businesses',
+  metaTitle: 'AI Pair Programming and Vibe Coding',
   shortTitle: 'Vibe coding risks and benefits',
   description:
     'AI coding assistants and vibe coding: where they help, where they fail, security, quality, IP and privacy risks, and how businesses can use them safely.',

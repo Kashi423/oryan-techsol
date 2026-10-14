@@ -3,6 +3,7 @@ import { bars, callout, checklist, compare, cta, h2, p, steps, table, ul } from 
 export default {
   slug: 'cross-platform-vs-native-cost',
   title: 'Cross-Platform vs. Native Apps: Total Cost Over Three Years',
+  metaTitle: 'Cross-Platform vs. Native Apps',
   shortTitle: 'Cross-platform vs. native cost',
   description:
     'Cross-platform vs native app cost over three years: build, maintenance, hiring, performance trade-offs and a worked cost model to help you choose.',

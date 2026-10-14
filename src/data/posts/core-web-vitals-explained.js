@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, ul } from './helpers.
 export default {
   slug: 'core-web-vitals-explained',
   title: 'Core Web Vitals Explained: LCP, INP and CLS for Business Owners',
+  metaTitle: 'Core Web Vitals Explained',
   shortTitle: 'Core Web Vitals explained',
   description:
     'Core Web Vitals explained: good-score thresholds for LCP, INP and CLS, how to measure them and the fixes that matter most for a faster, higher-converting site.',

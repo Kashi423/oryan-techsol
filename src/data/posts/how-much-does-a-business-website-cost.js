@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, table, ul, bars } from './
 export default {
   slug: 'how-much-does-a-business-website-cost',
   title: 'How Much Does a Business Website Cost in 2026? Price Ranges and What Drives Them',
+  metaTitle: 'How Much Does a Business Website Cost?',
   shortTitle: 'Business website cost',
   description:
     'What a business website really costs in 2026: price ranges by type, what drives the budget, ongoing costs, and how to get a fair quote without surprises.',

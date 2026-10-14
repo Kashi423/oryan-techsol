@@ -3,6 +3,7 @@ import { bars, callout, checklist, compare, cta, h2, h3, p, steps, table, ul } f
 export default {
   slug: 'how-to-make-your-website-faster',
   title: 'Website Speed: 15 Fixes That Make Sites Load Faster',
+  metaTitle: 'How to Make Your Website Faster: 15 Fixes',
   shortTitle: 'How to make your website faster',
   description:
     'How to make your website faster: 15 proven fixes for images, caching, scripts, fonts and hosting, plus a step-by-step speed audit for business sites.',

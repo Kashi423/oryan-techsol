@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'flutter-vs-react-native-2027',
   title: 'Flutter vs. React Native in 2027: An Updated Comparison',
+  metaTitle: 'Flutter vs. React Native in 2027',
   shortTitle: 'Flutter vs. React Native in 2027',
   description:
     'Flutter vs React Native in 2027: performance, developer availability, cost, ecosystem, UI, maintenance and a clear way to choose for your mobile app.',

@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'landing-page-best-practices',
   title: 'Landing Page Design: Elements of High-Converting Pages',
+  metaTitle: 'Landing Page Best Practices That Convert',
   shortTitle: 'Landing page best practices',
   description:
     'Landing page best practices: the elements of high-converting pages, headline and offer, social proof, forms, mobile design, speed, testing and common mistakes.',

@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'invoice-and-payment-automation-guide',
   title: 'Invoice and Payment Automation: Get Paid Faster With Less Admin',
+  metaTitle: 'Invoice & Payment Automation Guide',
   shortTitle: 'Invoice and payment automation',
   description:
     'How to automate invoicing and payment follow-up: create invoices from orders, send reminders, reconcile payments, reduce errors and what to watch out for.',

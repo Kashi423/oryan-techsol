@@ -55,6 +55,8 @@ import {
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
 import { hasSamples } from '@/data/caseStudies'
+import PostCard from '@/components/blog/PostCard'
+import { usePosts } from '@/lib/cms/store'
 import { useCaseStudies } from '@/lib/cms/store'
 import { cn } from '@/lib/cn'
 
@@ -797,6 +799,37 @@ function FinalCtaBackground() {
 // Closing conversion moment. Inverse tone + the same network mark as the hero (subtle, not
 // competing with the copy) makes it visually distinct from the light sections above it
 // while staying on the same brand language rather than introducing a new visual idea.
+// Fresh, crawlable internal links to the newest articles (and a freshness signal on the homepage).
+function LatestPostsSection() {
+  const latest = usePosts().slice(0, 3)
+  if (latest.length === 0) return null
+  return (
+    <Section tone="muted" aria-labelledby="latest-title">
+      <SectionHeading
+        as="h2"
+        id="latest-title"
+        eyebrow="From the blog"
+        align="center"
+        title="Practical guides for building with technology."
+        className="mx-auto"
+      />
+      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {latest.map((post, index) => (
+          <li key={post.slug} className={index >= 2 ? 'hidden lg:block' : undefined}>
+            <PostCard post={post} />
+          </li>
+        ))}
+      </ul>
+      <div className="mt-10 text-center">
+        <Button to="/blog" variant="secondary" size="lg">
+          Read all articles
+          <ArrowRight aria-hidden="true" />
+        </Button>
+      </div>
+    </Section>
+  )
+}
+
 function FinalCtaSection() {
   return (
     <Section tone="inverse" background={<FinalCtaBackground />} aria-labelledby="final-cta-title">
@@ -890,6 +923,7 @@ export default function Home() {
       <ProcessSection />
       <PortfolioSection />
       <WhySection />
+      <LatestPostsSection />
       <FinalCtaSection />
     </>
   )

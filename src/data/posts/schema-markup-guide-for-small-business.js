@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'schema-markup-guide-for-small-business',
   title: 'Schema Markup Explained: Rich Results for Small Business Websites',
+  metaTitle: 'Schema Markup Guide for Small Business',
   shortTitle: 'Schema markup guide',
   description:
     'Schema markup explained for small businesses: what structured data is, which types to use, how to add and test it and mistakes that block rich results.',

@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'ecommerce-chatbot-use-cases',
   title: 'Chatbots for E-Commerce: Use Cases That Raise Sales and Cut Support',
+  metaTitle: 'Chatbots for E-Commerce',
   shortTitle: 'E-commerce chatbot use cases',
   description:
     'E-commerce chatbot use cases: product advice, order tracking, returns, cart recovery and upsells, with integration needs, metrics, risks and rollout tips.',

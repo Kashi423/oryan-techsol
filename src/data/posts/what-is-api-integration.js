@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, timeline, ul
 export default {
   slug: 'what-is-api-integration',
   title: 'What Is API Integration? A Business Owner’s Guide to Connecting Your Systems',
+  metaTitle: 'What Is API Integration? A Business Guide',
   shortTitle: 'What is API integration?',
   description:
     'API integration explained in plain English: how it connects your CRM, payments and store, real examples, and what makes it reliable.',

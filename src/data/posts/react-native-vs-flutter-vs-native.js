@@ -3,6 +3,7 @@ import { bars, callout, checklist, compare, cta, h2, h3, p, steps, table } from 
 export default {
   slug: 'react-native-vs-flutter-vs-native',
   title: 'React Native vs. Flutter vs. Native: Which Should You Choose for Your App?',
+  metaTitle: 'React Native vs. Flutter vs. Native',
   shortTitle: 'React Native vs. Flutter vs. native',
   description:
     'React Native, Flutter or native? Compare cost, performance, speed and maintenance, and use a clear guide to choose the right approach for your app.',

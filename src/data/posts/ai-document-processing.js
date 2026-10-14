@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'ai-document-processing',
   title: 'AI Document Processing: Extract Data From Invoices, Contracts and Forms',
+  metaTitle: 'AI Document Processing for Invoices & Forms',
   shortTitle: 'AI document processing',
   description:
     'AI document processing explained: extract data from invoices, contracts and forms with OCR and AI, plus accuracy, review workflows, privacy and a pilot plan.',

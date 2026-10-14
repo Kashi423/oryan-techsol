@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'booking-and-appointment-app-development',
   title: 'Booking and Appointment App Development: Features and Costs',
+  metaTitle: 'Booking and Appointment App Development',
   shortTitle: 'Booking and appointment app development',
   description:
     'Booking and appointment app development: must-have features, calendar and payment integration, build vs buy, costs, reducing no-shows and a launch plan.',

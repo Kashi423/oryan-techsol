@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, p, steps, table, timeline, ul } from './he
 export default {
   slug: 'website-redesign-seo-checklist',
   title: 'Website Redesign SEO Checklist: Relaunch Without Losing Your Rankings',
+  metaTitle: 'Website Redesign SEO Checklist',
   shortTitle: 'Website redesign SEO checklist',
   description:
     'A step-by-step website redesign SEO checklist: audit, redirect map, content and URL preservation, testing, launch and post-launch monitoring to protect traffic.',

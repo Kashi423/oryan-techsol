@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'headless-commerce-explained',
   title: 'Headless Commerce Explained: Is It Worth It for Your Store?',
+  metaTitle: 'Headless Commerce Explained',
   shortTitle: 'Headless commerce explained',
   description:
     'Headless commerce explained: how it differs from a traditional store, benefits, costs, SEO and speed implications, when it is worth it and how to migrate.',

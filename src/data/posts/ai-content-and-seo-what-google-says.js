@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'ai-content-and-seo-what-google-says',
   title: 'AI Content and SEO: What Google Actually Says (and How to Use AI Safely)',
+  metaTitle: 'AI Content and SEO: What Google Actually Says',
   shortTitle: 'AI content and SEO',
   description:
     'What Google says about AI content: does it penalise AI writing, how E-E-A-T and spam policies apply, and a safe workflow to publish helpful pages.',

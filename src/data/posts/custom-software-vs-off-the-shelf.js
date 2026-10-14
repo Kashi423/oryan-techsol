@@ -3,6 +3,7 @@ import { bars, callout, checklist, compare, cta, h2, h3, p, steps, table, ul } f
 export default {
   slug: 'custom-software-vs-off-the-shelf',
   title: 'Custom Software vs. Off-the-Shelf: How to Decide (With a Practical Framework)',
+  metaTitle: 'Custom Software vs. Off-the-Shelf',
   shortTitle: 'Custom software vs. off-the-shelf',
   description:
     'Build or buy? Compare custom and off-the-shelf software on cost, fit and control, with a simple framework to choose the right path.',

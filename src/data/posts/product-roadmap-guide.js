@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, timeline, ul } f
 export default {
   slug: 'product-roadmap-guide',
   title: 'Product Roadmaps: How to Plan Features Without Chaos',
+  metaTitle: 'Product Roadmap Guide for Startups',
   shortTitle: 'Product roadmap guide',
   description:
     'Product roadmap guide: outcome vs feature roadmaps, prioritisation methods like MoSCoW and RICE, gathering input and communicating plans without chaos.',

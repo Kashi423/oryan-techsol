@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'add-an-ai-chatbot-to-your-website',
   title: 'How to Add an AI Chatbot to Your Website: No-Code and Custom Options',
+  metaTitle: 'How to Add an AI Chatbot to Your Website',
   shortTitle: 'Add an AI chatbot to your website',
   description:
     'How to add an AI chatbot to your website: no-code widgets vs custom builds, setup steps, training data, design, SEO and speed impact, privacy and costs.',

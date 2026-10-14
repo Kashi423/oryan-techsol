@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, p, steps, table, ul } from './helpers.js'
 export default {
   slug: 'no-code-vs-low-code-vs-custom-code',
   title: 'No-Code vs. Low-Code vs. Custom Code: How to Choose',
+  metaTitle: 'No-Code vs. Low-Code vs. Custom Code',
   shortTitle: 'No-code vs. low-code vs. custom code',
   description:
     'No-code vs low-code vs custom code: speed, cost, flexibility, scalability, security and lock-in, with a decision guide and when to move to code.',

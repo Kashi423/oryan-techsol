@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'hr-and-recruitment-automation-with-ai',
   title: 'HR and Recruitment Automation With AI: What Works and What to Avoid',
+  metaTitle: 'HR and Recruitment Automation With AI',
   shortTitle: 'HR and recruitment automation with AI',
   description:
     'HR and recruitment automation with AI: scheduling, onboarding and admin workflows, plus fairness, legal risk, privacy and human oversight to get right.',

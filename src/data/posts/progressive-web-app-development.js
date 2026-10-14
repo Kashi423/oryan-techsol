@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'progressive-web-app-development',
   title: 'Progressive Web App Development: When and How to Build One',
+  metaTitle: 'Progressive Web App Development',
   shortTitle: 'Progressive web app development',
   description:
     'Progressive web app development guide: what PWAs are, benefits and limits, iPhone support, offline and install features, costs, SEO and when to choose one.',

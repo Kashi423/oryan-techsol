@@ -3,6 +3,7 @@ import { callout, compare, cta, h2, h3, p, steps, table, ul } from './helpers.js
 export default {
   slug: 'generative-engine-optimization-guide',
   title: 'Generative Engine Optimization (GEO): A Beginner’s Guide',
+  metaTitle: 'Generative Engine Optimization (GEO)',
   shortTitle: 'Generative engine optimization (GEO)',
   description:
     'What generative engine optimization (GEO) is, how it differs from SEO, and a checklist for getting your business mentioned by AI assistants.',

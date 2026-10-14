@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'ai-voice-agents-for-business-calls',
   title: 'AI Voice Agents for Customer Calls: What They Can and Cannot Do',
+  metaTitle: 'AI Voice Agents for Customer Calls',
   shortTitle: 'AI voice agents for business calls',
   description:
     'AI voice agents can answer calls, book appointments and qualify leads. Learn how they work, real use cases, limits, costs, legal points and how to launch one.',

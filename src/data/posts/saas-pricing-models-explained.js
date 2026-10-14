@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'saas-pricing-models-explained',
   title: 'SaaS Pricing Models Explained: Flat-Rate, Per-User, Usage-Based and Tiered',
+  metaTitle: 'SaaS Pricing Models Explained',
   shortTitle: 'SaaS pricing models',
   description:
     'Compare SaaS pricing models — flat-rate, per-user, usage-based, tiered and freemium — with pros, cons, examples and a framework to choose and test your pricing.',

@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'zapier-make-or-custom-automation',
   title: 'Zapier, Make or Custom-Built Automation: Which Should You Use?',
+  metaTitle: 'Zapier, Make or Custom Automation?',
   shortTitle: 'Zapier vs. Make vs. custom automation',
   description:
     'Compare no-code tools like Zapier and Make with custom-built automation: cost at scale, reliability, security and complexity — plus a simple way to choose.',

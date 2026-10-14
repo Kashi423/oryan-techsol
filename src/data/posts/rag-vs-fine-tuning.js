@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, ul } from './helpers.
 export default {
   slug: 'rag-vs-fine-tuning',
   title: 'RAG vs. Fine-Tuning: Which Is Right for Your Company Data?',
+  metaTitle: 'RAG vs. Fine-Tuning for Company Data',
   shortTitle: 'RAG vs. fine-tuning',
   description:
     'RAG or fine-tuning? Learn how each works, when to use which for company data, costs, accuracy, privacy trade-offs and how to avoid AI hallucinations.',

@@ -3,6 +3,7 @@ import { bars, callout, checklist, compare, cta, h2, p, steps, table, ul } from 
 export default {
   slug: 'wordpress-vs-custom-website',
   title: 'WordPress vs. a Custom Website: A Cost and Growth Comparison',
+  metaTitle: 'WordPress vs. a Custom Website',
   shortTitle: 'WordPress vs. custom website',
   description:
     'WordPress or a custom-built website? Compare cost, speed, security, SEO, flexibility and maintenance, and when to start with WordPress or build custom.',

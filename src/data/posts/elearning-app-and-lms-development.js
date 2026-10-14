@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'elearning-app-and-lms-development',
   title: 'E-Learning App and LMS Development: A Practical Guide',
+  metaTitle: 'E-Learning App and LMS Development',
   shortTitle: 'E-learning app and LMS development',
   description:
     'E-learning app and LMS development guide: models, key features, build vs buy, tech choices, video delivery, costs, engagement tactics and launch steps.',

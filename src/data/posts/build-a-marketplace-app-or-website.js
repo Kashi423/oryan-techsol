@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'build-a-marketplace-app-or-website',
   title: 'How to Build a Marketplace App or Website: Models, Features and Costs',
+  metaTitle: 'How to Build a Marketplace App or Website',
   shortTitle: 'Build a marketplace app or website',
   description:
     'How to build an online marketplace: business models, the chicken-and-egg problem, must-have features, payments and trust, tech choices, costs and a launch plan.',

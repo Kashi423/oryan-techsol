@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, timeline, ul } f
 export default {
   slug: 'technology-trends-2027-for-business-owners',
   title: 'Technology Trends Business Owners Should Prepare for in 2027',
+  metaTitle: 'Technology Trends for Business Owners 2027',
   shortTitle: 'Technology trends for 2027',
   description:
     'Technology trends for 2027 that matter to business owners: AI agents, search changes, automation, privacy, security and costs, with practical steps to prepare.',

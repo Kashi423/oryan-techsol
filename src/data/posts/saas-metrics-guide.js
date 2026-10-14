@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, p, stats, steps, table, ul } from './helpe
 export default {
   slug: 'saas-metrics-guide',
   title: 'SaaS Metrics Founders Should Track: MRR, Churn, CAC and LTV',
+  metaTitle: 'SaaS Metrics Founders Should Track',
   shortTitle: 'SaaS metrics guide',
   description:
     'SaaS metrics explained for founders: MRR, ARR, churn, net revenue retention, CAC, LTV and payback, with how to calculate and use them without fooling yourself.',

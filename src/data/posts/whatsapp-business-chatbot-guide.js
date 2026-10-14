@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'whatsapp-business-chatbot-guide',
   title: 'WhatsApp Business Chatbot: How It Works, Rules to Follow and Use Cases',
+  metaTitle: 'WhatsApp Business Chatbot Guide',
   shortTitle: 'WhatsApp business chatbot',
   description:
     'How to set up a WhatsApp chatbot for your business: app vs API, opt-in and 24-hour rules, message templates, best use cases and mistakes to avoid.',

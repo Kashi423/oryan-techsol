@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'pricing-software-services',
   title: 'Pricing Your Software Services: Hourly, Fixed or Retainer',
+  metaTitle: 'Pricing Your Software Services',
   shortTitle: 'Pricing software services',
   description:
     'How to price software and web development services: hourly, fixed price, retainers and value-based pricing, how to calculate rates, scope and raise prices.',

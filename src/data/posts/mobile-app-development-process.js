@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, timeline, ul } from '
 export default {
   slug: 'mobile-app-development-process',
   title: 'The Mobile App Development Process: 7 Stages From Idea to App Store',
+  metaTitle: 'The Mobile App Development Process',
   shortTitle: 'Mobile app development process',
   description:
     'A clear walk-through of the mobile app development process — discovery, design, build, testing, launch and support — with what happens at each stage.',

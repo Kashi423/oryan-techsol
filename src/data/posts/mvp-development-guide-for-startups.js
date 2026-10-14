@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table } from './hel
 export default {
   slug: 'mvp-development-guide-for-startups',
   title: 'MVP Development Guide: How to Build a Minimum Viable Product That Actually Works',
+  metaTitle: 'MVP Development Guide for Startups',
   shortTitle: 'MVP development guide',
   description:
     'What a minimum viable product really is, how to choose MVP features, a step-by-step build plan, common mistakes and how to measure success after launch.',

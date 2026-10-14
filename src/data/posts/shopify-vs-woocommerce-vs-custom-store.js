@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'shopify-vs-woocommerce-vs-custom-store',
   title: 'Shopify vs. WooCommerce vs. a Custom Online Store: How to Choose',
+  metaTitle: 'Shopify vs. WooCommerce vs. Custom Store',
   shortTitle: 'Shopify vs. WooCommerce vs. custom',
   description:
     'Compare Shopify, WooCommerce and a custom-built store on cost, control, scalability, maintenance and integrations — and choose the right e-commerce platform.',

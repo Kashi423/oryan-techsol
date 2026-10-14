@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table } from './helpers
 export default {
   slug: 'ai-customer-support-automation-guide',
   title: 'AI Customer Support Automation: What to Automate, What to Keep Human',
+  metaTitle: 'AI Customer Support Automation Guide',
   shortTitle: 'AI customer support automation',
   description:
     'How to automate customer support with AI safely: the best tasks to automate, where humans must stay, a rollout plan, metrics to track and mistakes to avoid.',

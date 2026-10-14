@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'rest-vs-graphql-vs-webhooks',
   title: 'REST vs. GraphQL vs. Webhooks: Which API Approach Fits Your Project?',
+  metaTitle: 'REST vs. GraphQL vs. Webhooks',
   shortTitle: 'REST vs. GraphQL vs. webhooks',
   description:
     'REST, GraphQL and webhooks in plain English: how each works, strengths and trade-offs, when to use them and how they fit together in real integrations.',

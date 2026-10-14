@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, table, ul } from './helpers.js'
 export default {
   slug: 'website-accessibility-basics',
   title: 'Website Accessibility Basics: A Practical WCAG Checklist for Business Sites',
+  metaTitle: 'Website Accessibility Basics',
   shortTitle: 'Website accessibility basics',
   description:
     'Website accessibility basics for business owners: why it matters, the WCAG principles, and a practical checklist for contrast, keyboards, alt text and forms.',

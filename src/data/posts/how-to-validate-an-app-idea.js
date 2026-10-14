@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'how-to-validate-an-app-idea',
   title: 'How to Validate an App Idea Before You Spend a Dollar on Development',
+  metaTitle: 'How to Validate an App Idea',
   shortTitle: 'Validate an app idea',
   description:
     'Test whether your app idea is worth building: define the problem, talk to users, check demand and competitors, run a prototype test and decide with evidence.',

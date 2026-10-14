@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'web-hosting-for-fast-sites',
   title: 'Hosting for Fast Sites: Shared, VPS, Cloud and CDN Compared',
+  metaTitle: 'Web Hosting for Fast Sites: Shared vs VPS vs Cloud',
   shortTitle: 'Web hosting for fast sites',
   description:
     'Web hosting for fast sites: shared vs VPS vs cloud vs managed hosting, what affects speed, server location, caching, CDN, uptime and how to choose a host.',

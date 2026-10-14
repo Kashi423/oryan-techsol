@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, table, ul } from './helper
 export default {
   slug: 'ai-privacy-and-security-for-small-business',
   title: 'AI Privacy and Security for Small Businesses: A Practical Guide',
+  metaTitle: 'AI Privacy & Security for Small Business',
   shortTitle: 'AI privacy and security',
   description:
     'How to use AI tools without exposing customer data: what not to share, vendor questions, data retention, access controls, staff policies and compliance basics.',

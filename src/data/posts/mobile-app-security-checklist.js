@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, ul } from './helpers.
 export default {
   slug: 'mobile-app-security-checklist',
   title: 'Mobile App Security Checklist: 20 Essentials Before You Launch',
+  metaTitle: 'Mobile App Security Checklist',
   shortTitle: 'Mobile app security checklist',
   description:
     'A practical mobile app security checklist: authentication, data storage, network and API security, third-party code, privacy and testing.',

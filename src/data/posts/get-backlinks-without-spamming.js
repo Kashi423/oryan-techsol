@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'get-backlinks-without-spamming',
   title: 'How to Get Backlinks Without Spamming: A Practical Guide',
+  metaTitle: 'How to Get Backlinks Without Spamming',
   shortTitle: 'Get backlinks without spamming',
   description:
     'How to get quality backlinks without spam: link-worthy content, digital PR, partnerships, outreach and the tactics to avoid so you stay safe from penalties.',

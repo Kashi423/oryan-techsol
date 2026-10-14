@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, table, ul } from './helpers.js
 export default {
   slug: 'web-app-vs-website-which-do-you-need',
   title: 'Web App vs. Website: What’s the Difference and Which Do You Need?',
+  metaTitle: 'Web App vs. Website: Which Do You Need?',
   shortTitle: 'Web app vs. website',
   description:
     'Web app or website? Learn the differences in purpose, features, cost and complexity, with examples and a simple checklist to decide which your business needs.',

@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'how-to-reduce-cart-abandonment',
   title: 'How to Reduce Cart Abandonment: 15 Fixes for Your Online Store',
+  metaTitle: 'How to Reduce Cart Abandonment: 15 Fixes',
   shortTitle: 'Reduce cart abandonment',
   description:
     'Why shoppers abandon carts and how to win them back: transparent pricing, faster checkout, trust signals, payment options and recovery emails that work.',

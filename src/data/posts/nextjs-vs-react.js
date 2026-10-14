@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'nextjs-vs-react',
   title: 'Next.js vs. React: When to Use Which for Your Website or App',
+  metaTitle: 'Next.js vs. React: When to Use Which',
   shortTitle: 'Next.js vs. React',
   description:
     'Next.js vs React explained for business owners: how they differ, SEO and performance implications, costs, use cases and how to choose for your website or app.',

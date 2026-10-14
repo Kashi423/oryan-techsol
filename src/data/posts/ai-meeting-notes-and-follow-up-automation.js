@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'ai-meeting-notes-and-follow-up-automation',
   title: 'AI Meeting Notes and Follow-Up Automation: A Practical Guide',
+  metaTitle: 'AI Meeting Notes and Follow-Up Automation',
   shortTitle: 'AI meeting notes and follow-up automation',
   description:
     'AI meeting notes and follow-up automation: how it works, workflows into your CRM and tasks, consent and privacy rules, and mistakes to avoid.',

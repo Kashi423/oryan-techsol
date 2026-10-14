@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, ul } from './helpers.
 export default {
   slug: 'app-store-optimization-basics',
   title: 'App Store Optimization (ASO) Basics: Get Your App Found and Downloaded',
+  metaTitle: 'App Store Optimization (ASO) Basics',
   shortTitle: 'App Store Optimization basics',
   description:
     'App Store Optimization basics: keywords, title, icon, screenshots, ratings and localization for the Apple App Store and Google Play.',

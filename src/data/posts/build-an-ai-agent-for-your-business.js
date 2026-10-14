@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'build-an-ai-agent-for-your-business',
   title: 'How to Build an AI Agent for Your Business, Step by Step',
+  metaTitle: 'How to Build an AI Agent for Your Business',
   shortTitle: 'Build an AI agent for your business',
   description:
     'Step-by-step guide to building an AI agent for your business: choosing a task, tools, data, guardrails, testing, launch and the real costs involved.',

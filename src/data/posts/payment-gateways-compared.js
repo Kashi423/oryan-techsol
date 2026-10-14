@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'payment-gateways-compared',
   title: 'Payment Gateways Compared: Stripe, PayPal and Local Options',
+  metaTitle: 'Payment Gateways Compared',
   shortTitle: 'Payment gateways compared',
   description:
     'Payment gateways compared for small business: how they work, fees, Stripe vs PayPal vs local options, security and PCI, checkout design and how to choose.',

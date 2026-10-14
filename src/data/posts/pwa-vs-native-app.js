@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'pwa-vs-native-app',
   title: 'Progressive Web App (PWA) vs. Native App: Which Is Right for Your Business?',
+  metaTitle: 'PWA vs. Native App: Which to Choose',
   shortTitle: 'PWA vs. native app',
   description:
     'PWA or native app? Compare capabilities, cost, discoverability, offline use, notifications and limitations, with a clear guide to choosing the right approach.',

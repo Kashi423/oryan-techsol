@@ -3,6 +3,7 @@ import { callout, checklist, cta, h2, h3, p, steps, table, ul } from './helpers.
 export default {
   slug: 'crm-automation-ideas-for-small-business',
   title: '12 CRM Automation Ideas for Small Businesses (That Pay for Themselves)',
+  metaTitle: '12 CRM Automation Ideas for Small Business',
   shortTitle: 'CRM automation ideas',
   description:
     'Twelve practical CRM automations for small businesses: lead capture, instant replies, follow-ups, task creation, reminders, reporting and data hygiene.',

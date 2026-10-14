@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'devops-and-ci-cd-for-small-teams',
   title: 'DevOps for Small Teams: CI/CD Without the Complexity',
+  metaTitle: 'DevOps & CI/CD for Small Teams',
   shortTitle: 'DevOps and CI/CD for small teams',
   description:
     'DevOps and CI/CD for small teams explained simply: version control, automated tests, deployment pipelines, environments, monitoring and a starter setup.',

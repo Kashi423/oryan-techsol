@@ -3,6 +3,7 @@ import { bars, callout, checklist, compare, cta, h2, p, steps, table, ul } from 
 export default {
   slug: 'mobile-app-analytics-metrics',
   title: 'Mobile App Analytics: Which Metrics Actually Matter',
+  metaTitle: 'Mobile App Analytics: Metrics That Matter',
   shortTitle: 'Mobile app analytics metrics',
   description:
     'Mobile app analytics explained: the metrics that matter (retention, activation, DAU/MAU, LTV), how to set up tracking, choose tools and avoid vanity numbers.',

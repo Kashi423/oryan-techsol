@@ -3,6 +3,7 @@ import { bars, callout, checklist, compare, cta, h2, h3, p, steps, table, timeli
 export default {
   slug: 'business-process-automation-where-to-start',
   title: 'Business Process Automation: Where to Start (and What to Automate First)',
+  metaTitle: 'Business Process Automation: Where to Start',
   shortTitle: 'Business process automation: where to start',
   description:
     'How to start with business process automation: pick the right workflows, score them, estimate the return and roll out step by step.',

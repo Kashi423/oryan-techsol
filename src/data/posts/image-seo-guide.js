@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'image-seo-guide',
   title: 'Image SEO: How to Get Your Photos Ranking in Google Images',
+  metaTitle: 'Image SEO: Rank Your Photos in Google Images',
   shortTitle: 'Image SEO guide',
   description:
     'Image SEO guide: file names, alt text, formats, compression, responsive images, image sitemaps and structured data to rank in Google Images and speed up pages.',

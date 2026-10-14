@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'prompt-engineering-for-business-teams',
   title: 'Prompt Engineering for Business Teams: A Practical Guide',
+  metaTitle: 'Prompt Engineering for Business Teams',
   shortTitle: 'Prompt engineering for business teams',
   description:
     'Prompt engineering for business teams: write clear prompts, use examples and structured output, test, share prompt libraries and avoid common mistakes.',

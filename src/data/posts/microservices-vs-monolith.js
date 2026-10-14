@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'microservices-vs-monolith',
   title: 'Microservices vs. Monolith: What Small Teams Should Choose',
+  metaTitle: 'Microservices vs. Monolith',
   shortTitle: 'Microservices vs. monolith',
   description:
     'Microservices vs monolith for small teams: pros, cons, costs, when to split, the modular monolith middle path and a decision checklist for startups.',

@@ -45,7 +45,7 @@ export default function BlogPost() {
   return (
     <>
       <Seo
-        title={post.title}
+        title={post.metaTitle ?? post.title}
         description={post.description}
         keywords={post.keywords}
         image={image}

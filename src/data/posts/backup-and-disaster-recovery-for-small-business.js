@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'backup-and-disaster-recovery-for-small-business',
   title: 'Data Backup and Disaster Recovery for Small Businesses',
+  metaTitle: 'Backup & Disaster Recovery for Small Business',
   shortTitle: 'Backup and disaster recovery',
   description:
     'Backup and disaster recovery for small business: the 3-2-1 rule, RTO and RPO, what to back up, ransomware protection, testing restores and a practical plan.',

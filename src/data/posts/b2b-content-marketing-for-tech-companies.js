@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'b2b-content-marketing-for-tech-companies',
   title: 'Content Marketing for B2B Tech Companies: A Simple System That Works',
+  metaTitle: 'Content Marketing for B2B Tech Companies',
   shortTitle: 'B2B content marketing for tech companies',
   description:
     'A simple B2B content marketing system for tech companies: audience, topics, formats, distribution, lead capture and the metrics that show it is working.',

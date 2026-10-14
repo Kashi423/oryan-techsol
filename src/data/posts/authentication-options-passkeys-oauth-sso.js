@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'authentication-options-passkeys-oauth-sso',
   title: 'Authentication Options: Passwords, OAuth, Passkeys and SSO',
+  metaTitle: 'Authentication Options: Passkeys, OAuth, SSO',
   shortTitle: 'Authentication options',
   description:
     'Authentication options explained: passwords, MFA, social login, OAuth, passkeys and SSO. Compare security and experience, and decide whether to build or buy.',

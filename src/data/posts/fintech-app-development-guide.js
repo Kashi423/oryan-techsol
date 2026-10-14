@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'fintech-app-development-guide',
   title: 'Fintech App Development: Compliance, Security and Costs',
+  metaTitle: 'Fintech App Development',
   shortTitle: 'Fintech app development',
   description:
     'Fintech app development guide: app types, compliance and licensing, security requirements, key features, build approaches, costs and common mistakes.',

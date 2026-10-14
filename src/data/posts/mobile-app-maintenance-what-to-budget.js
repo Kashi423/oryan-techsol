@@ -3,6 +3,7 @@ import { bars, callout, checklist, cta, h2, h3, p, table, ul } from './helpers.j
 export default {
   slug: 'mobile-app-maintenance-what-to-budget',
   title: 'Mobile App Maintenance Costs: What to Budget After Launch',
+  metaTitle: 'Mobile App Maintenance Costs',
   shortTitle: 'Mobile app maintenance costs',
   description:
     'What mobile app maintenance includes after launch: OS updates, bug fixes, security, hosting and store fees, plus a realistic yearly budget percentage.',

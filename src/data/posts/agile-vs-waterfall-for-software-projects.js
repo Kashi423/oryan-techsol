@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, h3, p, steps, table, ul } from '.
 export default {
   slug: 'agile-vs-waterfall-for-software-projects',
   title: 'Agile vs. Waterfall: Which Approach Is Better for Your Software Project?',
+  metaTitle: 'Agile vs. Waterfall for Software Projects',
   shortTitle: 'Agile vs. waterfall',
   description:
     'Agile or waterfall? Compare how each works, pros and cons, how budgets and contracts differ, and which fits your software project, including hybrids.',

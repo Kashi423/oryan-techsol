@@ -3,6 +3,7 @@ import { callout, checklist, compare, cta, h2, p, steps, table, ul } from './hel
 export default {
   slug: 'website-maintenance-plans-and-costs',
   title: 'Website Maintenance Plans: What You Get and What to Pay',
+  metaTitle: 'Website Maintenance Plans',
   shortTitle: 'Website maintenance plans and costs',
   description:
     'What website maintenance includes, typical monthly costs, what to look for in a plan, DIY vs agency care and warning signs that your site is being neglected.',
