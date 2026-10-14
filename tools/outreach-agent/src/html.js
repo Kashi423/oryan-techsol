@@ -66,7 +66,7 @@ ${blocks(body, name)}
         <div style="font-weight:700;color:${NAVY};">${esc(name)}</div>
         <div style="color:${MUTED};">Oryan Techsol &middot; Innovate &middot; Integrate &middot; Elevate</div>
         <div style="margin-top:6px;font-size:12px;color:${MUTED};">${esc(servicesLine())}</div>
-        <div style="margin-top:6px;"><a href="${esc(site)}" style="color:${CYAN};text-decoration:none;">${esc(site.replace(/^https?:\/\//, ''))}</a>${config.phone ? ` &middot; <span style="color:${MUTED};">${esc(config.phone)}</span>` : ''}</div>
+        <div style="margin-top:6px;"><a href="${esc(site)}" style="color:${CYAN};text-decoration:none;">${esc(site.replace(/^https?:\/\//, ''))}</a></div>
       </td></tr></table>
     </td></tr>
     <tr><td style="background:#f8fafc;padding:16px 28px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:${MUTED};border-top:1px solid #e2e8f0;">
