@@ -164,3 +164,7 @@ Running real searches and real websites found problems that test data never did.
 - The signature is added in code if the AI omits it.
 - Blocked claims: result promises ("ensure you never miss", "secure more sign-ups"), certainties ("does not have", "doesn't currently feature"), and generalisations about customers ("visitors who prefer messaging").
 - A slow or retired AI model can no longer stall a batch: 30-second timeouts, model fallback, then the template.
+
+## Real proof, matched to the business
+
+Proof points (Setup > Services & starting prices) are used only where they fit: a clinic portal is offered to dentists, clinics and doctors, a pharmacy system to pharmacies, a school portal to schools, a hotel booking platform to hotels and travel. A proof point that names no industry counts as general and can be used for anyone. A plumber never sees a school portal. The line is used word for word and never invented.

@@ -37,6 +37,33 @@ export function proofPoints() {
   return Array.isArray(p) ? p.filter((x) => typeof x === 'string' && x.trim()).slice(0, 5) : []
 }
 
+// Which kind of business a proof point speaks to: [what the lead looks like, what the proof says].
+const INDUSTRIES = [
+  [/clinic|dental|dentist|orthodont|doctor|medical|physio|health|surgeon|hospital|wellness|optic|chiropract/i, /clinic|patient|dental|medical/i],
+  [/pharmac|chemist|drug ?store/i, /pharmac/i],
+  [/school|academy|college|tutor|education|institute|kindergarten|montessori|training/i, /school|student|education/i],
+  [/hotel|resort|motel|lodg|travel|hostel|villa|guest ?house/i, /hotel|travel|stays?\b/i],
+]
+const ALL_PROOF_TOPICS = new RegExp(INDUSTRIES.map(([, p]) => p.source).join('|'), 'i')
+
+/**
+ * The one real proof point that fits this business, or null.
+ * An industry-specific proof is used only for that industry (a school portal is not shown to a
+ * plumber). A proof that names no industry at all counts as general and may be used for anyone.
+ */
+export function proofFor(lead) {
+  const proofs = proofPoints()
+  if (!proofs.length) return null
+  const hay = `${lead?.category ?? ''} ${lead?.name ?? ''}`
+  for (const [leadRe, proofRe] of INDUSTRIES) {
+    if (leadRe.test(hay)) {
+      const hit = proofs.find((p) => proofRe.test(p))
+      if (hit) return hit
+    }
+  }
+  return proofs.find((p) => !ALL_PROOF_TOPICS.test(p)) ?? null
+}
+
 export function saveProof(lines) {
   const proof = String(Array.isArray(lines) ? lines.join('\n') : lines ?? '')
     .split('\n').map((l) => l.trim().replace(/\s+/g, ' ')).filter(Boolean).slice(0, 5)

@@ -2,7 +2,7 @@
 // and as the fallback when the AI is unavailable or keeps making a claim we cannot support.
 // Shape follows the research: a specific true observation, one fix, one easy interest question.
 import { config } from './config.js'
-import { startingPrice, money, proofPoints } from './catalog.js'
+import { startingPrice, money, proofFor } from './catalog.js'
 import { PHRASES } from './offer.js'
 import { auditBullets, shortName } from './findings.js'
 
@@ -63,7 +63,7 @@ export function templateDraft(lead, { step = 0, previous = null, variant = 'A', 
 
   if (step > 0) {
     const reSubject = previous?.subject ? `Re: ${previous.subject.replace(/^Re:\s*/i, '')}` : `Following up: ${shortName(name)}`
-    const proof = proofPoints()[0]
+    const proof = proofFor(lead)
     const bodies = {
       1: bullets[0]
         ? `Hi,\n\nOne quick thing I'd fix first on your site: ${lowerFirst(stripDot(bullets[0]).replace(/^I couldn't (spot|see|find)/i, "it wasn't easy to spot"))}. It's usually a small change.\n\nHappy to send the short list if it's useful.\n\n${sign}`
@@ -100,11 +100,13 @@ export function templateDraft(lead, { step = 0, previous = null, variant = 'A', 
   ]
   // "That is something we do" only makes sense right after a finding; otherwise use the plain wording.
   const fix = finding ? fixes[(h >>> 5) % fixes.length] : fixes[0]
+  // One true, relevant proof sentence when you have one for this kind of business (never invented).
+  const proofLine = proofFor(lead)
   // Paragraph 3: one easy interest-based question.
   const ask = ASKS[h % ASKS.length](Math.max(1, bullets.length))
   const subject = subjectFor(lead, variant, h)
   const body = tone === 'short'
     ? `Hi,\n\n${finding || first} ${ask}\n\n${sign}`
-    : `Hi,\n\n${first}\n\n${fix} ${ask}\n\n${sign}`
+    : `Hi,\n\n${first}\n\n${fix}${proofLine ? ` ${stripDot(proofLine)}.` : ''} ${ask}\n\n${sign}`
   return { subject, body }
 }

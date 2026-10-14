@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { config } from './config.js'
 import { templateDraft } from './template.js'
-import { startingPrice, money, servicesLine, proofPoints } from './catalog.js'
+import { startingPrice, money, servicesLine, proofFor } from './catalog.js'
 import { auditBullets } from './findings.js'
 
 const systemPrompt = (signOff) => `You write cold outreach emails for Oryan Techsol, a small software company that builds custom websites, mobile apps, AI business chatbots and automation for local businesses. Every email must read like a short note from one person who really looked at THEIR business, not a template.
@@ -169,10 +169,11 @@ async function draftWithAi(lead, { step, previous, client, variant, tone, signOf
   const priceLine = price
     ? `\nStarting price you may quote, exactly as written: "from ${money(price)}". Do not round it, discount it, or compare it with others.`
     : '\nNo price is supplied: do not mention any price, cost or how affordable we are.'
-  const proof = proofPoints()
-  const proofLine = proof.length
-    ? `\nReal proof you may use, verbatim, at most one: ${proof.map((p) => `"${p}"`).join(' | ')}`
-    : '\nNo proof points are supplied: do not mention past clients, projects or results.'
+  // Only proof that fits THIS kind of business is offered (a school portal is not shown to a plumber).
+  const proof = proofFor(lead)
+  const proofLine = proof
+    ? `\nReal, relevant proof you may use verbatim as one short sentence: "${proof}"`
+    : '\nNo relevant proof point is supplied: do not mention past clients, projects or results.'
   const offer = (lead.offer ? `\nLead with this one thing: ${lead.offer}. Do not list other services.` : '') + priceLine + proofLine
   const base = `${task}${step === 0 ? '\n' + (STYLE[variant] ?? STYLE.A) : ''}${TONES[tone] ? '\n' + TONES[tone] : ''}${offer}\n\nFacts:\n${facts(lead)}`
   let problem = null

@@ -80,25 +80,46 @@ test('sequence: three follow-ups on days 3, 7 and 14, then stop', () => {
   assert.equal(dueFollowUps(db).length, 0, 'sequence finished after the break-up note')
 })
 
-test('proof: none is claimed unless YOU supply it; supplied proof is used verbatim and links are refused', async () => {
+test('proof: none is claimed unless YOU supply it, and only relevant proof is used', async () => {
   useMemoryCatalog({})
   assert.deepEqual(proofPoints(), [])
   const seen = []
   const client = { messages: { create: async ({ messages }) => { seen.push(messages[0].content); return { content: [{ type: 'text', text: '{"subject":"Acme booking","body":"Acme: want the quick fix?"}' }] } } } }
-  const lead = { id: 1, name: 'Acme', website: 'https://a.test', observations: '[]' }
-  await draftEmail(lead, { client })
-  assert.match(seen[0], /No proof points are supplied/)
-  saveProof('We built a booking site for a dental clinic.\n\n  We automated invoicing for a small shop  ')
-  assert.deepEqual(proofPoints(), ['We built a booking site for a dental clinic.', 'We automated invoicing for a small shop'])
-  await draftEmail(lead, { client })
-  assert.match(seen[1], /Real proof you may use, verbatim, at most one: "We built a booking site/)
+  const dentist = { id: 1, name: 'Acme Dental', category: 'Dentist', website: 'https://a.test', observations: '[]' }
+  const plumber = { id: 2, name: 'Acme Plumbing', category: 'Plumber', website: 'https://p.test', observations: '[]' }
+  await draftEmail(dentist, { client })
+  assert.match(seen[0], /No relevant proof point is supplied/)
+
+  saveProof(['We built an appointment and patient-record portal for a clinic.', '  We built a CRM portal for a school  '])
+  assert.deepEqual(proofPoints(), ['We built an appointment and patient-record portal for a clinic.', 'We built a CRM portal for a school'])
+  await draftEmail(dentist, { client })
+  assert.match(seen[1], /Real, relevant proof you may use verbatim as one short sentence: "We built an appointment and patient-record portal/)
+  await draftEmail(plumber, { client })
+  assert.match(seen[2], /No relevant proof point is supplied/, 'a clinic or school portal is not shown to a plumber')
+
   assert.throws(() => saveProof('See https://x.test for our work'), /cannot contain links/)
   assert.throws(() => saveProof('x'.repeat(200)), /under 160/)
   saveCatalog({ web: 499 })
   assert.equal(proofPoints().length, 2, 'saving prices keeps your proof points')
-  // template follow-up 2 uses proof verbatim when present
-  const t = templateDraft(lead, { step: 2, previous: { subject: 'S' } })
-  assert.match(t.body, /We built a booking site for a dental clinic/)
+
+  // The template uses the proof verbatim, for the right business only
+  const t0 = templateDraft({ ...dentist, offer: 'online booking or enquiry system', audit: JSON.stringify({ bullets: ["I couldn't spot an online booking option on the homepage."] }) })
+  assert.match(t0.body, /We built an appointment and patient-record portal for a clinic\./)
+  assert.ok(!/school/i.test(templateDraft(plumber).body))
+  const t2 = templateDraft(dentist, { step: 2, previous: { subject: 'S' } })
+  assert.match(t2.body, /We built an appointment and patient-record portal for a clinic/)
+})
+
+test('proofFor: industry matching, general proof usable by anyone', async () => {
+  const { proofFor } = await import('../src/catalog.js')
+  useMemoryCatalog({})
+  saveProof(['We built a point-of-sale system for a pharmacy.', 'We built Skylark, an online booking platform for luxury hotel stays.', 'We build custom software for small businesses.'])
+  assert.match(proofFor({ name: 'Green Cross Pharmacy' }), /pharmacy/)
+  assert.match(proofFor({ category: 'Hotel', name: 'Seaview Resort' }), /Skylark/)
+  assert.match(proofFor({ name: 'Joe Plumbing', category: 'Plumber' }), /custom software for small businesses/, 'general proof is usable')
+  saveProof(['We built a point-of-sale system for a pharmacy.'])
+  assert.equal(proofFor({ name: 'Joe Plumbing', category: 'Plumber' }), null, 'only industry proof exists: nothing for a plumber')
+  assert.equal(proofFor({ name: 'Bright Smile Dental', category: 'Dentist' }), null, 'no clinic proof: nothing')
 })
 
 test('first email follows the research shape: short, specific, interest question, no call ask', () => {
