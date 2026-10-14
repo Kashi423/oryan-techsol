@@ -1,58 +1,42 @@
 import {
   ArrowDown,
   ArrowRight,
-  BedDouble,
   Bell,
   Blocks,
   Bot,
-  Briefcase,
   Brain,
   Building2,
   CalendarCheck,
   CheckCircle2,
-  Clock,
-  ClipboardList,
   Code2,
   Compass,
   Database,
   FileSearch,
-  FileText,
-  Globe,
-  GraduationCap,
   Hammer,
-  HeartPulse,
-  Headset,
   HelpCircle,
-  Landmark,
   Layers,
   LayoutGrid,
   ListChecks,
-  Megaphone,
   Network,
   Plug2,
-  Quote,
   RefreshCw,
   Repeat,
   Rocket,
   Search,
   ShoppingCart,
-  Shuffle,
   Smartphone,
   Sparkles,
-  Star,
   Target,
   Ticket,
   TrendingDown,
-  Truck,
-  Unplug,
   User,
   UserPlus,
   Users,
   Workflow,
   Zap,
 } from 'lucide-react'
-import { AnimatePresence, m, useInView } from 'framer-motion'
-import { Fragment, useRef, useState } from 'react'
+import { m, useInView } from 'framer-motion'
+import { Fragment, useRef } from 'react'
 import { Link } from 'react-router'
 import LogoMark from '@/components/brand/LogoMark'
 import Seo from '@/components/seo/Seo'
@@ -70,43 +54,17 @@ import {
   TypeCard,
 } from '@/components/ui'
 import { primaryCta } from '@/config/site'
-import { categories, categoriesInUse, hasSamples } from '@/data/caseStudies'
+import { hasSamples } from '@/data/caseStudies'
 import { useCaseStudies } from '@/lib/cms/store'
-import { testimonials } from '@/data/testimonials'
 import { cn } from '@/lib/cn'
 
 const trustIndicators = ['Custom Apps & Software', 'AI-Powered Automation', 'Scalable Technology']
 
-const problems = [
-  { icon: Headset, label: 'Manual customer support' },
-  { icon: ClipboardList, label: 'Repetitive data entry' },
-  { icon: Clock, label: 'Slow lead responses' },
-  { icon: Shuffle, label: 'Scattered business systems' },
-  { icon: FileText, label: 'Manual reporting' },
-  { icon: Repeat, label: 'Inefficient workflows' },
-  { icon: Globe, label: 'Outdated websites' },
-  { icon: Unplug, label: 'Disconnected software' },
-  { icon: TrendingDown, label: 'Missed opportunities' },
-]
 
 // Each row pairs one "before" pain with the specific "after" outcome that fixes it, rather
 // than two unrelated lists that happen to sit side by side — the icon changes per concept
 // (manual work vs. automation, waiting vs. real-time routing, siloed tools vs. one stack)
 // instead of a generic minus/check mark repeated three times.
-const transformations = [
-  {
-    before: { icon: ClipboardList, label: 'Manual', description: "Repetitive tasks like data entry and follow-ups eat up your team's time." },
-    after: { icon: Zap, label: 'Automated', description: 'AI bots and workflows handle the repetitive work around the clock.' },
-  },
-  {
-    before: { icon: Clock, label: 'Slow', description: 'Leads and customers wait hours, sometimes days, for a response.' },
-    after: { icon: Brain, label: 'Intelligent', description: 'Systems that route, prioritise and respond based on real data.' },
-  },
-  {
-    before: { icon: Unplug, label: 'Disconnected', description: "Data is scattered across tools that don't talk to each other." },
-    after: { icon: Plug2, label: 'Connected', description: 'One integrated stack — a single source of truth for your business.' },
-  },
-]
 
 // AI Bots & AI Agents is a distinct specialty, not one card in a generic list — real
 // examples of what gets built, not a "we do chatbots" one-liner.
@@ -219,93 +177,6 @@ const processSteps = [
 // Not a claim of certified expertise in each field — the same custom web, software and AI
 // building blocks, shaped around how each type of business actually operates. Examples,
 // not fixed packages.
-const industries = [
-  {
-    name: 'E-commerce',
-    icon: ShoppingCart,
-    solutions: ['Customer support AI', 'Order-status assistant', 'Product recommendation', 'Marketing automation'],
-  },
-  {
-    name: 'Real Estate',
-    icon: Building2,
-    solutions: ['AI lead qualification', 'Property inquiry bot', 'Appointment scheduling', 'CRM automation'],
-  },
-  {
-    name: 'Healthcare',
-    icon: HeartPulse,
-    solutions: [
-      'Appointment booking assistant',
-      'Patient FAQ bot',
-      'Intake form automation',
-      'Reminder & follow-up automation',
-    ],
-  },
-  {
-    name: 'Education',
-    icon: GraduationCap,
-    solutions: [
-      'Admissions inquiry bot',
-      'Course FAQ assistant',
-      'Enrollment automation',
-      'Student support ticketing',
-    ],
-  },
-  {
-    name: 'Hospitality',
-    icon: BedDouble,
-    solutions: [
-      'Booking & reservations bot',
-      'Guest inquiry assistant',
-      'Review & feedback automation',
-      'Concierge-style FAQ bot',
-    ],
-  },
-  {
-    name: 'Professional Services',
-    icon: Briefcase,
-    solutions: ['Client intake bot', 'Appointment scheduling', 'Document automation', 'CRM & follow-up automation'],
-  },
-  {
-    name: 'Finance',
-    icon: Landmark,
-    solutions: [
-      'Lead qualification bot',
-      'Client FAQ assistant',
-      'Document processing automation',
-      'Internal reporting automation',
-    ],
-  },
-  {
-    name: 'Logistics',
-    icon: Truck,
-    solutions: [
-      'Shipment status assistant',
-      'Customer inquiry bot',
-      'Order tracking automation',
-      'Dispatch notification automation',
-    ],
-  },
-  {
-    name: 'Agencies',
-    icon: Megaphone,
-    solutions: [
-      'Client onboarding bot',
-      'Project status assistant',
-      'Internal workflow automation',
-      'Reporting automation',
-    ],
-  },
-  {
-    name: 'Startups',
-    icon: Rocket,
-    solutions: ['MVP web & app development', 'Lead capture bot', 'Internal tooling automation', 'Customer support assistant'],
-  },
-  {
-    name: 'Small & Medium Businesses',
-    icon: Users,
-    solutions: ['Customer support bot', 'Appointment booking', 'Internal process automation', 'Simple CRM setup'],
-  },
-]
 
 const differentiators = [
   {
@@ -413,129 +284,15 @@ function HeroVisual() {
 
 // Muted (not alarmist) problem tile — grey ink tones, no hover treatment, since these
 // describe the visitor's current state rather than something to click or celebrate.
-function ProblemTile({ icon: Icon, label, delay = 0 }) {
-  return (
-    <Reveal delay={delay}>
-      {/* No lift/border-highlight (that would read as "clickable") — just a quiet darkening,
-          fitting for a tile describing a pain point rather than something to celebrate. A
-          faint danger-tinted icon (not the brand cyan) marks these as "the problem", visually
-          distinct from every other icon treatment on the page, which is reserved for solutions. */}
-      <Card
-        padding="none"
-        className="group relative flex h-full items-center gap-4 overflow-hidden py-5 pr-5 pl-6 transition-colors duration-200 hover:bg-surface-muted"
-      >
-        <span aria-hidden="true" className="absolute inset-y-3 left-0 w-1 rounded-full bg-danger/25" />
-        <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-danger/8 text-danger/70 transition-transform duration-200 group-hover:scale-110">
-          <Icon className="size-5" aria-hidden="true" />
-        </span>
-        <p className="font-display text-sm font-semibold text-fg-muted">{label}</p>
-      </Card>
-    </Reveal>
-  )
-}
 
 // One paired row of the before/after comparison: the specific pain on the left and the
 // specific outcome that fixes it on the right, joined by a connector arrow — so each
 // transformation reads as its own before→after story instead of two unrelated lists that
 // happen to sit side by side.
-function TransformationRow({ before, after, index }) {
-  const BeforeIcon = before.icon
-  const AfterIcon = after.icon
-  return (
-    <Reveal delay={index * 0.08}>
-      <div className="grid items-stretch gap-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4">
-        <div className="group flex items-start gap-3.5 rounded-2xl border border-line bg-surface-raised p-5 transition-colors duration-200 hover:border-fg-subtle/30">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-fg-subtle/10 text-fg-subtle transition-transform duration-200 group-hover:scale-105">
-            <BeforeIcon className="size-5" aria-hidden="true" />
-          </span>
-          <div>
-            <Badge className="w-fit border-fg-subtle/25 bg-fg-subtle/5 py-0.5 text-[10px] tracking-[0.15em] text-fg-subtle uppercase sm:hidden">
-              Before
-            </Badge>
-            <p className="mt-1.5 font-display text-sm font-bold text-fg-muted sm:mt-0">{before.label}</p>
-            <p className="mt-1 text-sm leading-relaxed text-fg-muted">{before.description}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-center py-1 sm:py-0">
-          <span className="relative flex size-10 shrink-0 rotate-90 items-center justify-center rounded-full bg-primary text-primary-fg shadow-button sm:rotate-0">
-            <span
-              aria-hidden="true"
-              className="motion-safe:absolute motion-safe:inset-0 motion-safe:animate-ping motion-safe:rounded-full motion-safe:bg-primary/50"
-            />
-            <ArrowRight className="relative size-4" aria-hidden="true" />
-          </span>
-        </div>
-
-        <div
-          data-tone="inverse"
-          className="group relative flex items-start gap-3.5 overflow-hidden rounded-2xl bg-surface p-5 shadow-card ring-1 ring-highlight/15 transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:ring-highlight/30"
-        >
-          <div aria-hidden="true" className="bg-glow absolute -top-10 -right-10 h-28 w-28 opacity-70" />
-          <span className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button transition-transform duration-200 group-hover:scale-105">
-            <AfterIcon className="size-5" aria-hidden="true" />
-          </span>
-          <div className="relative">
-            <Badge className="w-fit border-transparent bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] py-0.5 text-[10px] tracking-[0.15em] text-white uppercase shadow-button sm:hidden">
-              After
-            </Badge>
-            <p className="mt-1.5 font-display text-sm font-bold text-fg sm:mt-0">{after.label}</p>
-            <p className="mt-1 text-sm leading-relaxed text-fg-muted">{after.description}</p>
-          </div>
-        </div>
-      </div>
-    </Reveal>
-  )
-}
 
 // Problem/solution section: the visitor's current pain (a muted grid of 9 common issues),
 // a plain-language transition line, then a before/after comparison. Deliberately no stats
 // or superlatives here — those belong in the proof sections (case studies), not the pitch.
-function ProblemsSection() {
-  return (
-    <Section aria-labelledby="problems-title">
-      <SectionHeading
-        as="h2"
-        id="problems-title"
-        eyebrow="The problem"
-        align="center"
-        title="Your business shouldn't run on repetitive work."
-        description="Most growing teams lose hours every week to tasks that technology could already be handling."
-        className="mx-auto"
-      />
-
-      <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {problems.map((problem, index) => (
-          <li key={problem.label}>
-            <ProblemTile icon={problem.icon} label={problem.label} delay={index * 0.03} />
-          </li>
-        ))}
-      </ul>
-
-      <Reveal delay={0.1}>
-        <p className="mx-auto mt-16 max-w-2xl text-center font-display text-2xl font-bold text-fg sm:text-3xl">
-          OryanTechsol turns these processes into intelligent digital systems.
-        </p>
-      </Reveal>
-
-      <div className="mt-12 hidden items-center gap-4 sm:grid sm:grid-cols-[1fr_auto_1fr]">
-        <Badge className="w-fit border-fg-subtle/25 bg-fg-subtle/5 tracking-[0.2em] text-fg-subtle uppercase">
-          Before
-        </Badge>
-        <span aria-hidden="true" className="w-10" />
-        <Badge className="w-fit border-transparent bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] tracking-[0.2em] text-white uppercase shadow-button">
-          After
-        </Badge>
-      </div>
-
-      <div className="mt-3 space-y-4 sm:mt-1">
-        {transformations.map((row, index) => (
-          <TransformationRow key={row.before.label} before={row.before} after={row.after} index={index} />
-        ))}
-      </div>
-    </Section>
-  )
-}
 
 // Sets the pointer position over a card as CSS custom properties (no React re-render per
 // frame) so a radial-gradient overlay can follow the cursor — the "premium SaaS" spotlight
@@ -935,100 +692,6 @@ function ProcessSection() {
 // Interactive, not decorative: picking an industry swaps in real example solutions rather
 // than just listing names. Plain toggle buttons (not an ARIA tablist) — this is a filter,
 // not tabbed content, so native button semantics already give correct keyboard support.
-function IndustriesSection() {
-  const [active, setActive] = useState(0)
-  const industry = industries[active]
-
-  return (
-    <Section tone="muted" aria-labelledby="industries-title">
-      <SectionHeading
-        as="h2"
-        id="industries-title"
-        eyebrow="Industries"
-        align="center"
-        title="Built to fit how you work."
-        description="We're not certified specialists in every field — but custom software and AI adapt to how any business actually operates. Pick an industry to see what that can look like."
-        className="mx-auto"
-      />
-
-      <Reveal delay={0.05}>
-        <div className="mt-12 flex flex-wrap justify-center gap-2">
-          {industries.map((ind, index) => (
-            <button
-              key={ind.name}
-              type="button"
-              aria-pressed={index === active}
-              onClick={() => setActive(index)}
-              className={cn(
-                'inline-flex items-center gap-2 rounded-full border px-4 py-2 font-display text-sm font-semibold transition-[background-color,border-color,color,box-shadow] duration-200',
-                index === active
-                  ? 'border-transparent bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] text-white shadow-button'
-                  : 'border-line-strong bg-surface-raised text-fg-muted hover:border-highlight/50 hover:text-fg',
-              )}
-            >
-              <ind.icon className="size-4" aria-hidden="true" />
-              {ind.name}
-            </button>
-          ))}
-        </div>
-      </Reveal>
-
-      <Reveal delay={0.1}>
-        <div className="mx-auto mt-8 max-w-2xl" aria-live="polite">
-          <AnimatePresence mode="wait">
-            <m.div
-              key={industry.name}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Card className="overflow-hidden" padding="none">
-                <div className="flex items-center gap-4 bg-linear-to-br from-[var(--gradient-from)] to-[var(--gradient-to)] px-6 py-5 sm:px-8">
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/30">
-                    <industry.icon className="size-5" aria-hidden="true" />
-                  </span>
-                  <p className="font-display text-sm font-bold tracking-[0.1em] text-white uppercase">
-                    {industry.name}
-                  </p>
-                </div>
-                <div className="p-6 sm:p-8">
-                <p className="text-sm text-fg-muted">
-                  Examples of what this can look like — not a fixed package, shaped around how
-                  your business actually works.
-                </p>
-                <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {industry.solutions.map((solution) => (
-                    <li key={solution}>
-                      <div className="group flex items-center gap-2.5 rounded-xl border border-line bg-surface-muted px-4 py-3 transition-colors duration-200 hover:border-highlight/40 hover:bg-highlight/5">
-                        <CheckCircle2
-                          className="size-4 shrink-0 text-highlight transition-transform duration-200 group-hover:scale-110"
-                          aria-hidden="true"
-                        />
-                        <span className="text-sm font-semibold text-fg">{solution}</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                </div>
-              </Card>
-            </m.div>
-          </AnimatePresence>
-        </div>
-      </Reveal>
-
-      <Reveal delay={0.15}>
-        <p className="mt-8 text-center text-sm text-fg-subtle">
-          Don't see your exact industry?{' '}
-          <Link to="/contact" className="font-semibold text-highlight hover:underline">
-            Let's talk about your specific workflow
-          </Link>
-          .
-        </p>
-      </Reveal>
-    </Section>
-  )
-}
 
 // Homepage preview of the portfolio: filterable grid over the shared caseStudies data
 // (src/data/caseStudies.js), so a full /portfolio page can read the exact same source
@@ -1036,9 +699,8 @@ function IndustriesSection() {
 // see that file's header comment for how to replace one with a real project.
 function PortfolioSection() {
   const caseStudies = useCaseStudies()
-  const [activeCategory, setActiveCategory] = useState('all')
-  const visible =
-    activeCategory === 'all' ? caseStudies : caseStudies.filter((project) => project.category === activeCategory)
+  // A short preview; the full filterable list lives on /portfolio.
+  const visible = caseStudies.slice(0, 3)
 
   return (
     <Section aria-labelledby="portfolio-title">
@@ -1052,37 +714,7 @@ function PortfolioSection() {
         className="mx-auto"
       />
 
-      <Reveal delay={0.05}>
-        <div className="mt-12 flex flex-wrap justify-center gap-2">
-          {categoriesInUse(caseStudies, categories).map((category) => (
-            <button
-              key={category.value}
-              type="button"
-              aria-pressed={category.value === activeCategory}
-              onClick={() => setActiveCategory(category.value)}
-              className={cn(
-                'rounded-full border px-4 py-2 font-display text-sm font-semibold transition-colors duration-200',
-                category.value === activeCategory
-                  ? 'border-primary bg-primary text-primary-fg'
-                  : 'border-line-strong bg-surface-raised text-fg-muted hover:border-highlight/50 hover:text-fg',
-              )}
-            >
-              {category.label}
-            </button>
-          ))}
-        </div>
-      </Reveal>
-
-      {/* Keying the whole grid by category makes filtering remount-and-fade cleanly — a
-          per-card AnimatePresence exit inside a CSS grid is a known-fragile combination
-          (grid track sizing and popLayout's absolute-position exit trick don't mix well). */}
-      <m.ul
-        key={activeCategory}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-      >
+      <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((project) => (
           <li key={project.slug}>
             <CaseStudyCard
@@ -1097,7 +729,13 @@ function PortfolioSection() {
             />
           </li>
         ))}
-      </m.ul>
+      </ul>
+      <div className="mt-10 text-center">
+        <Button to="/portfolio" variant="secondary" size="lg">
+          View all projects
+          <ArrowRight aria-hidden="true" />
+        </Button>
+      </div>
     </Section>
   )
 }
@@ -1132,51 +770,9 @@ function WhySection() {
 
 // Initials avatar fallback — same approach as the (now-unused-here) <TestimonialCard>: keeps
 // every entry visually consistent without depending on client photos.
-function initials(name) {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
-}
 
 // One switcher pill — the active entry's whole quote lives in the panel above, so this only
 // needs to carry enough to identify who's currently speaking and invite picking someone else.
-function TestimonialSwitcher({ testimonial, active, onSelect }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onSelect}
-      className={cn(
-        'flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-[background-color,border-color,box-shadow] duration-200',
-        active
-          ? 'border-transparent bg-linear-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] shadow-button'
-          : 'border-line bg-surface-raised hover:border-highlight/40',
-      )}
-    >
-      <span
-        aria-hidden="true"
-        className={cn(
-          'flex size-9 shrink-0 items-center justify-center rounded-full font-display text-xs font-bold',
-          active ? 'bg-white/20 text-white' : 'bg-highlight/10 text-highlight',
-        )}
-      >
-        {initials(testimonial.name)}
-      </span>
-      <span>
-        <span className={cn('block font-display text-sm font-bold', active ? 'text-white' : 'text-fg')}>
-          {testimonial.name}
-        </span>
-        <span className={cn('block text-xs', active ? 'text-white/80' : 'text-fg-subtle')}>
-          {testimonial.company}
-        </span>
-      </span>
-    </button>
-  )
-}
 
 // One large featured quote instead of a flat 3-up grid — reads as a pull-quote rather than
 // three interchangeable boxes, and gives a short quote room to actually carry weight on the
@@ -1184,113 +780,6 @@ function TestimonialSwitcher({ testimonial, active, onSelect }) {
 // taller for each one. All three entries are placeholders today (src/data/testimonials.js);
 // `placeholder` styling (dashed border, muted quote) keeps that honest if a future entry needs
 // it, same as the shared <TestimonialCard> this replaces.
-function TestimonialsSection() {
-  const [active, setActive] = useState(0)
-  const testimonial = testimonials[active]
-  // No real testimonials yet: show nothing rather than made-up ones (see src/data/testimonials.js).
-  if (!testimonial) return null
-
-  return (
-    <Section aria-labelledby="testimonials-title">
-      <SectionHeading
-        as="h2"
-        id="testimonials-title"
-        eyebrow="Client feedback"
-        align="center"
-        title="What clients say."
-        description="A few words from teams we've worked with."
-        className="mx-auto"
-      />
-
-      <div className="mx-auto mt-12 max-w-2xl" aria-live="polite">
-        <AnimatePresence mode="wait">
-          <m.div
-            key={testimonial.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Card
-              as="figure"
-              className={cn('relative overflow-hidden', testimonial.placeholder && 'border-dashed')}
-            >
-              <Quote
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-4 -left-2 size-28 text-highlight/[0.07]"
-              />
-
-              <div className="relative flex flex-wrap items-center justify-between gap-3">
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={cn('size-4', testimonial.placeholder ? 'fill-fg-subtle/40 text-fg-subtle/40' : 'fill-highlight text-highlight')}
-                      aria-hidden="true"
-                    />
-                  ))}
-                </div>
-                {testimonial.projectType && <Badge>{testimonial.projectType}</Badge>}
-              </div>
-
-              <blockquote
-                className={cn(
-                  'relative mt-5 text-xl leading-relaxed sm:text-2xl',
-                  testimonial.placeholder ? 'text-fg-subtle italic' : 'font-medium text-fg',
-                )}
-              >
-                “{testimonial.quote}”
-              </blockquote>
-
-              <figcaption className="relative mt-6 flex items-center gap-3 border-t border-line pt-6">
-                {testimonial.logo ? (
-                  <img
-                    src={testimonial.logo}
-                    alt=""
-                    width={40}
-                    height={40}
-                    loading="lazy"
-                    decoding="async"
-                    className="size-10 shrink-0 rounded-full object-contain"
-                  />
-                ) : (
-                  <span
-                    aria-hidden="true"
-                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-highlight/10 font-display text-sm font-bold text-highlight"
-                  >
-                    {initials(testimonial.name)}
-                  </span>
-                )}
-                <div>
-                  <p className={cn('font-display text-sm font-bold', testimonial.placeholder ? 'text-fg-subtle' : 'text-fg')}>
-                    {testimonial.name}
-                  </p>
-                  <p className="text-xs text-fg-subtle">
-                    {testimonial.jobTitle}
-                    {testimonial.company && `, ${testimonial.company}`}
-                  </p>
-                </div>
-              </figcaption>
-            </Card>
-          </m.div>
-        </AnimatePresence>
-      </div>
-
-      <Reveal delay={0.1}>
-        <div className="mx-auto mt-6 flex max-w-2xl flex-wrap justify-center gap-3">
-          {testimonials.map((item, index) => (
-            <TestimonialSwitcher
-              key={item.id}
-              testimonial={item}
-              active={index === active}
-              onSelect={() => setActive(index)}
-            />
-          ))}
-        </div>
-      </Reveal>
-    </Section>
-  )
-}
 
 function FinalCtaBackground() {
   return (
@@ -1393,14 +882,11 @@ export default function Home() {
         </div>
       </Section>
 
-      <ProblemsSection />
       <ServicesSection />
       <AiSection />
       <ProcessSection />
-      <IndustriesSection />
       <PortfolioSection />
       <WhySection />
-      <TestimonialsSection />
       <FinalCtaSection />
     </>
   )
