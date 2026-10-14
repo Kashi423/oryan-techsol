@@ -83,7 +83,7 @@ export const caseStudies = [
     problem: 'A school needed a single portal to manage its students, families and day-to-day administration.',
     solution:
       'We built a complete school management and CRM portal: student and parent records, fees and invoices, attendance and results, admissions and messaging, staff salaries, inventory and biometric staff attendance, with a mobile app for homework and automatic absence alerts and notifications. It is a private client system, so there is no public link; details are available on request.',
-    technology: [],
+    technology: ['Laravel', 'Node.js', 'Java', 'MySQL'],
     platform: ['Web', 'Mobile'],
     features: [
       'Student and parent records',
@@ -108,7 +108,8 @@ export const caseStudies = [
     problem: 'A pharmacy needed one system covering the everyday needs of running a pharmacy.',
     solution:
       'We built a custom point-of-sale system that covers the everyday needs of a pharmacy: billing at the counter, stock and expiry tracking, suppliers and purchasing, and sales and profit reports. It is a private client system, so there is no public link; details are available on request.',
-    technology: [],
+    technology: ['Laravel', 'Node.js', 'Java', 'MySQL'],
+    platform: ['Web', 'Desktop'],
     features: [
       'Billing at the counter',
       'Stock and expiry tracking',
@@ -127,7 +128,7 @@ export const caseStudies = [
     problem: 'A clinic needed one portal for booking appointments and keeping its records.',
     solution:
       'We built a custom clinic portal covering appointment scheduling, patient records and history, prescriptions and billing, and reminders and reports, with an AI receptionist to handle appointments. It is a private client system, so there is no public link; details are available on request.',
-    technology: [],
+    technology: ['Laravel', 'Node.js', 'Java', 'MySQL'],
     platform: ['Web'],
     features: [
       'Appointment scheduling',
