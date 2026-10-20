@@ -22,7 +22,7 @@ The path to `docs/guest-posts/<site>/article.md` (and its `pitch.md`). Read both
 ## Output
 - Apply direct fixes with Edit (small wording, sourcing, trimming). Keep the author's meaning and structure unless a structural fix is needed.
 - Re-run the lint after your edits and report the final result.
-- Reply with: **VERDICT: PASS** or **VERDICT: REVISE**; a short list of what you changed; the claim table (claim, status, source URL); any remaining TODOs that need the user's real facts; and, for REVISE, a numbered list of exact changes the writer must make. Only give PASS when lint reports no errors, no UNSUPPORTED claims remain, and you would publish it yourself.
+- Reply with: **VERDICT: PASS**, **VERDICT: PASS-PENDING-HUMAN** or **VERDICT: REVISE**; a short list of what you changed; the claim table (claim, status, source URL); any remaining TODOs that need the user's real facts; and, for REVISE, a numbered list of exact changes the writer must make. Verdicts: **PASS** (lint clean, no UNSUPPORTED claims, nothing missing); **PASS-PENDING-HUMAN** (the text is verified and clean, but it still contains placeholders that only the author can fill with real facts, or it needs the author's own-voice rewrite); **REVISE** (the writer must change something). Use REVISE only for problems the writer or you could fix. Never give PASS or PASS-PENDING-HUMAN while any claim is UNSUPPORTED or lint has errors.
 - Append your verdict and date to the "Pre-send checklist" at the end of `article.md`.
 
 ## Rules

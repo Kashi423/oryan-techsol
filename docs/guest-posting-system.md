@@ -22,6 +22,7 @@ You can also call one agent directly: `guest-post-prospector`, `guest-post-write
 5. **Tracker**: `docs/guest-posts/tracker.csv` records every draft and its status; update `pitched_on`, `response` and `published_url` by hand as things happen.
 
 ## What you do
+- **Treat every draft as a skeleton, not a finished piece.** Several publishers (for example Mind the Product) reject fully AI-written articles. Rewrite the draft in your own words with your own real experience before submitting. Editors can tell, and a genuine voice also gets more readers.
 - Fill any `[ADD REAL EXAMPLE]` placeholders with real project facts (the agents will not invent them).
 - Send the pitch yourself from your email (or the site's form), pasting `pitch.md`. After they accept, send `article.md`.
 - Keep the pace natural: about 5-8 new links per week at most. Do not send the same article to more than one site.

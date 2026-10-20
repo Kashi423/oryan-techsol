@@ -111,7 +111,8 @@ try {
 }
 
 // --- accuracy -----------------------------------------------------------------------------------
-const placeholders = [...raw.matchAll(/\[(ADD|TODO|FILL|XX)[^\]]*\]/gi)]
+// Count placeholders in the article itself, not in the checklist, which only quotes them.
+const placeholders = [...raw.split(/^##\s+Pre-send checklist/im)[0].matchAll(/\[(ADD|TODO|FILL|XX)[^\]]*\]/gi)]
 if (placeholders.length) add('TODO', `${placeholders.length} placeholder(s) need a real fact from Waqas: ${[...new Set(placeholders.map((p) => p[0]))].slice(0, 4).join(', ')}`)
 const claimRe = /(\d[\d,.]*\s?%|\$\s?\d[\d,.]*|\b\d+(\.\d+)?\s?(x|times)\b|\b(19|20)\d\d\b.*\b(study|survey|report)\b)/i
 let unsourced = 0
