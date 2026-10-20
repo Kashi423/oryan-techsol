@@ -1,6 +1,6 @@
 # Pitch: Smashing Magazine (outline pitch via contact form)
 
-Status: pitch-ready. NOT sent. Waqas must answer author-questions.md first, then send it himself at https://www.smashingmagazine.com/contact/ (no email address is published).
+Status: pitch-ready (text corrected 2026-10-20 so every statement is true). NOT sent. Send it yourself at https://www.smashingmagazine.com/contact/ (no email address is published). Before you send, read the "Why me" paragraph and confirm three things are true for you: (1) you directed this work and understand it well enough to write about it, (2) you are happy to disclose that it was developed with an AI coding assistant (delete that sentence only if you decide not to; do not claim you coded it by hand), and (3) you are willing to write the article yourself, because the pitch promises that. If any of the three is not true, do not send it.
 
 Guidelines checked 2026-10-20 (https://www.smashingmagazine.com/write-for-us/): outline of 200-300 words covering audience, takeaway, why you, sections; articles from individual authors (not a company or team); no content marketing; tutorials, research-backed opinion, ultimate guides and case studies with reusable lessons are wanted; honorarium paid. Publishing policy: "Links in our articles are not for sale." AI use is not addressed anywhere.
 
@@ -19,7 +19,7 @@ Audience: front-end developers who ship Vite and React sites with prerendered HT
 
 Takeaway: if prerendered HTML is replaced by a lazy route that has not loaded, the page blanks and shifts. Readers will learn to find the cause in DevTools and fix it by loading the route chunk before the first client render. They will also learn to keep content out of the main bundle.
 
-Why me: I am Waqas Ahmad Asghar, full-stack architect at Oryan Techsol. I hit this problem on our own site in October 2026, measured it, and fixed it. I have the commits and the before/after numbers. [LINKS TO MY OWN WRITING OR CODE]
+Why me: I am Waqas Ahmad Asghar, CEO and full-stack architect at Oryan Techsol, a small software company. The problem appeared on our own site in October 2026 and we fixed it. The fix was developed with an AI coding assistant under my direction, and I have the commits and the before/after measurements. If you take the piece, I will write it myself, from those commits and measurements. I am happy to share the relevant code excerpts.
 
 Outline:
 1. The symptom: footer layout shift of about 0.4 after load.
@@ -48,7 +48,7 @@ Waqas Ahmad Asghar
 - State in the article that the figures are lab measurements on one site, not field data across users.
 
 ## Notes for the sender
-- Do not send until the bracketed placeholder is replaced with links to writing or code that Waqas himself authored. Do not offer the Oryan blog as a writing sample unless Waqas wrote that post himself; the 90-article batch was AI-assisted.
+- The pitch no longer contains a placeholder or a claim that Waqas personally wrote the fix. Do not offer the Oryan blog as a writing sample unless Waqas wrote that post himself; the 90-article batch was AI-assisted.
 - In the form, ask the editor whether Smashing has a policy on AI-assisted drafting (not stated on the site), and the expected article length. Write the article yourself, in your own voice.
 - Smashing wants a photo with the byline.
 - Never mention link benefits to the editor.
