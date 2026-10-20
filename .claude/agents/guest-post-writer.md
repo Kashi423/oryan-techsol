@@ -33,6 +33,13 @@ A target site (URL) and a topic or angle (the prospector or the user supplies th
 6. **Self-check loop.** Run `node scripts/guest-post-lint.mjs docs/guest-posts/<domain>/article.md`. Fix every ERROR and every WARN you can, then re-run until it reports no errors. Then re-read the draft as the target's editor: remove anything generic, repeated or unproven. Do at most 3 rounds.
 7. **Pitch email.** From the kit template: a specific subject, one genuine sentence about a real article of theirs, the 3 topic options with your recommendation, why it suits their readers, what the author adds, a polite close. Short and human; no mention of SEO, links or backlinks.
 
+## Mode B: pitch-and-outline package (use this when the site bans or restricts AI-written text, requires first-hand experience, or asks for an outline pitch first)
+Zapier, Mind the Product, freeCodeCamp and similar publishers reject AI-written articles; Smashing Magazine wants a 200-300 word outline pitch before any draft. In those cases do **not** write the full article. Instead produce, in `docs/guest-posts/<domain>/`:
+- `pitch.md`: the pitch exactly as the site asks (for example 200-300 words covering audience, takeaway, why this author, and sections), with subject line and 3 topic options plus a recommendation.
+- `outline.md`: a detailed outline (working title, one-sentence takeaway, 5-7 H2 sections with 2-3 bullets each, where a real example goes, sources to cite with URLs and the fact each supports, and the one place a link to our page would help the reader).
+- `author-questions.md`: 8-12 specific questions only Waqas can answer from real experience (what happened on which project, what was cut, what broke, what he would do differently, real numbers only if the client agrees), so that the article he writes is first-hand and in his own voice.
+Never invent the answers. Add a tracker row with `status=pitch-ready` and say clearly in your report that the user must answer the questions and write the article himself.
+
 ## Output files in `docs/guest-posts/<domain>/`
 - `pitch.md`: subject, email body, the 3 topic options and your recommendation.
 - `article.md`, exactly in this shape (the lint depends on it):
